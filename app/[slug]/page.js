@@ -1,5 +1,6 @@
 import Image from "next/image";
 import RefInput from "../RefInput";
+import CheckBillLoader from "../CheckBillLoader";
 import { notFound } from "next/navigation";
 import { DISCOS, hasLogo, discoLogo } from "../../lib/discos";
 import { COMPANIES, faqsFor, slugFor, codeFromSlug } from "../../lib/companies";
@@ -109,6 +110,7 @@ export default async function CompanyPage({ params }) {
               <button type="submit" className="btn btn-primary"><Search /> Check {abbr} Bill</button>
             </div>
             <p className="search-foot">Your 14-digit reference number is printed at the top-left of your {abbr} bill.</p>
+            <CheckBillLoader />
           </form>
         </div>
       </section>

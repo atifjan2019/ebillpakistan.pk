@@ -271,6 +271,23 @@ img { max-width: 100%; }
 .blog-cta p { margin: 0 0 14px; font-weight: 600; color: var(--ink); }
 @media (max-width: 640px) { .blog-list { grid-template-columns: 1fr; } }
 
+/* ===== "checking your bill" loader (form submit) ===== */
+.checking-overlay { position: fixed; inset: 0; z-index: 200; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(7, 28, 19, .55); backdrop-filter: blur(6px); }
+.checking-overlay.show { display: flex; animation: ck-fade .22s ease both; }
+@keyframes ck-fade { from { opacity: 0; } to { opacity: 1; } }
+.checking-card { width: min(380px, 100%); background: #fff; border-radius: 22px; padding: 34px 30px; text-align: center; box-shadow: 0 30px 70px -25px rgba(0, 0, 0, .5); animation: ck-pop .25s ease both; }
+@keyframes ck-pop { from { transform: translateY(10px) scale(.96); opacity: 0; } to { transform: none; opacity: 1; } }
+.checking-bolt { font-size: 42px; line-height: 1; animation: ck-pulse 1s ease-in-out infinite; }
+@keyframes ck-pulse { 0%, 100% { transform: scale(1); opacity: .8; } 50% { transform: scale(1.18); opacity: 1; } }
+.checking-title { font-family: var(--font-display); font-weight: 800; font-size: 20px; color: var(--ink); margin: 12px 0 18px; }
+.checking-bar { position: relative; height: 8px; border-radius: 999px; background: var(--brand-50); overflow: hidden; }
+.checking-bar span { position: absolute; top: 0; left: 0; height: 100%; width: 42%; border-radius: 999px; background: linear-gradient(90deg, var(--brand), var(--accent)); animation: ck-slide 1.25s cubic-bezier(.65, .05, .36, 1) infinite; }
+@keyframes ck-slide { 0% { left: -44%; } 100% { left: 100%; } }
+.checking-msg { margin-top: 16px; font-size: 14px; color: var(--muted); min-height: 20px; }
+@media (prefers-reduced-motion: reduce) {
+  .checking-bolt, .checking-bar span, .checking-card, .checking-overlay.show { animation-iteration-count: 1; animation-duration: .01ms; }
+}
+
 /* ===== admin dashboard ===== */
 /* admin renders without the marketing header/footer */
 body:has(.admin-page) > .nav,

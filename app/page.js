@@ -1,5 +1,6 @@
 import Image from "next/image";
 import RefInput from "./RefInput";
+import CheckBillLoader from "./CheckBillLoader";
 import { DISCOS, hasLogo, discoLogo } from "../lib/discos";
 import { SITE_URL, HOME_URL, OG_IMAGE, TWITTER_SITE, SOCIAL } from "../lib/seo";
 
@@ -141,6 +142,7 @@ export default async function Home({ searchParams }) {
               <button type="submit" className="btn btn-primary">{I.search} Check Bill</button>
             </div>
             <p className="search-foot">{I.shield} Leave company on “Auto-detect” and we’ll find it from your reference number.</p>
+            <CheckBillLoader />
           </form>
 
           <div className="trust">
