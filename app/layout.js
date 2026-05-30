@@ -1,7 +1,7 @@
 import "./globals.css";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { DISCOS } from "../lib/discos";
-import { OG_IMAGE, SITE_URL } from "../lib/seo";
+import { OG_IMAGE, SITE_URL, TWITTER_SITE } from "../lib/seo";
 import Nav from "./Nav";
 
 const body = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
