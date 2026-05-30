@@ -6,6 +6,8 @@ const LINKS = [
   ["/#companies", "Companies"],
   ["/#how", "How it works"],
   ["/#faq", "FAQ"],
+  ["/about", "About"],
+  ["/contact", "Contact"],
 ];
 
 export default function Nav() {
