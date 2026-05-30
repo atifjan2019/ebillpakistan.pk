@@ -4,7 +4,7 @@ import { slugFor } from "../lib/companies";
 const BASE = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ebillpakistan.pk";
 
 // Stable last-modified dates per content group. Bump the relevant constant when
-// you actually change that content — using `new Date()` here would stamp every
+// you actually change that content; using `new Date()` here would stamp every
 // URL with the request time, which Google ignores as inaccurate.
 const UPDATED = {
   core: "2026-05-30",   // homepage + DISCO landing pages

@@ -15,7 +15,7 @@ export default function Contact() {
         <h1>Contact us</h1>
         <p className="legal-intro">
           We&apos;d love to hear from you. Whether it&apos;s feedback, a bug, a feature request, or a
-          company you&apos;d like us to add — drop us a line.
+          company you&apos;d like us to add, just drop us a line.
         </p>
 
         <div className="prose">
@@ -35,7 +35,7 @@ export default function Contact() {
             We&apos;re an independent service and are not affiliated with PITC or any distribution
             company. For <strong>bill payments, meter issues, new connections, or billing
             complaints and disputes</strong>, please contact your electricity distribution company
-            directly through their official helpline or office — they&apos;re the only ones who can
+            directly through their official helpline or office, as they&apos;re the only ones who can
             resolve those.
           </p>
 

@@ -4,7 +4,7 @@ import { SITE_URL, HOME_URL, OG_IMAGE } from "../lib/seo";
 export const metadata = {
   title: "eBill Pakistan | Check Your Electricity Bill Online",
   description:
-    "Check and download your latest electricity bill online for LESCO, IESCO, MEPCO, FESCO, GEPCO, HESCO, PESCO, QESCO, SEPCO, TESCO, HAZECO and AJK. Free, instant and secure — no sign-up needed.",
+    "Check and download your latest electricity bill online for LESCO, IESCO, MEPCO, FESCO, GEPCO, HESCO, PESCO, QESCO, SEPCO, TESCO, HAZECO and AJK. Free, instant and secure. No sign-up needed.",
   alternates: { canonical: HOME_URL },
   // Re-supply type/siteName/image: Next replaces (not deep-merges) the parent
   // openGraph when a page sets its own, so omitting these would drop them.
@@ -91,7 +91,7 @@ export default async function Home({ searchParams }) {
       <section className="hero">
         <div className="container">
           <span className="eyebrow"><span className="dot" /> Free • No sign-up • All companies</span>
-          <h1>Check Your <span className="grad">Electricity Bill</span> Online — Without the Hassle</h1>
+          <h1>Check Your <span className="grad">Electricity Bill</span> Online, Without the Hassle</h1>
           <p className="sub">
             No app to download, no account to make. Just pop in your reference number and we&apos;ll
             pull up your latest bill, ready to view, download or send on WhatsApp.

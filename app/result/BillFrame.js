@@ -99,7 +99,7 @@ export default function BillFrame({ src, disco = "bill", reference = "" }) {
     fit();
     setTimeout(fit, 300); // refit after images/barcode/QR settle
     setTimeout(fit, 1000);
-    // Observe genuine content reflow (tab switch, late images) — NOT the iframe
+    // Observe genuine content reflow (tab switch, late images), NOT the iframe
     // viewport, so our own height writes can't re-trigger it.
     try {
       const win = ref.current.contentWindow;
@@ -121,7 +121,7 @@ export default function BillFrame({ src, disco = "bill", reference = "" }) {
     };
   }, [scheduleFit]);
 
-  // Print-to-PDF dialog — only used as a fallback if direct download fails.
+  // Print-to-PDF dialog, only used as a fallback if direct download fails.
   const printFallback = useCallback(() => {
     const iframe = ref.current;
     let doc, win;

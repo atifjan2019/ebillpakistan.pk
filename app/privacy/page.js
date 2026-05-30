@@ -44,7 +44,7 @@ export default function Privacy() {
       <p>
         We do not ask you to register, and we do not collect your name, CNIC, phone number or payment
         details. Any personal details printed on your bill belong to your distribution company and are
-        simply shown back to you on screen — we do not retain them.
+        simply shown back to you on screen, and we do not retain them.
       </p>
 
       <h2>4. Cookies</h2>

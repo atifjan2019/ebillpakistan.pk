@@ -34,7 +34,7 @@ export default function Terms() {
       <p>
         The bill information shown comes from third-party sources and is provided on an “as is” and “as
         available” basis. We do not guarantee that it is accurate, complete, current or uninterrupted. For
-        anything official — paying your bill, raising a complaint or resolving a dispute — always rely on
+        anything official (paying your bill, raising a complaint or resolving a dispute), always rely on
         your distribution company&apos;s official channels.
       </p>
 

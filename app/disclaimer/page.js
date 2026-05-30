@@ -33,7 +33,7 @@ export default function Disclaimer() {
       <p>
         While we aim to show your bill correctly, we do not warrant that the information displayed is
         accurate, complete, current or error-free. Bills are generated and maintained by your distribution
-        company, and any figures, charges, dates or readings shown originate from them — not from us.
+        company, and any figures, charges, dates or readings shown originate from them, not from us.
       </p>
 
       <h2>Always use official channels</h2>
