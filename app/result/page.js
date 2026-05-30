@@ -42,6 +42,11 @@ export default async function Result({ searchParams }) {
 
   const hdrs = await headers();
   const page = sourcePage(hdrs.get("referer") || "");
+  const geo = {
+    ip: getIp(hdrs),
+    city: decodeURIComponent(hdrs.get("x-vercel-ip-city") || ""),
+    country: hdrs.get("x-vercel-ip-country") || "",
+  };
 
   // No company chosen -> auto-detect it from the reference number.
   if (!disco) {
@@ -52,10 +57,10 @@ export default async function Result({ searchParams }) {
       detected = await detectDisco(ref);
     } catch {}
     if (!detected) {
-      if (page) await logBillCheck({ disco: "auto", page, outcome: "notfound" });
+      if (page) await logBillCheck({ disco: "auto", page, outcome: "notfound", ...geo });
       return <NotFound reference={ref} />;
     }
-    if (page) await logBillCheck({ disco: detected.disco, page, outcome: "view" });
+    if (page) await logBillCheck({ disco: detected.disco, page, outcome: "view", ...geo });
     redirect(`/result?disco=${detected.disco}&reference=${ref}`);
   }
 

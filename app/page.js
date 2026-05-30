@@ -1,4 +1,5 @@
 import Image from "next/image";
+import RefInput from "./RefInput";
 import { DISCOS, hasLogo, discoLogo } from "../lib/discos";
 import { SITE_URL, HOME_URL, OG_IMAGE, TWITTER_SITE, SOCIAL } from "../lib/seo";
 
@@ -133,7 +134,7 @@ export default async function Home({ searchParams }) {
               <div className="field">
                 <label htmlFor="reference">Reference number</label>
                 <div className="control">
-                  <input id="reference" name="reference" inputMode="numeric" pattern="[0-9]{8,14}"
+                  <RefInput id="reference" name="reference" inputMode="numeric" pattern="[0-9]{8,14}"
                     maxLength={14} placeholder="e.g. 12345678901234" required autoFocus={!!preset} />
                 </div>
               </div>

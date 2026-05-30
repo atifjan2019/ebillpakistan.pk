@@ -1,4 +1,5 @@
 import Image from "next/image";
+import RefInput from "../RefInput";
 import { notFound } from "next/navigation";
 import { DISCOS, hasLogo, discoLogo } from "../../lib/discos";
 import { COMPANIES, faqsFor, slugFor, codeFromSlug } from "../../lib/companies";
@@ -101,7 +102,7 @@ export default async function CompanyPage({ params }) {
               <div className="field">
                 <label htmlFor="reference">{abbr} reference number</label>
                 <div className="control">
-                  <input id="reference" name="reference" inputMode="numeric" pattern="[0-9]{8,14}"
+                  <RefInput id="reference" name="reference" inputMode="numeric" pattern="[0-9]{8,14}"
                     maxLength={14} placeholder="e.g. 12345678901234" required autoFocus />
                 </div>
               </div>
