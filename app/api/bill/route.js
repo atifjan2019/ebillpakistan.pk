@@ -1,0 +1,53 @@
+import { fetchBillHtml } from "../../../lib/pitc";
+import { DISCOS, isValidRef } from "../../../lib/discos";
+
+export const dynamic = "force-dynamic";
+export const maxDuration = 20;
+
+// A small styled page rendered inside the iframe. `status` is also exposed via a
+// body data-attribute so the app shell can surface an error state (Bug 4).
+function messagePage(title, msg, status) {
+  return `<!doctype html><html><head><meta charset="utf-8"></head>
+<body data-bill-status="${status}" style="font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;margin:0;padding:32px;text-align:center;color:#444">
+<h3 style="color:#9b1c1c;margin:0 0 8px">${title}</h3><p style="margin:0">${msg}</p>
+</body></html>`;
+}
+
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const disco = (searchParams.get("disco") || "").toLowerCase();
+  const ref = (searchParams.get("reference") || "").trim();
+
+  const html = (body, status) =>
+    new Response(body, {
+      status,
+      headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" },
+    });
+
+  if (!DISCOS[disco] || !isValidRef(ref)) {
+    return html(
+      messagePage("Invalid request", "Please choose a company and enter a valid reference number.", "invalid"),
+      400
+    );
+  }
+
+  try {
+    const bill = await fetchBillHtml(disco, ref);
+    return html(bill, 200);
+  } catch (e) {
+    if (e && e.code === "BILL_NOT_FOUND") {
+      return html(
+        messagePage(
+          "Bill not found",
+          `No bill found for reference <b>${ref}</b>. Please check the number and try again.`,
+          "notfound"
+        ),
+        404
+      );
+    }
+    return html(
+      messagePage("Service unavailable", "The bill service is unreachable right now. Please try again shortly.", "error"),
+      502
+    );
+  }
+}
