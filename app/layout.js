@@ -67,7 +67,8 @@ export default function RootLayout({ children }) {
               <h4>Site</h4>
               <ul>
                 <li><a href="/">Home</a></li>
-                <li><a href="/#how">How it works</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/contact">Contact</a></li>
                 <li><a href="/#companies">All companies</a></li>
                 <li><a href="/#faq">FAQ</a></li>
               </ul>
