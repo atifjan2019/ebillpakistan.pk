@@ -2,7 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { DISCOS, hasLogo, discoLogo } from "../../lib/discos";
 import { COMPANIES, faqsFor, slugFor, codeFromSlug } from "../../lib/companies";
-import { SITE_URL, HOME_URL, OG_IMAGE, TWITTER_SITE } from "../../lib/seo";
+import { SITE_URL, HOME_URL, buildMeta } from "../../lib/seo";
 
 export const dynamicParams = false;
 
@@ -15,25 +15,15 @@ export async function generateMetadata({ params }) {
   const code = codeFromSlug(slug);
   if (!code) return {};
   const [abbr] = DISCOS[code];
-  const c = COMPANIES[code];
   const year = new Date().getFullYear();
-  const title = `${abbr} Bill Check Online ${year} | ${c.full} | eBill Pakistan`;
-  const description = `Check your ${abbr} (${c.full}) electricity bill online for free. Enter your reference number to instantly view, print or download your latest bill. Serving ${c.cities.slice(0, 4).join(", ")} and more.`;
-  const ogImage = { ...OG_IMAGE, alt: `Check your ${abbr} electricity bill online - eBill Pakistan` };
-  return {
+  const title = `${abbr} Bill Check Online ${year} | eBill Pakistan`;
+  const description = `Check your ${abbr} electricity bill online for free. Enter your 14-digit reference number to instantly view, download or print your latest bill.`;
+  return buildMeta({
     title,
     description,
-    alternates: { canonical: `/${slugFor(code)}` },
-    openGraph: {
-      title,
-      description,
-      type: "website",
-      siteName: "eBill Pakistan",
-      url: `/${slugFor(code)}`,
-      images: [ogImage],
-    },
-    twitter: { card: "summary_large_image", site: TWITTER_SITE, title, description, images: [OG_IMAGE.url] },
-  };
+    path: `/${slugFor(code)}`,
+    imageAlt: `Check your ${abbr} electricity bill online - eBill Pakistan`,
+  });
 }
 
 const Search = () => (
@@ -126,12 +116,6 @@ export default async function CompanyPage({ params }) {
         <div className="container article">
           <h2>About {abbr}</h2>
           <p>{c.about}</p>
-          <p>
-            For official notices, tariff schedules and customer services, visit the{" "}
-            <a href={c.website} target="_blank" rel="noopener noreferrer">
-              official {abbr} website
-            </a>.
-          </p>
 
           <h2>Areas {abbr} serves</h2>
           <p>{abbr} distributes electricity across {c.region}, including:</p>

@@ -1,7 +1,7 @@
 import "./globals.css";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { DISCOS } from "../lib/discos";
-import { OG_IMAGE, SITE_URL, TWITTER_SITE, SOCIAL } from "../lib/seo";
+import { OG_IMAGE, OG_IMAGE_ALT, SITE_URL, TWITTER_SITE, SOCIAL } from "../lib/seo";
 import { ARTICLES } from "../lib/articles";
 import Nav from "./Nav";
 
@@ -34,7 +34,7 @@ export const metadata = {
     title: "eBill Pakistan | Check Your Electricity Bill Online",
     description:
       "Check and download your latest electricity bill online for all major DISCOs in Pakistan. Free, instant and secure.",
-    images: [OG_IMAGE.url],
+    images: [{ url: OG_IMAGE.url, alt: OG_IMAGE_ALT }],
   },
 };
 

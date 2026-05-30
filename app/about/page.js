@@ -1,13 +1,26 @@
-export const metadata = {
-  title: "About | eBill Pakistan",
+import { SITE_URL, buildMeta } from "../../lib/seo";
+
+export const metadata = buildMeta({
+  title: "About eBill Pakistan | Free Electricity Bill Checker",
   description:
     "eBill Pakistan is a free, independent tool that lets you check your electricity bill online in seconds, with no app and no sign-up. Learn what we do and why.",
-  alternates: { canonical: "/about" },
+  path: "/about",
+});
+
+const aboutLd = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "@id": `${SITE_URL}/about#aboutpage`,
+  url: `${SITE_URL}/about`,
+  name: "About eBill Pakistan",
+  isPartOf: { "@id": `${SITE_URL}/#website` },
+  about: { "@id": `${SITE_URL}/#organization` },
 };
 
 export default function About() {
   return (
     <section className="legal-page">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutLd) }} />
       <div className="container legal-inner">
         <div className="crumb">
           <a href="/">Home</a> <span>/</span> <span>About</span>

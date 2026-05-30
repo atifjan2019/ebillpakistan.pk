@@ -4,7 +4,7 @@ import { SITE_URL, HOME_URL, OG_IMAGE, TWITTER_SITE, SOCIAL } from "../lib/seo";
 
 const HOME_TITLE = "eBill Pakistan | Check Your Electricity Bill Online";
 const HOME_DESC =
-  "Check and download your latest electricity bill online for LESCO, IESCO, MEPCO, FESCO, GEPCO, HESCO, PESCO, QESCO, SEPCO, TESCO, HAZECO and AJK. Free, instant and secure. No sign-up needed.";
+  "Check your electricity bill online for LESCO, IESCO, MEPCO, FESCO and all 12 major DISCOs in Pakistan. Free, instant, no sign-up needed.";
 
 export const metadata = {
   title: HOME_TITLE,
@@ -17,6 +17,7 @@ export const metadata = {
   openGraph: {
     type: "website",
     siteName: "eBill Pakistan",
+    locale: "en_PK",
     title: HOME_TITLE,
     description: HOME_DESC,
     images: [OG_IMAGE],
@@ -27,7 +28,7 @@ export const metadata = {
     site: TWITTER_SITE,
     title: HOME_TITLE,
     description: HOME_DESC,
-    images: [OG_IMAGE.url],
+    images: [{ url: OG_IMAGE.url, alt: HOME_TITLE }],
   },
 };
 

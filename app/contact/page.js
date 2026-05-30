@@ -1,13 +1,26 @@
-export const metadata = {
-  title: "Contact | eBill Pakistan",
+import { SITE_URL, buildMeta } from "../../lib/seo";
+
+export const metadata = buildMeta({
+  title: "Contact Us | eBill Pakistan",
   description:
     "Get in touch with eBill Pakistan. Email us with feedback, questions or suggestions about checking your electricity bill online.",
-  alternates: { canonical: "/contact" },
+  path: "/contact",
+});
+
+const contactLd = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "@id": `${SITE_URL}/contact#contactpage`,
+  url: `${SITE_URL}/contact`,
+  name: "Contact eBill Pakistan",
+  isPartOf: { "@id": `${SITE_URL}/#website` },
+  about: { "@id": `${SITE_URL}/#organization` },
 };
 
 export default function Contact() {
   return (
     <section className="legal-page">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(contactLd) }} />
       <div className="container legal-inner">
         <div className="crumb">
           <a href="/">Home</a> <span>/</span> <span>Contact</span>

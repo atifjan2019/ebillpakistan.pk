@@ -1,11 +1,12 @@
 import LegalShell from "../LegalShell";
+import { buildMeta } from "../../lib/seo";
 
-export const metadata = {
+export const metadata = buildMeta({
   title: "Privacy Policy | eBill Pakistan",
   description:
     "How eBill Pakistan handles your information when you check your electricity bill online. We don't require sign-up and we don't store your bills.",
-  alternates: { canonical: "/privacy" },
-};
+  path: "/privacy",
+});
 
 export default function Privacy() {
   return (
