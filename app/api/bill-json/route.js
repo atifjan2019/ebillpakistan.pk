@@ -1,5 +1,6 @@
 import { fetchBillJson } from "../../../lib/pitc";
 import { isValidRef } from "../../../lib/discos";
+import { rateLimitBill, getIp } from "../../../lib/store";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 20;
@@ -10,6 +11,10 @@ export async function GET(request) {
 
   if (!isValidRef(ref)) {
     return Response.json({ error: "reference must be 8-14 digits" }, { status: 400 });
+  }
+  const rl = await rateLimitBill(`${getIp(request)}`);
+  if (!rl.success) {
+    return Response.json({ error: "too many requests" }, { status: 429 });
   }
   try {
     const data = await fetchBillJson(ref);

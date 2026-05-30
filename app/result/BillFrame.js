@@ -6,6 +6,7 @@ const ERROR_TEXT = {
   notfound: "We couldn't find a bill for this reference number. Please double-check it and try again.",
   invalid: "Please go back and enter a valid company and reference number.",
   error: "The bill service is unreachable right now. Please try again in a moment.",
+  ratelimited: "You're going a bit fast. Please wait a minute and try again.",
 };
 
 const DownloadIcon = () => (

@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { DISCOS, isValidRef } from "../../lib/discos";
 import { detectDisco } from "../../lib/pitc";
+import { rateLimitDetect, getIp } from "../../lib/store";
 import BillFrame from "./BillFrame";
 
 export const dynamic = "force-dynamic";
@@ -28,6 +30,8 @@ export default async function Result({ searchParams }) {
 
   // No company chosen -> auto-detect it from the reference number.
   if (!disco) {
+    const rl = await rateLimitDetect(getIp(await headers()));
+    if (!rl.success) return <TooMany />;
     let detected = null;
     try {
       detected = await detectDisco(ref);
@@ -92,6 +96,32 @@ function NotFound({ reference }) {
             </p>
             <p style={{ marginTop: 12 }}>
               <a className="btn btn-ghost" href="/">← Try again</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TooMany() {
+  return (
+    <section className="result-wrap">
+      <div className="container">
+        <div className="crumb">
+          <a href="/">Home</a> <span>/</span> <span>Bill</span>
+        </div>
+        <div className="error-box" style={{ marginTop: 8 }}>
+          <span className="ic">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9b1c1c" strokeWidth="2">
+              <circle cx="12" cy="12" r="9" /><path d="M12 7v5M12 16h.01" />
+            </svg>
+          </span>
+          <div>
+            <h3>Too many requests</h3>
+            <p>You&apos;ve checked a lot of bills in a short time. Please wait a minute and try again.</p>
+            <p style={{ marginTop: 12 }}>
+              <a className="btn btn-ghost" href="/">← Back</a>
             </p>
           </div>
         </div>

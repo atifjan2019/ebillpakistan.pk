@@ -1,5 +1,6 @@
 import { fetchBillHtml } from "../../../lib/pitc";
 import { DISCOS, isValidRef } from "../../../lib/discos";
+import { rateLimitBill, getIp } from "../../../lib/store";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 20;
@@ -28,6 +29,14 @@ export async function GET(request) {
     return html(
       messagePage("Invalid request", "Please choose a company and enter a valid reference number.", "invalid"),
       400
+    );
+  }
+
+  const rl = await rateLimitBill(`${getIp(request)}`);
+  if (!rl.success) {
+    return html(
+      messagePage("Too many requests", "You're checking bills very quickly. Please wait a minute and try again.", "ratelimited"),
+      429
     );
   }
 

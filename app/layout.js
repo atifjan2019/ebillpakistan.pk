@@ -1,5 +1,6 @@
 import "./globals.css";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { DISCOS } from "../lib/discos";
 
 const body = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
 const display = Plus_Jakarta_Sans({
@@ -45,43 +46,48 @@ export default function RootLayout({ children }) {
         <main>{children}</main>
 
         <footer className="footer">
-          <div className="container footer-top">
-            <div>
+          <div className="container footer-grid">
+            <div className="footer-brand">
               <a className="logo" href="/"><span className="mark"><Bolt /></span>eBill<b>&nbsp;Pakistan</b></a>
               <p className="blurb">
-                A simple, free way to check your electricity bill: no app, no sign-up, just your
-                reference number. More bills (gas &amp; internet) coming soon.
+                A simple, free way to check your electricity bill online: no app, no sign-up,
+                just your reference number.
               </p>
+              <span className="footer-soon">⚡ Gas &amp; internet bills coming soon</span>
             </div>
-            <div>
-              <h4>Companies</h4>
-              <ul>
-                <li><a href="/lesco-bill-check">LESCO Bill</a></li>
-                <li><a href="/iesco-bill-check">IESCO Bill</a></li>
-                <li><a href="/mepco-bill-check">MEPCO Bill</a></li>
-                <li><a href="/pesco-bill-check">PESCO Bill</a></li>
+
+            <div className="footer-col footer-companies">
+              <h4>Check your bill</h4>
+              <ul className="cols-2">
+                {Object.entries(DISCOS).map(([code, [abbr]]) => (
+                  <li key={code}><a href={`/${code}-bill-check`}>{abbr} Bill</a></li>
+                ))}
               </ul>
             </div>
-            <div>
-              <h4>Quick links</h4>
+
+            <div className="footer-col">
+              <h4>Site</h4>
               <ul>
+                <li><a href="/">Home</a></li>
                 <li><a href="/#how">How it works</a></li>
                 <li><a href="/#companies">All companies</a></li>
                 <li><a href="/#faq">FAQ</a></li>
               </ul>
             </div>
-            <div>
+
+            <div className="footer-col">
               <h4>Legal</h4>
               <ul>
-                <li><a href="/#faq">Privacy</a></li>
-                <li><a href="/#faq">Terms</a></li>
+                <li><a href="/#faq">Privacy policy</a></li>
+                <li><a href="/#faq">Terms of use</a></li>
                 <li><a href="/#faq">Disclaimer</a></li>
               </ul>
             </div>
           </div>
+
           <div className="container footer-bottom">
-            <span>© {new Date().getFullYear()} eBill Pakistan. Not affiliated with PITC or any DISCO.</span>
-            <span>Bill data belongs to the respective distribution company.</span>
+            <span>© {new Date().getFullYear()} eBill Pakistan. All rights reserved.</span>
+            <span>Not affiliated with PITC or any DISCO. Bill data belongs to the respective company.</span>
           </div>
         </footer>
       </body>
