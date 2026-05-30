@@ -226,6 +226,20 @@ img { max-width: 100%; }
 .error-box h3 { color: #9b1c1c; font-size: 17px; margin-bottom: 4px; }
 .error-box p { margin: 0; font-size: 14.5px; }
 
+/* ---------- legal / prose pages ---------- */
+.legal-page { padding: 34px 0 60px; }
+.legal-inner { max-width: 820px; }
+.legal-page h1 { font-size: clamp(26px, 4vw, 34px); margin: 8px 0 6px; }
+.legal-updated { color: var(--muted); font-size: 14px; margin: 0 0 18px; }
+.legal-intro { font-size: 16.5px; line-height: 1.7; color: var(--body); margin: 0 0 8px; }
+.prose h2 { font-size: 20px; margin: 30px 0 8px; color: var(--ink); }
+.prose p { font-size: 15.5px; line-height: 1.75; color: var(--body); margin: 0 0 10px; }
+.prose ul { padding-left: 20px; margin: 8px 0 12px; }
+.prose li { font-size: 15.5px; line-height: 1.7; color: var(--body); margin: 7px 0; }
+.prose a, .legal-note a { color: var(--brand); font-weight: 600; }
+.prose strong { color: var(--ink); }
+.legal-note { margin-top: 30px; font-size: 13.5px; line-height: 1.6; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+
 /* ---------- responsive ---------- */
 @media (max-width: 820px) {
   .footer-grid { grid-template-columns: 1.6fr 1fr 1fr; }
