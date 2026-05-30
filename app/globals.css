@@ -63,6 +63,9 @@ img { max-width: 100%; }
 .logo .mark { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; background: linear-gradient(140deg, var(--brand) 0%, var(--accent) 100%); color: #fff; box-shadow: 0 8px 18px -6px rgba(22, 160, 61, .55); }
 .logo .mark svg { width: 20px; height: 20px; }
 .logo b { color: var(--accent); }
+.logo-img { height: 38px; width: auto; display: block; }
+.logo-chip { display: inline-flex; background: #fff; padding: 8px 14px; border-radius: 12px; box-shadow: 0 8px 20px -10px rgba(0, 0, 0, .45); }
+.logo-chip .logo-img { height: 34px; }
 .nav-links { display: flex; align-items: center; gap: 30px; font-weight: 600; font-size: 15px; color: var(--body); }
 .nav-links a:hover { color: var(--brand); }
 @media (max-width: 760px) { .nav-links { display: none; } }

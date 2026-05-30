@@ -31,9 +31,8 @@ export default function RootLayout({ children }) {
       <body>
         <header className="nav">
           <div className="container nav-inner">
-            <a className="logo" href="/">
-              <span className="mark"><Bolt /></span>
-              eBill<b>&nbsp;Pakistan</b>
+            <a className="logo" href="/" aria-label="eBill Pakistan home">
+              <img src="/images/logo.png" alt="eBill Pakistan" className="logo-img" />
             </a>
             <nav className="nav-links">
               <a href="/#companies">Companies</a>
@@ -48,7 +47,9 @@ export default function RootLayout({ children }) {
         <footer className="footer">
           <div className="container footer-grid">
             <div className="footer-brand">
-              <a className="logo" href="/"><span className="mark"><Bolt /></span>eBill<b>&nbsp;Pakistan</b></a>
+              <a className="logo-chip" href="/" aria-label="eBill Pakistan home">
+                <img src="/images/logo.png" alt="eBill Pakistan" className="logo-img" />
+              </a>
               <p className="blurb">
                 A simple, free way to check your electricity bill online: no app, no sign-up,
                 just your reference number.
