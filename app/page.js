@@ -1,13 +1,19 @@
 import { DISCOS, hasLogo, discoLogo } from "../lib/discos";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ebillpakistan.pk";
+import { SITE_URL, HOME_URL, OG_IMAGE } from "../lib/seo";
 
 export const metadata = {
   title: "eBill Pakistan | Check Your Electricity Bill Online",
   description:
     "Check and download your latest electricity bill online for LESCO, IESCO, MEPCO, FESCO, GEPCO, HESCO, PESCO, QESCO, SEPCO, TESCO, HAZECO and AJK. Free, instant and secure — no sign-up needed.",
-  alternates: { canonical: "/" },
-  openGraph: { url: "/" },
+  alternates: { canonical: HOME_URL },
+  // Re-supply type/siteName/image: Next replaces (not deep-merges) the parent
+  // openGraph when a page sets its own, so omitting these would drop them.
+  openGraph: {
+    type: "website",
+    siteName: "eBill Pakistan",
+    url: HOME_URL,
+    images: [OG_IMAGE],
+  },
 };
 
 /* inline icons (no external requests) */
@@ -48,11 +54,6 @@ export default async function Home({ searchParams }) {
         name: "eBill Pakistan",
         description: "Check your electricity bill online for all major DISCOs in Pakistan.",
         publisher: { "@id": `${SITE_URL}/#organization` },
-        potentialAction: {
-          "@type": "SearchAction",
-          target: { "@type": "EntryPoint", urlTemplate: `${SITE_URL}/result?reference={reference}` },
-          "query-input": "required name=reference",
-        },
       },
       {
         "@type": "Organization",

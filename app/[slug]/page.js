@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
 import { DISCOS, hasLogo, discoLogo } from "../../lib/discos";
 import { COMPANIES, faqsFor, slugFor, codeFromSlug } from "../../lib/companies";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ebillpakistan.pk";
+import { SITE_URL, OG_IMAGE } from "../../lib/seo";
 
 export const dynamicParams = false;
 
@@ -23,8 +22,8 @@ export async function generateMetadata({ params }) {
     title,
     description,
     alternates: { canonical: `/${slugFor(code)}` },
-    openGraph: { title, description, type: "website", url: `/${slugFor(code)}`, images: ["/images/og-image.jpg"] },
-    twitter: { card: "summary_large_image", title, description, images: ["/images/og-image.jpg"] },
+    openGraph: { title, description, type: "website", url: `/${slugFor(code)}`, images: [OG_IMAGE] },
+    twitter: { card: "summary_large_image", title, description, images: [OG_IMAGE.url] },
   };
 }
 

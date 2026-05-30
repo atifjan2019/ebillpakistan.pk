@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { DISCOS } from "../lib/discos";
+import { OG_IMAGE, SITE_URL } from "../lib/seo";
 import Nav from "./Nav";
 
 const body = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
@@ -10,8 +11,6 @@ const display = Plus_Jakarta_Sans({
   variable: "--font-display",
   display: "swap",
 });
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ebillpakistan.pk";
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -26,14 +25,14 @@ export const metadata = {
     title: "eBill Pakistan | Check Your Electricity Bill Online",
     description:
       "Check and download your latest electricity bill online for all major DISCOs in Pakistan. Free, instant and secure.",
-    images: [{ url: "/images/og-image.jpg", width: 1200, height: 630, alt: "eBill Pakistan" }],
+    images: [OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: "eBill Pakistan | Check Your Electricity Bill Online",
     description:
       "Check and download your latest electricity bill online for all major DISCOs in Pakistan. Free, instant and secure.",
-    images: ["/images/og-image.jpg"],
+    images: [OG_IMAGE.url],
   },
 };
 
