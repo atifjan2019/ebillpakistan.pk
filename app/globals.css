@@ -19,7 +19,7 @@
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.08);
   --shadow: 0 14px 34px -16px rgba(15, 23, 42, 0.22);
   --shadow-lg: 0 30px 70px -24px rgba(15, 23, 42, 0.30);
-  --container: 1240px;
+  --container: 1280px;
 }
 
 * { box-sizing: border-box; }
@@ -155,8 +155,7 @@ img { max-width: 100%; }
 .disco-card .badge { width: 56px; height: 56px; border-radius: 16px; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 14%, #fff); color: var(--c); font-family: var(--font-display); font-weight: 800; font-size: 17px; margin-bottom: 6px; }
 .disco-card .name { font-family: var(--font-display); font-weight: 700; color: var(--ink); font-size: 16px; }
 .disco-card .city { font-size: 13px; color: var(--muted); }
-.disco-card .go { margin-top: 8px; font-size: 13px; font-weight: 600; color: var(--brand); opacity: 0; transform: translateY(4px); transition: .14s; }
-.disco-card:hover .go { opacity: 1; transform: none; }
+.disco-card .go { margin-top: 8px; font-size: 13px; font-weight: 600; color: var(--brand); }
 
 /* ---------- steps ---------- */
 .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
@@ -238,6 +237,7 @@ img { max-width: 100%; }
 .prose ul { padding-left: 20px; margin: 8px 0 12px; }
 .prose li { font-size: 15.5px; line-height: 1.7; color: var(--body); margin: 7px 0; }
 .prose a, .legal-note a { color: var(--brand); font-weight: 600; }
+.prose a.btn-primary { color: #fff; } /* keep the email button text white over its green fill */
 .prose strong { color: var(--ink); }
 .legal-note { margin-top: 30px; font-size: 13.5px; line-height: 1.6; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
 
