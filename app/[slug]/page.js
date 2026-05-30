@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { DISCOS } from "../../lib/discos";
+import { DISCOS, hasLogo, discoLogo } from "../../lib/discos";
 import { COMPANIES, faqsFor, slugFor, codeFromSlug } from "../../lib/companies";
 
 export const dynamicParams = false;
@@ -66,6 +66,15 @@ export default async function CompanyPage({ params }) {
 
       <section className="hero">
         <div className="container">
+          {hasLogo(code) && (
+            <img
+              className="disco-logo"
+              src={discoLogo(code)}
+              alt={`${c.full} (${abbr}) logo`}
+              width={88}
+              height={88}
+            />
+          )}
           <span className="eyebrow"><span className="dot" /> {abbr} • {city} region</span>
           <h1>
             {abbr} Bill Check Online <span className="grad">{year}</span>
@@ -128,7 +137,11 @@ export default async function CompanyPage({ params }) {
               const [a2, ci2, co2] = DISCOS[x];
               return (
                 <a key={x} className="disco-card" href={`/${slugFor(x)}`} style={{ "--c": co2 }}>
-                  <span className="badge">{a2.slice(0, 2)}</span>
+                  <span className={hasLogo(x) ? "badge badge--logo" : "badge"}>
+                    {hasLogo(x)
+                      ? <img src={discoLogo(x)} alt={`${a2} logo`} className="badge-logo" />
+                      : a2.slice(0, 2)}
+                  </span>
                   <span className="name">{a2}</span>
                   <span className="city">{ci2}</span>
                 </a>

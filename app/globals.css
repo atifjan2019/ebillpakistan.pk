@@ -103,6 +103,7 @@ img { max-width: 100%; }
   background: radial-gradient(closest-side, rgba(22, 160, 61, .14), rgba(22, 160, 61, 0));
 }
 .hero > * { position: relative; z-index: 1; }
+.disco-logo { display: block; width: 88px; height: 88px; margin: 0 auto 18px; object-fit: contain; filter: drop-shadow(0 10px 22px rgba(15, 23, 42, .18)); }
 .eyebrow { display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--line); color: var(--brand-700); font-weight: 600; font-size: 13px; padding: 7px 14px; border-radius: 999px; box-shadow: var(--shadow-sm); }
 .eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px rgba(15, 157, 88, .18); }
 .hero h1 { font-size: clamp(31px, 5.2vw, 50px); font-weight: 800; letter-spacing: -1px; margin: 20px auto 14px; max-width: 760px; }
@@ -261,3 +262,7 @@ img { max-width: 100%; }
   .bill-toolbar .actions { width: 100%; }
   .bill-toolbar .actions .btn { flex: 1; justify-content: center; padding: 10px 8px; }
 }
+
+/* PESCO card: show the transparent logo image in place of the abbr text. */
+.badge--logo { background: transparent; box-shadow: none; padding: 0; }
+.badge-logo { width: 56px; height: 56px; object-fit: contain; display: block; }

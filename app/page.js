@@ -1,4 +1,4 @@
-import { DISCOS } from "../lib/discos";
+import { DISCOS, hasLogo, discoLogo } from "../lib/discos";
 
 /* inline icons (no external requests) */
 const I = {
@@ -85,7 +85,11 @@ export default async function Home({ searchParams }) {
           <div className="disco-grid">
             {entries.map(([code, [abbr, city, color]]) => (
               <a key={code} className="disco-card" href={`/${code}-bill-check`} style={{ "--c": color }}>
-                <span className="badge">{abbr.slice(0, 2)}</span>
+                <span className={hasLogo(code) ? "badge badge--logo" : "badge"}>
+                  {hasLogo(code)
+                    ? <img src={discoLogo(code)} alt={`${abbr} logo`} className="badge-logo" />
+                    : abbr.slice(0, 2)}
+                </span>
                 <span className="name">{abbr}</span>
                 <span className="city">{city}</span>
                 <span className="go">Check bill →</span>
