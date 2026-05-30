@@ -103,6 +103,12 @@ export default async function CompanyPage({ params }) {
         <div className="container article">
           <h2>About {abbr}</h2>
           <p>{c.about}</p>
+          <p>
+            For official notices, tariff schedules and customer services, visit the{" "}
+            <a href={c.website} target="_blank" rel="noopener noreferrer">
+              official {abbr} website
+            </a>.
+          </p>
 
           <h2>Areas {abbr} serves</h2>
           <p>{abbr} distributes electricity across {c.region}, including:</p>

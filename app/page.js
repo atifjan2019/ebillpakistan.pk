@@ -91,7 +91,7 @@ export default async function Home({ searchParams }) {
       <section className="hero">
         <div className="container">
           <span className="eyebrow"><span className="dot" /> Free • No sign-up • All companies</span>
-          <h1>Your <span className="grad">electricity bill</span>, without the hassle</h1>
+          <h1>Check Your <span className="grad">Electricity Bill</span> Online — Without the Hassle</h1>
           <p className="sub">
             No app to download, no account to make. Just pop in your reference number and we&apos;ll
             pull up your latest bill, ready to view, download or send on WhatsApp.
