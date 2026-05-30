@@ -43,8 +43,8 @@ export default function About() {
           <h2>What you can do</h2>
           <ul>
             <li>View your latest electricity bill instantly using your reference or account number.</li>
-            <li>Let us <strong>auto-detect your company</strong>, so you don&apos;t need to know whether
-              you&apos;re on LESCO, MEPCO, PESCO or any other DISCO.</li>
+            <li><strong>Pick your company</strong> from the list, whether you&apos;re on LESCO, MEPCO,
+              PESCO or any other DISCO.</li>
             <li>Download your bill as a PDF or share it on WhatsApp in a single tap.</li>
           </ul>
 
