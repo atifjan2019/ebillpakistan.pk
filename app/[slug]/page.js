@@ -1,7 +1,8 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { DISCOS, hasLogo, discoLogo } from "../../lib/discos";
 import { COMPANIES, faqsFor, slugFor, codeFromSlug } from "../../lib/companies";
-import { SITE_URL, OG_IMAGE } from "../../lib/seo";
+import { SITE_URL, OG_IMAGE, TWITTER_SITE } from "../../lib/seo";
 
 export const dynamicParams = false;
 
@@ -18,12 +19,20 @@ export async function generateMetadata({ params }) {
   const year = new Date().getFullYear();
   const title = `${abbr} Bill Check Online ${year} | ${c.full} | eBill Pakistan`;
   const description = `Check your ${abbr} (${c.full}) electricity bill online for free. Enter your reference number to instantly view, print or download your latest bill. Serving ${c.cities.slice(0, 4).join(", ")} and more.`;
+  const ogImage = { ...OG_IMAGE, alt: `Check your ${abbr} electricity bill online - eBill Pakistan` };
   return {
     title,
     description,
     alternates: { canonical: `/${slugFor(code)}` },
-    openGraph: { title, description, type: "website", url: `/${slugFor(code)}`, images: [OG_IMAGE] },
-    twitter: { card: "summary_large_image", title, description, images: [OG_IMAGE.url] },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      siteName: "eBill Pakistan",
+      url: `/${slugFor(code)}`,
+      images: [ogImage],
+    },
+    twitter: { card: "summary_large_image", site: TWITTER_SITE, title, description, images: [OG_IMAGE.url] },
   };
 }
 
@@ -56,7 +65,7 @@ export default async function CompanyPage({ params }) {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
-      { "@type": "ListItem", position: 2, name: `${abbr} Bill`, item: `${SITE_URL}/${slugFor(code)}` },
+      { "@type": "ListItem", position: 2, name: `${abbr} Bill Check`, item: `${SITE_URL}/${slugFor(code)}` },
     ],
   };
 
@@ -68,12 +77,13 @@ export default async function CompanyPage({ params }) {
       <section className="hero">
         <div className="container">
           {hasLogo(code) && (
-            <img
+            <Image
               className="disco-logo"
               src={discoLogo(code)}
               alt={`${c.full} (${abbr}) logo`}
               width={88}
               height={88}
+              priority
             />
           )}
           <span className="eyebrow"><span className="dot" /> {abbr} • {city} region</span>
@@ -146,7 +156,7 @@ export default async function CompanyPage({ params }) {
                 <a key={x} className="disco-card" href={`/${slugFor(x)}`} style={{ "--c": co2 }}>
                   <span className={hasLogo(x) ? "badge badge--logo" : "badge"}>
                     {hasLogo(x)
-                      ? <img src={discoLogo(x)} alt={`${a2} logo`} className="badge-logo" loading="lazy" />
+                      ? <Image src={discoLogo(x)} alt={`${a2} logo`} className="badge-logo" width={56} height={56} loading="lazy" />
                       : a2.slice(0, 2)}
                   </span>
                   <span className="name">{a2}</span>

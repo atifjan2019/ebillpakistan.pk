@@ -1,18 +1,32 @@
+import Image from "next/image";
 import { DISCOS, hasLogo, discoLogo } from "../lib/discos";
-import { SITE_URL, HOME_URL, OG_IMAGE } from "../lib/seo";
+import { SITE_URL, HOME_URL, OG_IMAGE, TWITTER_SITE } from "../lib/seo";
+
+const HOME_TITLE = "eBill Pakistan | Check Your Electricity Bill Online";
+const HOME_DESC =
+  "Check and download your latest electricity bill online for LESCO, IESCO, MEPCO, FESCO, GEPCO, HESCO, PESCO, QESCO, SEPCO, TESCO, HAZECO and AJK. Free, instant and secure. No sign-up needed.";
 
 export const metadata = {
-  title: "eBill Pakistan | Check Your Electricity Bill Online",
-  description:
-    "Check and download your latest electricity bill online for LESCO, IESCO, MEPCO, FESCO, GEPCO, HESCO, PESCO, QESCO, SEPCO, TESCO, HAZECO and AJK. Free, instant and secure. No sign-up needed.",
+  title: HOME_TITLE,
+  description: HOME_DESC,
   alternates: { canonical: HOME_URL },
-  // Re-supply type/siteName/image: Next replaces (not deep-merges) the parent
-  // openGraph when a page sets its own, so omitting these would drop them.
+  // Re-supply type/siteName/image/description: Next replaces (not deep-merges)
+  // the parent openGraph when a page sets its own, so omitting these drops them.
   openGraph: {
     type: "website",
     siteName: "eBill Pakistan",
     url: HOME_URL,
+    title: HOME_TITLE,
+    description: HOME_DESC,
     images: [OG_IMAGE],
+  },
+  // Keep twitter:description identical to og:description, and carry the handle.
+  twitter: {
+    card: "summary_large_image",
+    site: TWITTER_SITE,
+    title: HOME_TITLE,
+    description: HOME_DESC,
+    images: [OG_IMAGE.url],
   },
 };
 
@@ -144,7 +158,7 @@ export default async function Home({ searchParams }) {
               <a key={code} className="disco-card" href={`/${code}-bill-check`} style={{ "--c": color }}>
                 <span className={hasLogo(code) ? "badge badge--logo" : "badge"}>
                   {hasLogo(code)
-                    ? <img src={discoLogo(code)} alt={`${abbr} logo`} className="badge-logo" loading="lazy" />
+                    ? <Image src={discoLogo(code)} alt={`${abbr} logo`} className="badge-logo" width={56} height={56} loading="lazy" />
                     : abbr.slice(0, 2)}
                 </span>
                 <span className="name">{abbr}</span>

@@ -14,7 +14,7 @@ const UPDATED = {
 
 export default function sitemap() {
   return [
-    { url: BASE, lastModified: UPDATED.core, changeFrequency: "daily", priority: 1 },
+    { url: `${BASE}/`, lastModified: UPDATED.core, changeFrequency: "daily", priority: 1 },
     ...Object.keys(DISCOS).map((code) => ({
       url: `${BASE}/${slugFor(code)}`,
       lastModified: UPDATED.core,

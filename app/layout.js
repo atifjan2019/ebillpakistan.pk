@@ -29,6 +29,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    site: TWITTER_SITE,
     title: "eBill Pakistan | Check Your Electricity Bill Online",
     description:
       "Check and download your latest electricity bill online for all major DISCOs in Pakistan. Free, instant and secure.",
