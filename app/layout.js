@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { DISCOS } from "../lib/discos";
+import Nav from "./Nav";
 
 const body = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
 const display = Plus_Jakarta_Sans({
@@ -34,11 +35,7 @@ export default function RootLayout({ children }) {
             <a className="logo" href="/" aria-label="eBill Pakistan home">
               <img src="/images/logo.png" alt="eBill Pakistan" className="logo-img" />
             </a>
-            <nav className="nav-links">
-              <a href="/#companies">Companies</a>
-              <a href="/#how">How it works</a>
-              <a href="/#faq">FAQ</a>
-            </nav>
+            <Nav />
           </div>
         </header>
 
