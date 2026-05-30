@@ -1,11 +1,12 @@
 import LegalShell from "../LegalShell";
+import { buildMeta } from "../../lib/seo";
 
-export const metadata = {
+export const metadata = buildMeta({
   title: "Terms of Use | eBill Pakistan",
   description:
     "The terms that govern your use of eBill Pakistan, a free online electricity bill checking tool.",
-  alternates: { canonical: "/terms" },
-};
+  path: "/terms",
+});
 
 export default function Terms() {
   return (

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { ARTICLES, getArticle, formatDate } from "../../../lib/articles";
-import { SITE_URL, OG_IMAGE } from "../../../lib/seo";
+import { SITE_URL, OG_IMAGE, buildMeta } from "../../../lib/seo";
 
 export const dynamicParams = false;
 
@@ -12,22 +12,16 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const a = getArticle(slug);
   if (!a) return {};
-  const url = `/blog/${a.slug}`;
-  return {
+  // twitter:image:alt + og:image:alt use the article title (FIX 5).
+  const meta = buildMeta({
     title: a.metaTitle,
     description: a.metaDescription,
-    alternates: { canonical: url },
-    openGraph: {
-      type: "article",
-      siteName: "eBill Pakistan",
-      url,
-      title: a.metaTitle,
-      description: a.metaDescription,
-      publishedTime: a.publishedDate,
-      images: [OG_IMAGE],
-    },
-    twitter: { card: "summary_large_image", title: a.metaTitle, description: a.metaDescription, images: [OG_IMAGE.url] },
-  };
+    path: `/blog/${a.slug}`,
+    type: "article",
+    imageAlt: a.title,
+  });
+  meta.openGraph.publishedTime = a.publishedDate;
+  return meta;
 }
 
 export default async function ArticlePage({ params }) {

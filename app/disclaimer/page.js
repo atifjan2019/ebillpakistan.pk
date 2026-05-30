@@ -1,11 +1,12 @@
 import LegalShell from "../LegalShell";
+import { buildMeta } from "../../lib/seo";
 
-export const metadata = {
+export const metadata = buildMeta({
   title: "Disclaimer | eBill Pakistan",
   description:
     "eBill Pakistan is an independent tool and is not affiliated with PITC or any electricity distribution company. Bill information is provided for convenience only.",
-  alternates: { canonical: "/disclaimer" },
-};
+  path: "/disclaimer",
+});
 
 export default function Disclaimer() {
   return (

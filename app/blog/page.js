@@ -1,27 +1,44 @@
 import { ARTICLES, formatDate } from "../../lib/articles";
+import { SITE_URL, buildMeta } from "../../lib/seo";
 
-export const metadata = {
-  title: "Electricity Bill Help & Guides | eBill Pakistan",
-  description:
-    "Guides on how to check, read and understand your Pakistan electricity bill online. Tips for LESCO, IESCO, MEPCO and all major DISCOs.",
-  alternates: { canonical: "/blog" },
-  openGraph: {
-    type: "website",
-    siteName: "eBill Pakistan",
-    url: "/blog",
-    title: "Electricity Bill Help & Guides | eBill Pakistan",
-    description:
-      "Guides on how to check, read and understand your Pakistan electricity bill online. Tips for LESCO, IESCO, MEPCO and all major DISCOs.",
-  },
+const BLOG_TITLE = "Electricity Bill Help & Guides | eBill Pakistan";
+const BLOG_DESC =
+  "Guides on how to check, read and understand your Pakistan electricity bill online. Tips for LESCO, IESCO, MEPCO and all major DISCOs.";
+
+export const metadata = buildMeta({
+  title: BLOG_TITLE,
+  description: BLOG_DESC,
+  path: "/blog",
+  imageAlt: "eBill Pakistan guides",
+});
+
+const collectionLd = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "@id": `${SITE_URL}/blog#collection`,
+  url: `${SITE_URL}/blog`,
+  name: "Electricity Bill Help & Guides",
+  description: BLOG_DESC,
+  isPartOf: { "@id": `${SITE_URL}/#website` },
+};
+const breadcrumbLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+    { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE_URL}/blog` },
+  ],
 };
 
 export default function BlogIndex() {
   return (
     <section className="legal-page">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
       <div className="container legal-inner">
-        <div className="crumb">
-          <a href="/">Home</a> <span>/</span> <span>Blog</span>
-        </div>
+        <nav aria-label="Breadcrumb" className="crumb">
+          <a href="/">Home</a> <span>/</span> <span aria-current="page">Blog</span>
+        </nav>
         <h1>Electricity Bill Help &amp; Guides</h1>
         <p className="legal-intro">
           Practical guides on how to check, read and understand your Pakistan electricity bill
