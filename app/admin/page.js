@@ -107,7 +107,7 @@ function Bars({ rows, total, limit = 8 }) {
 }
 
 function Dashboard({ stats }) {
-  const { total, uniqueVisitors, byDisco, byPage, byDay, byCity, recent, configured } = stats;
+  const { total, uniqueVisitors, byDisco, byDay, byCity, recent, configured } = stats;
   const today = new Date().toISOString().slice(0, 10);
   const cityRows = sortedRows(byCity);
   const topCity = cityRows[0]?.label || "—";
@@ -140,9 +140,9 @@ function Dashboard({ stats }) {
           <Stat num={topCity} lbl="Top city" small />
         </div>
 
-        <div className="adm-cols">
-          <div className="adm-panel"><h2>Checks by company</h2><Bars rows={sortedRows(byDisco, discoLabel)} total={total} limit={12} /></div>
-          <div className="adm-panel"><h2>Checks by page</h2><Bars rows={sortedRows(byPage)} total={total} /></div>
+        <div className="adm-panel">
+          <h2>Checks by company</h2>
+          <Bars rows={sortedRows(byDisco, discoLabel)} total={total} limit={12} />
         </div>
 
         <div className="adm-panel">
