@@ -12,7 +12,7 @@ export default function Privacy() {
   return (
     <LegalShell
       title="Privacy Policy"
-      updated="30 May 2026"
+      updated="31 May 2026"
       intro="eBill Pakistan (“we”, “us”, “our”) runs the website ebillpakistan.pk, a free tool that lets you view your electricity bill online. This policy explains what information we handle and how. Your privacy matters to us, so we keep things minimal."
     >
       <h2>1. The short version</h2>
@@ -36,8 +36,10 @@ export default function Privacy() {
         </li>
         <li>
           <strong>Basic technical data.</strong> Like most websites, our servers automatically receive
-          information such as your IP address, browser type and the time of your request. We use this only
-          to keep the service secure, prevent abuse and apply fair-use rate limits.
+          information such as your IP address, approximate location (city and country) and the time of your
+          request. We use this to keep the service secure, prevent abuse, apply fair-use rate limits, and to
+          understand basic, aggregate usage, such as how many people check bills and from which cities. We do
+          not link this to your identity, and we do not sell it.
         </li>
       </ul>
 
