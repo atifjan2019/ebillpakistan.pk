@@ -1,5 +1,15 @@
 import { DISCOS, hasLogo, discoLogo } from "../lib/discos";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ebillpakistan.pk";
+
+export const metadata = {
+  title: "eBill Pakistan | Check Your Electricity Bill Online",
+  description:
+    "Check and download your latest electricity bill online for LESCO, IESCO, MEPCO, FESCO, GEPCO, HESCO, PESCO, QESCO, SEPCO, TESCO, HAZECO and AJK. Free, instant and secure — no sign-up needed.",
+  alternates: { canonical: "/" },
+  openGraph: { url: "/" },
+};
+
 /* inline icons (no external requests) */
 const I = {
   shield: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 3l7 3v5c0 4.4-3 8.3-7 10-4-1.7-7-5.6-7-10V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg>,
@@ -28,8 +38,54 @@ export default async function Home({ searchParams }) {
   const selected = (sp?.disco || "").toLowerCase();
   const preset = DISCOS[selected] ? selected : "";
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        url: `${SITE_URL}/`,
+        name: "eBill Pakistan",
+        description: "Check your electricity bill online for all major DISCOs in Pakistan.",
+        publisher: { "@id": `${SITE_URL}/#organization` },
+        potentialAction: {
+          "@type": "SearchAction",
+          target: { "@type": "EntryPoint", urlTemplate: `${SITE_URL}/result?reference={reference}` },
+          "query-input": "required name=reference",
+        },
+      },
+      {
+        "@type": "Organization",
+        "@id": `${SITE_URL}/#organization`,
+        name: "eBill Pakistan",
+        url: `${SITE_URL}/`,
+        logo: `${SITE_URL}/images/logo.png`,
+      },
+      {
+        "@type": "Service",
+        name: "Online Electricity Bill Check",
+        serviceType: "Electricity bill enquiry and download",
+        provider: { "@id": `${SITE_URL}/#organization` },
+        areaServed: { "@type": "Country", name: "Pakistan" },
+        description:
+          "Free online checking and downloading of electricity bills for all major distribution companies in Pakistan, including LESCO, IESCO, MEPCO, FESCO, GEPCO, HESCO, PESCO, QESCO, SEPCO, TESCO, HAZECO and AJK.",
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${SITE_URL}/#faq`,
+        mainEntity: FAQS.map(([q, a]) => ({
+          "@type": "Question",
+          name: q,
+          acceptedAnswer: { "@type": "Answer", text: a },
+        })),
+      },
+    ],
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
       {/* hero + search */}
       <section className="hero">
         <div className="container">
@@ -87,7 +143,7 @@ export default async function Home({ searchParams }) {
               <a key={code} className="disco-card" href={`/${code}-bill-check`} style={{ "--c": color }}>
                 <span className={hasLogo(code) ? "badge badge--logo" : "badge"}>
                   {hasLogo(code)
-                    ? <img src={discoLogo(code)} alt={`${abbr} logo`} className="badge-logo" />
+                    ? <img src={discoLogo(code)} alt={`${abbr} logo`} className="badge-logo" loading="lazy" />
                     : abbr.slice(0, 2)}
                 </span>
                 <span className="name">{abbr}</span>

@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { DISCOS, hasLogo, discoLogo } from "../../lib/discos";
 import { COMPANIES, faqsFor, slugFor, codeFromSlug } from "../../lib/companies";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ebillpakistan.pk";
+
 export const dynamicParams = false;
 
 export function generateStaticParams() {
@@ -54,8 +56,8 @@ export default async function CompanyPage({ params }) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "/" },
-      { "@type": "ListItem", position: 2, name: `${abbr} Bill`, item: `/${slugFor(code)}` },
+      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+      { "@type": "ListItem", position: 2, name: `${abbr} Bill`, item: `${SITE_URL}/${slugFor(code)}` },
     ],
   };
 
@@ -139,7 +141,7 @@ export default async function CompanyPage({ params }) {
                 <a key={x} className="disco-card" href={`/${slugFor(x)}`} style={{ "--c": co2 }}>
                   <span className={hasLogo(x) ? "badge badge--logo" : "badge"}>
                     {hasLogo(x)
-                      ? <img src={discoLogo(x)} alt={`${a2} logo`} className="badge-logo" />
+                      ? <img src={discoLogo(x)} alt={`${a2} logo`} className="badge-logo" loading="lazy" />
                       : a2.slice(0, 2)}
                   </span>
                   <span className="name">{a2}</span>

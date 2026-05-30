@@ -11,11 +11,30 @@ const display = Plus_Jakarta_Sans({
   display: "swap",
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ebillpakistan.pk";
+
 export const metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.ebillpakistan.pk"),
+  metadataBase: new URL(SITE_URL),
   title: "eBill Pakistan | Check Your Electricity Bill Online",
   description:
     "Check and download your latest electricity bill online for LESCO, IESCO, MEPCO, FESCO, GEPCO, HESCO, PESCO, QESCO, SEPCO, TESCO, HAZECO and AJK. Free, instant and secure.",
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    siteName: "eBill Pakistan",
+    locale: "en_PK",
+    title: "eBill Pakistan | Check Your Electricity Bill Online",
+    description:
+      "Check and download your latest electricity bill online for all major DISCOs in Pakistan. Free, instant and secure.",
+    images: [{ url: "/images/og-image.jpg", width: 1200, height: 630, alt: "eBill Pakistan" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "eBill Pakistan | Check Your Electricity Bill Online",
+    description:
+      "Check and download your latest electricity bill online for all major DISCOs in Pakistan. Free, instant and secure.",
+    images: ["/images/og-image.jpg"],
+  },
 };
 
 function Bolt() {
