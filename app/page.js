@@ -122,10 +122,10 @@ export default async function Home({ searchParams }) {
           <form id="lookup" className="search-card" action="/result" method="get">
             <div className="search-grid">
               <div className="field">
-                <label htmlFor="disco">Company <span className="opt">(optional)</span></label>
+                <label htmlFor="disco">Company</label>
                 <div className="control sel">
-                  <select id="disco" name="disco" defaultValue={preset}>
-                    <option value="">Auto-detect</option>
+                  <select id="disco" name="disco" defaultValue={preset} required>
+                    <option value="" disabled>Select your company</option>
                     {entries.map(([code, [abbr]]) => (
                       <option key={code} value={code}>{abbr}</option>
                     ))}
@@ -141,7 +141,7 @@ export default async function Home({ searchParams }) {
               </div>
               <button type="submit" className="btn btn-primary">{I.search} Check Bill</button>
             </div>
-            <p className="search-foot">{I.shield} Leave company on “Auto-detect” and we’ll find it from your reference number.</p>
+            <p className="search-foot">{I.shield} Pick your company, then enter the reference number printed at the top-left of your bill.</p>
             <CheckBillLoader />
           </form>
 
@@ -160,7 +160,7 @@ export default async function Home({ searchParams }) {
           <div className="section-head">
             <span className="kicker">All companies</span>
             <h2>Find your company</h2>
-            <p>Not sure which one you&apos;re with? No worries, Auto-detect handles it. Or tap yours here.</p>
+            <p>Not sure which one you&apos;re with? Check the name printed on your bill, or tap your company here.</p>
           </div>
           <div className="disco-grid">
             {entries.map(([code, [abbr, city, color]]) => (
@@ -188,7 +188,7 @@ export default async function Home({ searchParams }) {
           </div>
           <div className="steps">
             <div className="step"><span className="num">1</span><div className="ic">{I.search}</div><h3>Grab your reference number</h3><p>It&apos;s the 14-digit number at the top of your paper bill. That&apos;s all you need.</p></div>
-            <div className="step"><span className="num">2</span><div className="ic">{I.grid}</div><h3>Type it in</h3><p>Leave the company on “Auto-detect” and we&apos;ll figure out the rest for you.</p></div>
+            <div className="step"><span className="num">2</span><div className="ic">{I.grid}</div><h3>Pick your company</h3><p>Select your company from the list and type in your reference number. That&apos;s all we need.</p></div>
             <div className="step"><span className="num">3</span><div className="ic">{I.doc}</div><h3>There&apos;s your bill</h3><p>View it right away, save it as a PDF, or send it on WhatsApp in one tap.</p></div>
           </div>
         </div>
