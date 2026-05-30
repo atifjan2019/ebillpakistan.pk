@@ -5,7 +5,7 @@ export default function robots() {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/result", "/api/"], // per-reference lookups + API are not for indexing
+      disallow: ["/result", "/api/", "/admin"], // lookups, API + admin are not for indexing
     },
     sitemap: `${BASE}/sitemap.xml`,
   };

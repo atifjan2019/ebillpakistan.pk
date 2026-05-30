@@ -2,8 +2,20 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { DISCOS, isValidRef } from "../../lib/discos";
 import { detectDisco } from "../../lib/pitc";
-import { rateLimitDetect, getIp } from "../../lib/store";
+import { rateLimitDetect, getIp, logBillCheck } from "../../lib/store";
 import BillFrame from "./BillFrame";
+
+// Resolve the page the user submitted from (homepage vs a DISCO page) from the
+// Referer. Internal redirects (referer = /result) are skipped so each user
+// lookup is logged exactly once.
+function sourcePage(referer) {
+  try {
+    const path = new URL(referer).pathname || "/";
+    return path.startsWith("/result") ? null : path;
+  } catch {
+    return "(direct)";
+  }
+}
 
 export const dynamic = "force-dynamic";
 
@@ -28,17 +40,29 @@ export default async function Result({ searchParams }) {
   // An explicitly-chosen but unknown company -> back to the form.
   if (disco && !DISCOS[disco]) redirect("/");
 
+  const hdrs = await headers();
+  const page = sourcePage(hdrs.get("referer") || "");
+
   // No company chosen -> auto-detect it from the reference number.
   if (!disco) {
-    const rl = await rateLimitDetect(getIp(await headers()));
+    const rl = await rateLimitDetect(getIp(hdrs));
     if (!rl.success) return <TooMany />;
     let detected = null;
     try {
       detected = await detectDisco(ref);
     } catch {}
-    if (!detected) return <NotFound reference={ref} />;
+    if (!detected) {
+      if (page) await logBillCheck({ disco: "auto", page, outcome: "notfound" });
+      return <NotFound reference={ref} />;
+    }
+    if (page) await logBillCheck({ disco: detected.disco, page, outcome: "view" });
     redirect(`/result?disco=${detected.disco}&reference=${ref}`);
   }
+
+  // Company known (DISCO-page form, or homepage with a company chosen). The
+  // post-detection redirect above has referer=/result, so `page` is null here
+  // and we don't double-count it.
+  if (page) await logBillCheck({ disco, page, outcome: "view" });
 
   const info = DISCOS[disco];
   const src = `/api/bill?disco=${encodeURIComponent(disco)}&reference=${encodeURIComponent(ref)}`;
