@@ -23,8 +23,8 @@ export async function generateMetadata({ params }) {
     title,
     description,
     alternates: { canonical: `/${slugFor(code)}` },
-    openGraph: { title, description, type: "website", url: `/${slugFor(code)}` },
-    twitter: { card: "summary", title, description },
+    openGraph: { title, description, type: "website", url: `/${slugFor(code)}`, images: ["/images/og-image.jpg"] },
+    twitter: { card: "summary_large_image", title, description, images: ["/images/og-image.jpg"] },
   };
 }
 
