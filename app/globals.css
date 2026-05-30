@@ -264,5 +264,5 @@ img { max-width: 100%; }
 }
 
 /* PESCO card: show the transparent logo image in place of the abbr text. */
-.badge--logo { background: transparent; box-shadow: none; padding: 0; }
-.badge-logo { width: 56px; height: 56px; object-fit: contain; display: block; }
+.disco-card .badge.badge--logo { background: transparent; box-shadow: none; border: 0; padding: 0; }
+.disco-card .badge-logo { width: 56px; height: 56px; object-fit: contain; display: block; }
