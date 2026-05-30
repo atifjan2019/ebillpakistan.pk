@@ -271,8 +271,61 @@ img { max-width: 100%; }
 .blog-cta p { margin: 0 0 14px; font-weight: 600; color: var(--ink); }
 @media (max-width: 640px) { .blog-list { grid-template-columns: 1fr; } }
 
-/* admin dashboard */
-.admin-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 22px; box-shadow: var(--shadow-sm); }
+/* ===== admin dashboard ===== */
+/* admin renders without the marketing header/footer */
+body:has(.admin-page) > .nav,
+body:has(.admin-page) > .footer { display: none; }
+
+.admin-page { min-height: 100vh; background: #f5f7fb; }
+.adm { max-width: 1100px; margin: 0 auto; padding: 24px 18px 64px; }
+.adm-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 22px; }
+.adm-top h1 { font-size: clamp(20px, 3.6vw, 27px); font-weight: 800; margin: 0; color: var(--ink); }
+.adm-top p { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+.adm-note { background: #fff8e6; border: 1px solid #f0c36d; color: #7a5b12; border-radius: 12px; padding: 12px 14px; font-size: 13.5px; margin-bottom: 18px; }
+
+.adm-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 16px; }
+.adm-stat { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; box-shadow: var(--shadow-sm); }
+.adm-stat .num { font-size: clamp(24px, 5vw, 32px); font-weight: 800; color: var(--ink); line-height: 1.05; word-break: break-word; }
+.adm-stat .lbl { font-size: 12.5px; color: var(--muted); margin-top: 7px; }
+
+.adm-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.adm-panel { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
+.adm-cols .adm-panel { margin-bottom: 0; }
+.adm-panel h2 { font-size: 15px; font-weight: 700; margin: 0 0 16px; color: var(--ink); }
+
+.adm-bars { display: grid; gap: 11px; }
+.adm-row { display: grid; grid-template-columns: 130px 1fr 70px; align-items: center; gap: 10px; }
+.adm-row .k { font-size: 13.5px; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.adm-track { background: var(--brand-50); border-radius: 999px; height: 9px; overflow: hidden; }
+.adm-fill { display: block; height: 100%; background: var(--brand); border-radius: 999px; }
+.adm-row .v { font-size: 12.5px; color: var(--muted); text-align: right; white-space: nowrap; }
+
+.adm-days { display: flex; align-items: flex-end; gap: 6px; height: 140px; overflow-x: auto; padding-top: 6px; }
+.adm-day { flex: 1 0 28px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 5px; }
+.adm-day .bar { width: 64%; max-width: 28px; background: var(--brand); border-radius: 6px 6px 0 0; min-height: 3px; }
+.adm-day .n { font-size: 11px; color: var(--muted); }
+.adm-day .d { font-size: 10px; color: var(--muted); white-space: nowrap; }
+
+.adm-table-wrap { overflow-x: auto; }
+.adm-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 620px; }
+.adm-table th { text-align: left; color: var(--muted); font-weight: 600; padding: 9px 10px; border-bottom: 1px solid var(--line); }
+.adm-table td { padding: 9px 10px; border-bottom: 1px solid var(--line); color: var(--body); white-space: nowrap; }
+.adm-table code { font-size: 12px; color: var(--ink); }
+.adm-empty { color: var(--muted); font-size: 14px; margin: 0; }
+
+.adm-login { max-width: 400px; margin-top: 9vh; }
+.adm-login .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 28px; box-shadow: var(--shadow-lg); }
+.adm-login h1 { font-size: 22px; font-weight: 800; margin: 0 0 4px; color: var(--ink); }
+.adm-login .muted { color: var(--muted); font-size: 14px; margin: 0 0 18px; }
+.adm-login form { display: grid; gap: 12px; }
+.adm-input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); font-size: 16px; outline: none; }
+.adm-input:focus { border-color: var(--brand); }
+.adm-err { color: #9b1c1c; font-size: 13.5px; }
+
+@media (max-width: 720px) {
+  .adm-cols { grid-template-columns: 1fr; }
+  .adm-row { grid-template-columns: 92px 1fr 56px; }
+}
 .legal-note { margin-top: 30px; font-size: 13.5px; line-height: 1.6; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
 
 /* ---------- responsive ---------- */

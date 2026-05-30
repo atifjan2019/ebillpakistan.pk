@@ -67,7 +67,7 @@ export default async function Result({ searchParams }) {
   // Company known (DISCO-page form, or homepage with a company chosen). The
   // post-detection redirect above has referer=/result, so `page` is null here
   // and we don't double-count it.
-  if (page) await logBillCheck({ disco, page, outcome: "view" });
+  if (page) await logBillCheck({ disco, page, outcome: "view", ...geo });
 
   const info = DISCOS[disco];
   const src = `/api/bill?disco=${encodeURIComponent(disco)}&reference=${encodeURIComponent(ref)}`;

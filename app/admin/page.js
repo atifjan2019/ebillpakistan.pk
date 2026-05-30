@@ -33,7 +33,7 @@ async function login(formData) {
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/admin",
-    maxAge: 60 * 60 * 8, // 8 hours
+    maxAge: 60 * 60 * 8,
   });
   redirect("/admin");
 }
@@ -50,42 +50,28 @@ export default async function AdminPage({ searchParams }) {
     const sp = await searchParams;
     return <Login error={sp?.e === "1"} />;
   }
-  const stats = await getStats();
-  return <Dashboard stats={stats} />;
+  return <Dashboard stats={await getStats()} />;
 }
 
 /* ---------------- login ---------------- */
 function Login({ error }) {
   return (
-    <section className="result-wrap">
-      <div className="container" style={{ maxWidth: 420 }}>
-        <div className="admin-card" style={{ marginTop: 30 }}>
-          <h1 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 4px" }}>Admin access</h1>
-          <p style={{ color: "var(--muted)", fontSize: 14, margin: "0 0 18px" }}>
-            Enter the passcode to view the dashboard.
-          </p>
-          <form action={login} style={{ display: "grid", gap: 12 }}>
+    <div className="admin-page">
+      <div className="adm adm-login">
+        <div className="card">
+          <h1>Admin access</h1>
+          <p className="muted">Enter the passcode to open the dashboard.</p>
+          <form action={login}>
             <input
-              name="passcode"
-              type="password"
-              inputMode="numeric"
-              autoComplete="off"
-              placeholder="Passcode"
-              autoFocus
-              required
-              style={{
-                width: "100%", padding: "12px 14px", borderRadius: 12,
-                border: "1px solid var(--line)", fontSize: 16, outline: "none",
-              }}
+              name="passcode" type="password" inputMode="numeric" autoComplete="off"
+              placeholder="Passcode" autoFocus required className="adm-input"
             />
-            {error && (
-              <span style={{ color: "#9b1c1c", fontSize: 13.5 }}>Incorrect passcode. Try again.</span>
-            )}
-            <button type="submit" className="btn btn-primary">Unlock dashboard</button>
+            {error && <span className="adm-err">Incorrect passcode. Try again.</span>}
+            <button type="submit" className="btn btn-primary" style={{ width: "100%" }}>Unlock dashboard</button>
           </form>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
 
@@ -97,131 +83,124 @@ const fmtTime = (ms) =>
 
 const discoLabel = (code) => (DISCOS[code] ? DISCOS[code][0] : code === "auto" ? "Auto-detect" : code);
 
-function BarList({ rows, total }) {
-  if (!rows.length) return <p style={{ color: "var(--muted)", fontSize: 14 }}>No data yet.</p>;
-  const max = Math.max(...rows.map((r) => r.count), 1);
+function sortedRows(obj, labeller = (k) => k) {
+  return Object.entries(obj || {})
+    .map(([k, count]) => ({ key: k, label: labeller(k), count }))
+    .sort((a, b) => b.count - a.count);
+}
+
+function Bars({ rows, total, limit = 8 }) {
+  if (!rows.length) return <p className="adm-empty">No data yet.</p>;
+  const shown = rows.slice(0, limit);
+  const max = Math.max(...shown.map((r) => r.count), 1);
   return (
-    <div style={{ display: "grid", gap: 10 }}>
-      {rows.map((r) => (
-        <div key={r.label} style={{ display: "grid", gridTemplateColumns: "150px 1fr 52px", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.label}</span>
-          <span style={{ background: "var(--brand-50)", borderRadius: 999, height: 10, overflow: "hidden" }}>
-            <span style={{ display: "block", height: "100%", width: `${(r.count / max) * 100}%`, background: "var(--brand)", borderRadius: 999 }} />
-          </span>
-          <span style={{ fontSize: 13.5, color: "var(--muted)", textAlign: "right" }}>
-            {r.count}{total ? ` · ${Math.round((r.count / total) * 100)}%` : ""}
-          </span>
+    <div className="adm-bars">
+      {shown.map((r) => (
+        <div className="adm-row" key={r.key}>
+          <span className="k" title={r.label}>{r.label}</span>
+          <span className="adm-track"><span className="adm-fill" style={{ width: `${(r.count / max) * 100}%` }} /></span>
+          <span className="v">{r.count}{total ? ` · ${Math.round((r.count / total) * 100)}%` : ""}</span>
         </div>
       ))}
     </div>
   );
 }
 
-function sortedRows(obj, labeller = (k) => k) {
-  return Object.entries(obj || {})
-    .map(([k, count]) => ({ label: labeller(k), count }))
-    .sort((a, b) => b.count - a.count);
-}
-
 function Dashboard({ stats }) {
-  const { total, byDisco, byPage, byDay, recent, configured } = stats;
+  const { total, uniqueVisitors, byDisco, byPage, byDay, byCity, recent, configured } = stats;
+  const today = new Date().toISOString().slice(0, 10);
+  const cityRows = sortedRows(byCity);
+  const topCity = cityRows[0]?.label || "—";
   const days = Object.entries(byDay || {}).sort((a, b) => a[0].localeCompare(b[0])).slice(-14);
   const dayMax = Math.max(...days.map(([, n]) => n), 1);
 
   return (
-    <section className="result-wrap">
-      <div className="container" style={{ maxWidth: 920 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 18 }}>
+    <div className="admin-page">
+      <div className="adm">
+        <div className="adm-top">
           <div>
-            <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0 }}>Bill-check dashboard</h1>
-            <p style={{ color: "var(--muted)", fontSize: 13.5, margin: "4px 0 0" }}>
-              Privacy-safe analytics: no reference numbers or IPs are stored.
-            </p>
+            <h1>Bill-check dashboard</h1>
+            <p>Live analytics for eBill Pakistan · times in PKT</p>
           </div>
           <form action={logout}><button type="submit" className="btn btn-ghost">Log out</button></form>
         </div>
 
         {!configured && (
-          <div className="admin-card" style={{ marginBottom: 16, borderColor: "#f0c36d", background: "#fff8e6" }}>
-            <strong>Dev mode:</strong> no Redis/KV configured, so these counts are held in memory and reset on
-            restart. In production (with Upstash/Vercel KV) they persist.
+          <div className="adm-note">
+            <strong>Dev mode:</strong> no Redis/KV detected, so counts are in-memory and reset on restart.
+            In production (Upstash/Vercel KV) they persist.
           </div>
         )}
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 14, marginBottom: 18 }}>
-          <Stat label="Total bill checks" value={total} />
-          <Stat label="Companies seen" value={Object.keys(byDisco || {}).length} />
-          <Stat label="Source pages" value={Object.keys(byPage || {}).length} />
-          <Stat label="Today" value={byDay?.[new Date().toISOString().slice(0, 10)] || 0} />
+        <div className="adm-stats">
+          <Stat num={total} lbl="Total bill checks" />
+          <Stat num={uniqueVisitors} lbl="Unique visitors" />
+          <Stat num={byDay?.[today] || 0} lbl="Checks today" />
+          <Stat num={Object.keys(byCity || {}).length} lbl="Cities" />
+          <Stat num={topCity} lbl="Top city" small />
         </div>
 
-        <div className="admin-card" style={{ marginBottom: 16 }}>
-          <h2 style={cardH}>Checks by company</h2>
-          <BarList rows={sortedRows(byDisco, discoLabel)} total={total} />
+        <div className="adm-cols">
+          <div className="adm-panel"><h2>Checks by company</h2><Bars rows={sortedRows(byDisco, discoLabel)} total={total} limit={12} /></div>
+          <div className="adm-panel"><h2>Checks by page</h2><Bars rows={sortedRows(byPage)} total={total} /></div>
         </div>
 
-        <div className="admin-card" style={{ marginBottom: 16 }}>
-          <h2 style={cardH}>Checks by page</h2>
-          <BarList rows={sortedRows(byPage)} total={total} />
+        <div className="adm-panel">
+          <h2>Top cities</h2>
+          <Bars rows={cityRows} total={total} limit={10} />
         </div>
 
-        <div className="admin-card" style={{ marginBottom: 16 }}>
-          <h2 style={cardH}>Last 14 days</h2>
+        <div className="adm-panel">
+          <h2>Last 14 days</h2>
           {days.length ? (
-            <div style={{ display: "flex", alignItems: "flex-end", gap: 6, height: 120 }}>
+            <div className="adm-days">
               {days.map(([d, n]) => (
-                <div key={d} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }} title={`${d}: ${n}`}>
-                  <span style={{ fontSize: 11, color: "var(--muted)" }}>{n}</span>
-                  <span style={{ width: "100%", background: "var(--brand)", borderRadius: "6px 6px 0 0", height: `${(n / dayMax) * 86}px`, minHeight: 3 }} />
-                  <span style={{ fontSize: 10, color: "var(--muted)" }}>{d.slice(5)}</span>
+                <div className="adm-day" key={d} title={`${d}: ${n}`}>
+                  <span className="n">{n}</span>
+                  <span className="bar" style={{ height: `${(n / dayMax) * 96}px` }} />
+                  <span className="d">{d.slice(5)}</span>
                 </div>
               ))}
             </div>
-          ) : (
-            <p style={{ color: "var(--muted)", fontSize: 14 }}>No data yet.</p>
-          )}
+          ) : <p className="adm-empty">No data yet.</p>}
         </div>
 
-        <div className="admin-card">
-          <h2 style={cardH}>Recent checks</h2>
+        <div className="adm-panel">
+          <h2>Recent checks</h2>
           {recent && recent.length ? (
-            <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
+            <div className="adm-table-wrap">
+              <table className="adm-table">
                 <thead>
-                  <tr style={{ textAlign: "left", color: "var(--muted)", borderBottom: "1px solid var(--line)" }}>
-                    <th style={th}>Time (PKT)</th><th style={th}>Company</th><th style={th}>Page</th><th style={th}>Outcome</th>
+                  <tr>
+                    <th>Time</th><th>Company</th><th>City</th><th>IP</th><th>Page</th><th>Outcome</th>
                   </tr>
                 </thead>
                 <tbody>
                   {recent.map((ev, i) => (
-                    <tr key={i} style={{ borderBottom: "1px solid var(--line)" }}>
-                      <td style={td}>{fmtTime(ev.t)}</td>
-                      <td style={td}>{discoLabel(ev.disco)}</td>
-                      <td style={td}><code style={{ fontSize: 12.5 }}>{ev.page}</code></td>
-                      <td style={td}>{ev.outcome}</td>
+                    <tr key={i}>
+                      <td>{fmtTime(ev.t)}</td>
+                      <td>{discoLabel(ev.disco)}</td>
+                      <td>{ev.city ? `${ev.city}${ev.country ? ", " + ev.country : ""}` : "—"}</td>
+                      <td><code>{ev.ip || "—"}</code></td>
+                      <td><code>{ev.page}</code></td>
+                      <td>{ev.outcome}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          ) : (
-            <p style={{ color: "var(--muted)", fontSize: 14 }}>No checks recorded yet.</p>
-          )}
+          ) : <p className="adm-empty">No checks recorded yet.</p>}
         </div>
       </div>
-    </section>
+    </div>
   );
 }
 
-const cardH = { fontSize: 16, fontWeight: 700, margin: "0 0 14px", color: "var(--ink)" };
-const th = { padding: "8px 10px", fontWeight: 600 };
-const td = { padding: "8px 10px", color: "var(--body)" };
-
-function Stat({ label, value }) {
+function Stat({ num, lbl, small }) {
   return (
-    <div className="admin-card" style={{ padding: 18 }}>
-      <div style={{ fontSize: 28, fontWeight: 800, color: "var(--ink)", lineHeight: 1 }}>{value}</div>
-      <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 6 }}>{label}</div>
+    <div className="adm-stat">
+      <div className="num" style={small ? { fontSize: "clamp(16px, 3.5vw, 20px)" } : undefined}>{num}</div>
+      <div className="lbl">{lbl}</div>
     </div>
   );
 }
