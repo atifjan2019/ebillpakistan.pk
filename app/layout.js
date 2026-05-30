@@ -10,7 +10,7 @@ const display = Plus_Jakarta_Sans({
 });
 
 export const metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://ebillpakistan.pk"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.ebillpakistan.pk"),
   title: "eBill Pakistan | Check Your Electricity Bill Online",
   description:
     "Check and download your latest electricity bill online for LESCO, IESCO, MEPCO, FESCO, GEPCO, HESCO, PESCO, QESCO, SEPCO, TESCO, HAZECO and AJK. Free, instant and secure.",

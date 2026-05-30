@@ -1,7 +1,7 @@
 import { DISCOS } from "../lib/discos";
 import { slugFor } from "../lib/companies";
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL || "https://ebillpakistan.pk";
+const BASE = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ebillpakistan.pk";
 
 export default function sitemap() {
   const now = new Date();
