@@ -48,13 +48,20 @@ export default async function CompanyPage({ params }) {
   const [abbr, city, color] = DISCOS[code];
   const c = COMPANIES[code];
   const faqs = faqsFor(code);
+  // Two extra FAQs (helpline + reference number) appended to BOTH the visible
+  // list and the JSON-LD, so the structured data stays backed by on-page content.
+  const extraFaqs = [
+    [`What is the helpline number for ${c.full}?`, `You can reach ${abbr} customer support on 118, the national DISCO helpline.`],
+    [`What does the reference number on my ${abbr} bill look like?`, `It is a 14-digit number printed at the top-left of your ${abbr} paper bill, usually labelled Reference No. or Consumer No.`],
+  ];
+  const allFaqs = [...faqs, ...extraFaqs];
   const year = new Date().getFullYear();
   const others = Object.keys(DISCOS).filter((x) => x !== code);
 
   const faqLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: faqs.map(([q, a]) => ({
+    mainEntity: allFaqs.map(([q, a]) => ({
       "@type": "Question",
       name: q,
       acceptedAnswer: { "@type": "Answer", text: a },
@@ -141,13 +148,52 @@ export default async function CompanyPage({ params }) {
 
           <h2>{abbr} bill: frequently asked questions</h2>
           <div className="faq" style={{ marginTop: 16 }}>
-            {faqs.map(([q, a], i) => (
+            {allFaqs.map(([q, a], i) => (
               <details key={i} open={i === 0}>
                 <summary>{q}</summary>
                 <div className="a">{a}</div>
               </details>
             ))}
           </div>
+
+          <h2>Tariff &amp; billing information</h2>
+          <p>
+            Your {abbr} tariff is set by the National Electric Power Regulatory Authority
+            (NEPRA), not by {abbr} itself. Domestic consumers are billed on a slab system, where
+            the per-unit rate steps up as monthly usage crosses thresholds such as 100, 200 and
+            300 units (with higher slabs beyond 300). The more units you use, the higher the rate
+            applied to the upper portion. For the current approved rates, see the{" "}
+            <a href="https://www.nepra.org.pk" target="_blank" rel="noopener noreferrer">official NEPRA tariff page</a>.
+          </p>
+          <p>
+            {abbr} issues bills monthly, based on the reading taken from your meter. NEPRA also
+            recognises protected domestic consumers (those who keep usage below a set threshold
+            over several consecutive months), who are charged lower rates than unprotected
+            consumers. A bill can additionally carry a fixed or minimum charge, a TV licence fee and
+            applicable taxes. Because these rates are revised from time to time, always confirm the
+            latest schedule before estimating what you will pay.
+          </p>
+
+          <h3>{abbr} helpline &amp; contact</h3>
+          <dl className="contact-dl">
+            <dt>Customer helpline</dt>
+            <dd>118 (the national DISCO helpline used across Pakistan)</dd>
+            <dt>Offices &amp; complaints</dt>
+            <dd>
+              For office locations and regional customer services, visit the{" "}
+              <a href={c.website} target="_blank" rel="noopener noreferrer">official {abbr} website</a>.
+            </dd>
+          </dl>
+
+          <h3>Understanding your {abbr} bill</h3>
+          <p>
+            A {abbr} bill packs a lot into one page. The <strong>Reference No.</strong> is the
+            14-digit number at the top-left that identifies your connection. <strong>Units
+            Consumed</strong> is the electricity used during the month, <strong>Amount
+            Payable</strong> is the total due, and the <strong>Due Date</strong> is the last day
+            to pay before a late-payment surcharge is added. Extra lines such as fuel-price
+            adjustment and taxes appear as <strong>surcharges</strong>.
+          </p>
 
         </div>
       </section>

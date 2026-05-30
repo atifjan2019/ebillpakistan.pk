@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { DISCOS, hasLogo, discoLogo } from "../lib/discos";
-import { SITE_URL, HOME_URL, OG_IMAGE, TWITTER_SITE } from "../lib/seo";
+import { SITE_URL, HOME_URL, OG_IMAGE, TWITTER_SITE, SOCIAL } from "../lib/seo";
 
 const HOME_TITLE = "eBill Pakistan | Check Your Electricity Bill Online";
 const HOME_DESC =
@@ -76,6 +76,7 @@ export default async function Home({ searchParams }) {
         name: "eBill Pakistan",
         url: `${SITE_URL}/`,
         logo: `${SITE_URL}/images/logo.png`,
+        sameAs: [SOCIAL.facebook, SOCIAL.twitter],
       },
       {
         "@type": "Service",

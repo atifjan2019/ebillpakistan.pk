@@ -1,7 +1,8 @@
 import "./globals.css";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { DISCOS } from "../lib/discos";
-import { OG_IMAGE, SITE_URL, TWITTER_SITE } from "../lib/seo";
+import { OG_IMAGE, SITE_URL, TWITTER_SITE, SOCIAL } from "../lib/seo";
+import { ARTICLES } from "../lib/articles";
 import Nav from "./Nav";
 
 const body = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
@@ -71,6 +72,14 @@ export default function RootLayout({ children }) {
                 just your reference number.
               </p>
               <span className="footer-soon">⚡ Gas &amp; internet bills coming soon</span>
+              <div className="footer-social">
+                <a href={SOCIAL.facebook} target="_blank" rel="noopener noreferrer" aria-label="eBill Pakistan on Facebook">
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5h1.65V3.6c-.29-.04-1.27-.13-2.41-.13-2.39 0-4.02 1.46-4.02 4.13v2.3H7.5V13h2.74v8h3.26z" /></svg>
+                </a>
+                <a href={SOCIAL.twitter} target="_blank" rel="noopener noreferrer" aria-label="eBill Pakistan on Twitter">
+                  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.53 3H20.5l-6.48 7.4L21.5 21h-5.9l-4.2-5.5L6.5 21H3.5l6.93-7.92L2.5 3h6.05l3.8 5.02L17.53 3zm-1.04 16.2h1.64L7.6 4.7H5.84l10.65 14.5z" /></svg>
+                </a>
+              </div>
             </div>
 
             <div className="footer-col footer-companies">
@@ -90,6 +99,15 @@ export default function RootLayout({ children }) {
                 <li><a href="/contact">Contact</a></li>
                 <li><a href="/#companies">All companies</a></li>
                 <li><a href="/#faq">FAQ</a></li>
+              </ul>
+            </div>
+
+            <div className="footer-col">
+              <h4>Guides</h4>
+              <ul>
+                {ARTICLES.map((a) => (
+                  <li key={a.slug}><a href={`/blog/${a.slug}`}>{a.navLabel}</a></li>
+                ))}
               </ul>
             </div>
 

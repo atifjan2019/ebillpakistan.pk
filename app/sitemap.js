@@ -1,6 +1,7 @@
 import { DISCOS } from "../lib/discos";
 import { slugFor } from "../lib/companies";
 import { HOME_URL } from "../lib/seo";
+import { ARTICLES } from "../lib/articles";
 
 const BASE = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ebillpakistan.pk";
 
@@ -33,6 +34,13 @@ export default function sitemap() {
       lastModified: UPDATED.legal,
       changeFrequency: "yearly",
       priority: 0.3,
+    })),
+    { url: `${BASE}/blog`, lastModified: UPDATED.core, changeFrequency: "weekly", priority: 0.6 },
+    ...ARTICLES.map((a) => ({
+      url: `${BASE}/blog/${a.slug}`,
+      lastModified: a.publishedDate,
+      changeFrequency: "monthly",
+      priority: 0.5,
     })),
   ];
 }

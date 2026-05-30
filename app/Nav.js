@@ -6,6 +6,7 @@ const LINKS = [
   ["/#companies", "Companies"],
   ["/#how", "How it works"],
   ["/#faq", "FAQ"],
+  ["/blog", "Blog"],
   ["/about", "About"],
   ["/contact", "Contact"],
 ];
