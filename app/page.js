@@ -9,13 +9,14 @@ const HOME_DESC =
 export const metadata = {
   title: HOME_TITLE,
   description: HOME_DESC,
-  alternates: { canonical: HOME_URL },
+  // NOTE: canonical and og:url are emitted as raw <head> tags in the component
+  // below (see HOME_URL). The Metadata API strips the root trailing slash, so we
+  // bypass it here to keep canonical, og:url and the sitemap all = HOME_URL.
   // Re-supply type/siteName/image/description: Next replaces (not deep-merges)
   // the parent openGraph when a page sets its own, so omitting these drops them.
   openGraph: {
     type: "website",
     siteName: "eBill Pakistan",
-    url: HOME_URL,
     title: HOME_TITLE,
     description: HOME_DESC,
     images: [OG_IMAGE],
@@ -99,6 +100,9 @@ export default async function Home({ searchParams }) {
 
   return (
     <>
+      {/* Canonical + og:url with trailing slash (Metadata API would strip it). */}
+      <link rel="canonical" href={HOME_URL} />
+      <meta property="og:url" content={HOME_URL} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {/* hero + search */}

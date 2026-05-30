@@ -1,5 +1,6 @@
 import { DISCOS } from "../lib/discos";
 import { slugFor } from "../lib/companies";
+import { HOME_URL } from "../lib/seo";
 
 const BASE = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ebillpakistan.pk";
 
@@ -14,7 +15,7 @@ const UPDATED = {
 
 export default function sitemap() {
   return [
-    { url: BASE, lastModified: UPDATED.core, changeFrequency: "daily", priority: 1 },
+    { url: HOME_URL, lastModified: UPDATED.core, changeFrequency: "daily", priority: 1 },
     ...Object.keys(DISCOS).map((code) => ({
       url: `${BASE}/${slugFor(code)}`,
       lastModified: UPDATED.core,

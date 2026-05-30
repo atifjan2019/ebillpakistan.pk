@@ -2,7 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { DISCOS, hasLogo, discoLogo } from "../../lib/discos";
 import { COMPANIES, faqsFor, slugFor, codeFromSlug } from "../../lib/companies";
-import { SITE_URL, OG_IMAGE, TWITTER_SITE } from "../../lib/seo";
+import { SITE_URL, HOME_URL, OG_IMAGE, TWITTER_SITE } from "../../lib/seo";
 
 export const dynamicParams = false;
 
@@ -76,6 +76,12 @@ export default async function CompanyPage({ params }) {
 
       <section className="hero">
         <div className="container">
+          <nav aria-label="Breadcrumb" className="hero-crumb">
+            <ol>
+              <li><a href={HOME_URL}>Home</a></li>
+              <li aria-current="page">{abbr} Bill Check</li>
+            </ol>
+          </nav>
           {hasLogo(code) && (
             <Image
               className="disco-logo"
