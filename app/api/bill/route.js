@@ -58,7 +58,7 @@ export async function GET(request) {
     }
     return html(
       messagePage("Service unavailable", "The bill service is unreachable right now. Please try again shortly.", "error"),
-      502
+      503
     );
   }
 }
