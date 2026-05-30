@@ -76,9 +76,9 @@ export default function RootLayout({ children }) {
             <div className="footer-col">
               <h4>Legal</h4>
               <ul>
-                <li><a href="/#faq">Privacy policy</a></li>
-                <li><a href="/#faq">Terms of use</a></li>
-                <li><a href="/#faq">Disclaimer</a></li>
+                <li><a href="/privacy">Privacy policy</a></li>
+                <li><a href="/terms">Terms of use</a></li>
+                <li><a href="/disclaimer">Disclaimer</a></li>
               </ul>
             </div>
           </div>

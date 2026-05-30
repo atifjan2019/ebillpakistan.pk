@@ -13,5 +13,11 @@ export default function sitemap() {
       changeFrequency: "daily",
       priority: 0.8,
     })),
+    ...["privacy", "terms", "disclaimer"].map((p) => ({
+      url: `${BASE}/${p}`,
+      lastModified: now,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    })),
   ];
 }
