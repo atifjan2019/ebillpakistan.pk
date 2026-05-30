@@ -191,7 +191,7 @@ img { max-width: 100%; }
 
 /* ---------- footer ---------- */
 .footer { background: var(--brand-800); color: #a9c4ba; margin-top: 24px; border-top: 3px solid var(--accent); }
-.footer-grid { display: grid; grid-template-columns: 1.9fr 1.7fr 1fr 1fr; gap: 36px; padding-block: 56px 40px; }
+.footer-grid { display: grid; grid-template-columns: 1.8fr 1.6fr 1fr 1fr 1fr; gap: 36px; padding-block: 56px 40px; }
 .footer .logo { color: #fff; margin-bottom: 14px; }
 .footer-brand .blurb { font-size: 14.5px; max-width: 320px; line-height: 1.65; margin: 0; }
 .footer-soon { display: inline-block; margin-top: 16px; font-size: 13px; font-weight: 600; color: #cdd6e4; background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .1); padding: 7px 13px; border-radius: 999px; }
