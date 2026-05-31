@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { DISCOS, isValidRef } from "../../lib/discos";
 import { getIp, logBillCheck } from "../../lib/store";
 import BillFrame from "./BillFrame";
+import BillReady from "./BillReady";
 
 // Resolve the page the user submitted from (homepage vs a DISCO page) from the
 // Referer. Internal redirects (referer = /result) are skipped so each user
@@ -86,24 +87,7 @@ export default async function Result({ searchParams }) {
         </div>
 
         {directPost ? (
-          <div className="bill-card" style={{ padding: 28, textAlign: "center" }}>
-            <span className="tag" style={{ marginBottom: 14 }}><span className="dot" /> Bill ready</span>
-            <h2 style={{ margin: "6px 0 6px", fontSize: 22 }}>Your {info[0]} bill is ready</h2>
-            <p style={{ margin: "0 0 18px", color: "#555", fontSize: 15 }}>
-              Reference No: <b>{ref}</b>. Tap below to open your official bill on the PITC portal.
-            </p>
-            {/* PITC's gbill.aspx renders the bill only on a POST (a GET loops), and
-                sets X-Frame-Options so it can't be embedded — so we POST it open in
-                a new tab. The visitor's own browser reaches PITC, so no proxy needed. */}
-            <form action={pitcUrl} method="POST" target="_blank" rel="noopener noreferrer" encType="text/plain">
-              <button type="submit" className="btn btn-wa" style={{ fontSize: 16, padding: "12px 28px" }}>
-                View My Bill →
-              </button>
-            </form>
-            <p style={{ margin: "16px 0 0", color: "#888", fontSize: 13 }}>
-              Your bill opens directly on the official PITC portal (bill.pitc.com.pk) in a new tab.
-            </p>
-          </div>
+          <BillReady discoName={info[0]} region={info[1]} reference={ref} pitcUrl={pitcUrl} />
         ) : (
           <BillFrame src={src} disco={disco} reference={ref} />
         )}
