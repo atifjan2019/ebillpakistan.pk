@@ -39,12 +39,12 @@ export default async function Result({ searchParams }) {
   if (!DISCOS[disco]) redirect("/");
 
   // PITC blocks datacenter IPs, so our Vercel server can't fetch bills until a
-  // PITC-reachable egress (PITC_PROXY) is set. Until then, send the browser
-  // straight to PITC's gbill.aspx deep link: it loads the bill client-side, so
-  // it works from the visitor's own (Pakistani) connection — no proxy needed.
-  // Self-healing: stops the moment PITC_PROXY is set; never fires in local dev.
+  // PITC-reachable egress (PITC_PROXY) is set. Until then, send the user to
+  // PITC's official search form for the right company. (We can't deep-link to
+  // the bill itself: gbill.aspx loops without a prior search session, even in a
+  // clean browser.) Self-healing: stops once PITC_PROXY is set; not in local dev.
   if (process.env.VERCEL && !process.env.PITC_PROXY) {
-    redirect(`https://bill.pitc.com.pk/gbill.aspx?refno=${encodeURIComponent(ref)}&type=U`);
+    redirect(`https://bill.pitc.com.pk/${disco}bill`);
   }
 
   const hdrs = await headers();
