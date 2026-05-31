@@ -178,12 +178,20 @@ export default function BillFrame({ src, disco = "bill", reference = "" }) {
     }
     const node = doc.querySelector(".maincontent") || doc.body;
     const RATIO = 1.6; // crisp text without a giant file
+    // .maincontent has a fixed box width but its tables overflow to the right
+    // (overflow:visible). Capture the FULL scroll size, not just the box, or the
+    // PDF gets cropped on the right edge.
+    const capW = Math.max(node.scrollWidth, node.offsetWidth);
+    const capH = Math.max(node.scrollHeight, node.offsetHeight);
     const { toJpeg } = await import("html-to-image");
     const dataUrl = await toJpeg(node, {
       backgroundColor: "#ffffff",
       quality: 0.82,
       pixelRatio: RATIO,
       cacheBust: true,
+      width: capW,
+      height: capH,
+      style: { margin: "0" },
     });
     const img = new Image();
     img.src = dataUrl;
