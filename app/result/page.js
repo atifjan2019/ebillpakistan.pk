@@ -38,6 +38,14 @@ export default async function Result({ searchParams }) {
   if (!isValidRef(ref)) redirect("/");
   if (!DISCOS[disco]) redirect("/");
 
+  // Stopgap: PITC blocks datacenter IPs, so our Vercel server can't fetch bills
+  // until a PITC-reachable egress (PITC_PROXY) is configured. Until then, send
+  // the user straight to PITC's official search form. Self-healing: this stops
+  // the moment PITC_PROXY is set, and never triggers in local dev (no VERCEL).
+  if (process.env.VERCEL && !process.env.PITC_PROXY) {
+    redirect(`https://bill.pitc.com.pk/${disco}bill`);
+  }
+
   const hdrs = await headers();
   const page = sourcePage(hdrs.get("referer") || "");
   const geo = {

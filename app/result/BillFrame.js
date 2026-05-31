@@ -270,6 +270,11 @@ export default function BillFrame({ src, disco = "bill", reference = "" }) {
   }, [buildPdf, fileName, sharing]);
 
   if (status) {
+    // When our server can't reach PITC (e.g. egress blocked), fall back to
+    // sending the user to PITC's own search form. PITC has no deep link to a
+    // bill (the page only renders after an interactive POST), so the best we can
+    // do is open the right company form with the reference shown to paste.
+    const pitcUrl = `https://bill.pitc.com.pk/${String(disco).toLowerCase()}bill`;
     return (
       <div className="error-box">
         <span className="ic">
@@ -280,6 +285,23 @@ export default function BillFrame({ src, disco = "bill", reference = "" }) {
         <div>
           <h3>{status === "notfound" ? "Bill not found" : status === "error" ? "Service unavailable" : "Invalid request"}</h3>
           <p>{ERROR_TEXT[status] || "Something went wrong. Please try again."}</p>
+          {status === "error" && (
+            <div style={{ marginTop: 14 }}>
+              <p style={{ margin: "0 0 10px", fontSize: 14, color: "#555" }}>
+                You can view it directly on the official PITC website.
+                {reference ? <> Your reference number is <b>{reference}</b>.</> : null}
+              </p>
+              <a
+                className="btn btn-wa"
+                href={pitcUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ textDecoration: "none" }}
+              >
+                View your bill on PITC →
+              </a>
+            </div>
+          )}
         </div>
       </div>
     );
