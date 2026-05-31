@@ -1,7 +1,8 @@
 {
-  "regions": ["bom1"],
+  "regions": ["sin1"],
   "functions": {
     "app/api/bill/route.js": { "maxDuration": 30 },
-    "app/api/bill-json/route.js": { "maxDuration": 30 }
+    "app/api/bill-json/route.js": { "maxDuration": 30 },
+    "app/api/asset/route.js": { "maxDuration": 15 }
   }
 }

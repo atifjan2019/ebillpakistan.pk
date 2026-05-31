@@ -4,8 +4,8 @@ import { rateLimitBill, getIp } from "../../../lib/store";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
-// Run close to PITC (Pakistan) to cut latency to ccms.pitc.com.pk.
-export const preferredRegion = "bom1";
+// PITC blocks Vercel's Mumbai (bom1) egress IPs; Singapore can reach it.
+export const preferredRegion = "sin1";
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);

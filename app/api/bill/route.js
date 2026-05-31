@@ -4,8 +4,10 @@ import { rateLimitBill, getIp } from "../../../lib/store";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
-// Run close to PITC (Pakistan) to cut latency to bill.pitc.com.pk.
-export const preferredRegion = "bom1";
+// PITC (a Pakistani govt server) blocks Vercel's Mumbai (bom1) egress IPs, so
+// fetches from there hang and time out. Singapore is the closest region that
+// can actually reach bill.pitc.com.pk.
+export const preferredRegion = "sin1";
 
 // A small styled page rendered inside the iframe. `status` is also exposed via a
 // body data-attribute so the app shell can surface an error state (Bug 4).

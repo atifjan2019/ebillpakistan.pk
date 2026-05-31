@@ -1,6 +1,10 @@
 import { UA, ASSET_HOSTS } from "../../../lib/pitc";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 15;
+// Same region as /api/bill: PITC blocks Mumbai (bom1) egress IPs, so the bill's
+// CSS/JS/images must be proxied from a region that can reach bill.pitc.com.pk.
+export const preferredRegion = "sin1";
 
 // Rewrite url(...) / @import inside proxied CSS so nested assets also go through us.
 function rewriteCss(css, baseUrl) {
@@ -36,7 +40,11 @@ export async function GET(request) {
 
   let upstream;
   try {
-    upstream = await fetch(target.href, { headers: { "User-Agent": UA }, cache: "no-store" });
+    upstream = await fetch(target.href, {
+      headers: { "User-Agent": UA },
+      cache: "no-store",
+      signal: AbortSignal.timeout(10000), // fail fast instead of hanging the function
+    });
   } catch {
     return new Response("upstream error", { status: 502 });
   }
