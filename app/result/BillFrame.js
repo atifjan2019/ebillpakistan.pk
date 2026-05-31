@@ -179,10 +179,20 @@ export default function BillFrame({ src, disco = "bill", reference = "" }) {
     const node = doc.querySelector(".maincontent") || doc.body;
     const RATIO = 1.6; // crisp text without a giant file
     // .maincontent has a fixed box width but its tables overflow to the right
-    // (overflow:visible). Capture the FULL scroll size, not just the box, or the
-    // PDF gets cropped on the right edge.
-    const capW = Math.max(node.scrollWidth, node.offsetWidth);
-    const capH = Math.max(node.scrollHeight, node.offsetHeight);
+    // (overflow:visible), and scrollWidth/scrollHeight under-report visible
+    // overflow — so the PDF cropped on the right. Measure the TRUE content extent
+    // from the right-most / bottom-most descendant instead. (Coords are unscaled
+    // inside the iframe doc; the scale transform lives on the iframe element.)
+    const base = node.getBoundingClientRect();
+    let maxRight = base.right;
+    let maxBottom = base.bottom;
+    node.querySelectorAll("*").forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.right > maxRight) maxRight = r.right;
+      if (r.bottom > maxBottom) maxBottom = r.bottom;
+    });
+    const capW = Math.ceil(Math.max(maxRight - base.left, node.scrollWidth, node.offsetWidth)) + 2;
+    const capH = Math.ceil(Math.max(maxBottom - base.top, node.scrollHeight, node.offsetHeight)) + 2;
     const { toJpeg } = await import("html-to-image");
     const dataUrl = await toJpeg(node, {
       backgroundColor: "#ffffff",
