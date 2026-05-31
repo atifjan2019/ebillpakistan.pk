@@ -16,7 +16,7 @@ const WAIT = 10;
 const AD_CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 const AD_SLOT = process.env.NEXT_PUBLIC_ADSENSE_SLOT;
 
-export default function SngplGate() {
+export default function SngplGate({ consumer = "" }) {
   const [left, setLeft] = useState(WAIT);
   const pushed = useRef(false);
 
@@ -93,7 +93,8 @@ export default function SngplGate() {
       <div style={{ padding: "14px 18px", borderBottom: "1px solid #eef0f3", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
         <span className="tag"><span className="dot" /> Bill ready</span>
         <span style={{ color: "#475467", fontSize: 14 }}>
-          Enter your <b>11-digit consumer number</b> and the <b>captcha</b> shown, then tap <b>View Bill</b>.
+          {consumer ? <>Enter consumer no. <b>{consumer}</b> and the <b>captcha</b> below, then tap <b>View Bill</b>.</>
+                    : <>Enter your <b>11-digit consumer number</b> and the <b>captcha</b> shown, then tap <b>View Bill</b>.</>}
         </span>
       </div>
       <iframe
