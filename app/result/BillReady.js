@@ -112,8 +112,7 @@ export default function BillReady({ discoName, region, reference, pitcUrl }) {
             />
           </div>
           <p style={{ margin: "12px 0 0", color: "#667085", fontSize: 15 }}>
-            Your <b style={{ color: "#1f2937" }}>{discoName}</b> bill is getting ready…{" "}
-            <b style={{ color: "#16a34a" }}>{left}s</b>
+            Please wait… ready in <b style={{ color: "#16a34a" }}>{left}s</b>
           </p>
         </div>
       )}
