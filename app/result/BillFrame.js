@@ -270,11 +270,10 @@ export default function BillFrame({ src, disco = "bill", reference = "" }) {
   }, [buildPdf, fileName, sharing]);
 
   if (status) {
-    // When our server can't reach PITC (e.g. egress blocked), fall back to
-    // sending the user to PITC's own search form. PITC has no deep link to a
-    // bill (the page only renders after an interactive POST), so the best we can
-    // do is open the right company form with the reference shown to paste.
-    const pitcUrl = `https://bill.pitc.com.pk/${String(disco).toLowerCase()}bill`;
+    // When our server can't reach PITC (e.g. egress blocked), send the user to
+    // PITC's gbill.aspx deep link. It loads the bill client-side, so it renders
+    // from the visitor's own (Pakistani) connection without a proxy.
+    const pitcUrl = `https://bill.pitc.com.pk/gbill.aspx?refno=${encodeURIComponent(reference)}&type=U`;
     return (
       <div className="error-box">
         <span className="ic">
