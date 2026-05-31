@@ -270,10 +270,11 @@ export default function BillFrame({ src, disco = "bill", reference = "" }) {
   }, [buildPdf, fileName, sharing]);
 
   if (status) {
-    // When our server can't reach PITC (e.g. egress blocked), send the user to
-    // PITC's own search form for this company. (No deep link to the bill exists:
-    // gbill.aspx loops without a prior search session.)
-    const pitcUrl = `https://bill.pitc.com.pk/${String(disco).toLowerCase()}bill`;
+    // When our server can't reach PITC (e.g. egress blocked), let the visitor's
+    // own browser open the bill via a POST to gbill.aspx (a GET loops, and the
+    // page sets X-Frame-Options so it can't be embedded). reference identifies
+    // the company, so this works for every disco without a proxy.
+    const pitcUrl = `https://bill.pitc.com.pk/gbill.aspx?refno=${encodeURIComponent(reference)}&type=U`;
     return (
       <div className="error-box">
         <span className="ic">
@@ -290,15 +291,11 @@ export default function BillFrame({ src, disco = "bill", reference = "" }) {
                 You can view it directly on the official PITC website.
                 {reference ? <> Your reference number is <b>{reference}</b>.</> : null}
               </p>
-              <a
-                className="btn btn-wa"
-                href={pitcUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ textDecoration: "none" }}
-              >
-                View your bill on PITC →
-              </a>
+              <form action={pitcUrl} method="POST" target="_blank" rel="noopener noreferrer" encType="text/plain">
+                <button type="submit" className="btn btn-wa">
+                  View your bill on PITC →
+                </button>
+              </form>
             </div>
           )}
         </div>
