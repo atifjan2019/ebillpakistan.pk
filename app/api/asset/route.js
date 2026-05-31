@@ -1,4 +1,4 @@
-import { UA, ASSET_HOSTS } from "../../../lib/pitc";
+import { UA, ASSET_HOSTS, pitcFetch } from "../../../lib/pitc";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 15;
@@ -38,9 +38,14 @@ export async function GET(request) {
     return new Response("forbidden host", { status: 400 });
   }
 
+  // PITC blocks datacenter IPs, so its assets must go through PITC_PROXY too;
+  // CDN assets (jsdelivr etc.) are reachable directly and skip the proxy.
+  const isPitc = target.hostname.endsWith("pitc.com.pk");
+  const doFetch = isPitc ? pitcFetch : fetch;
+
   let upstream;
   try {
-    upstream = await fetch(target.href, {
+    upstream = await doFetch(target.href, {
       headers: { "User-Agent": UA },
       cache: "no-store",
       signal: AbortSignal.timeout(10000), // fail fast instead of hanging the function
