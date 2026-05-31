@@ -49,11 +49,11 @@ export default function BillReady({ discoName, region, reference, pitcUrl }) {
       )}
 
       <span className="tag" style={{ marginBottom: 16 }}>
-        <span className="dot" /> Bill ready
+        <span className="dot" /> {ready ? "Bill ready" : "Preparing your bill"}
       </span>
 
       <h2 style={{ margin: "4px 0 4px", fontSize: 24, fontWeight: 800 }}>
-        Your {discoName} bill is ready
+        Your {discoName} bill is {ready ? "ready" : "getting ready"}
       </h2>
       <p style={{ margin: "0 0 20px", color: "#667085", fontSize: 15 }}>
         Reference No: <b style={{ color: "#1f2937" }}>{reference}</b>
