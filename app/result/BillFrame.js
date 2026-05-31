@@ -115,6 +115,14 @@ export default function BillFrame({ src, disco = "bill", reference = "" }) {
         roRef.current = new RO(() => scheduleFit());
         roRef.current.observe(main);
       }
+      // Bill <-> Tax Certificate tabs toggle which .tab-content is display:none.
+      // Refit on click so the iframe resizes to the newly visible tab.
+      win.document.querySelectorAll(".tab").forEach((t) =>
+        t.addEventListener("click", () => {
+          scheduleFit();
+          setTimeout(fit, 60);
+        })
+      );
     } catch {}
   }, [fit, scheduleFit]);
 
