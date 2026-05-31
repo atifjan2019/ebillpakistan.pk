@@ -49,7 +49,10 @@ function Bolt() {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${body.variable} ${display.variable}`}>
-      <body>
+      {/* suppressHydrationWarning: some browser extensions (e.g. ColorZilla adds
+          cz-shortcut-listen) inject attributes on <body> before React hydrates,
+          which otherwise triggers a benign hydration-mismatch warning. */}
+      <body suppressHydrationWarning>
         <header className="nav">
           <div className="container nav-inner">
             <a className="logo" href="/" aria-label="eBill Pakistan home">
