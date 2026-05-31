@@ -53,8 +53,16 @@ export default function BillFrame({ src, disco = "bill", reference = "" }) {
     iframe.style.transformOrigin = "top left";
     iframe.style.width = "100%";
 
+    // Measure whichever tab is actually visible. The Bill tab's .maincontent is
+    // hidden (display:none) when the user switches to the Tax Certificate tab, so
+    // sizing off .maincontent alone collapses the iframe to ~0 and the tab looks
+    // blank. Fall back to the active .tab-content (or body) in that case.
     const main = doc.querySelector(".maincontent");
-    const natW = Math.max(main ? main.scrollWidth : 0, doc.body.scrollWidth, 920);
+    const billVisible = !!(main && main.offsetParent !== null);
+    const measureEl =
+      (billVisible ? main : doc.querySelector(".tab-content.active")) || doc.body;
+
+    const natW = Math.max(measureEl.scrollWidth, doc.body.scrollWidth, billVisible ? 920 : 0);
     const containerW = wrap.clientWidth;
     let scale = 1;
     if (natW > containerW + 1) {
@@ -62,11 +70,9 @@ export default function BillFrame({ src, disco = "bill", reference = "" }) {
       scale = containerW / natW;
     }
 
-    // Intrinsic content height: the bottom of the bill content relative to the
+    // Intrinsic content height: the bottom of the visible content relative to the
     // document top. This does NOT grow when we grow the iframe.
-    const contentH = main
-      ? Math.ceil(main.getBoundingClientRect().bottom + 24)
-      : doc.body.scrollHeight;
+    const contentH = Math.ceil(measureEl.getBoundingClientRect().bottom + 24);
 
     if (Math.abs(contentH - lastH.current) > 2) {
       iframe.style.height = `${contentH}px`;
