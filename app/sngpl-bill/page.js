@@ -115,7 +115,7 @@ export default async function SngplBillPage({ searchParams }) {
                 <label htmlFor="consumer">SNGPL consumer number</label>
                 <div className="control">
                   <RefInput id="consumer" name="consumer" inputMode="numeric" pattern="[0-9]{10,11}"
-                    maxLength={11} placeholder="e.g. 97709930008" required autoFocus />
+                    placeholder="e.g. 97709930008" required autoFocus />
                 </div>
               </div>
               <button type="submit" className="btn btn-primary"><Search /> Check SNGPL Bill</button>

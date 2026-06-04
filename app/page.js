@@ -136,7 +136,7 @@ export default async function Home({ searchParams }) {
                 <label htmlFor="reference">Reference number</label>
                 <div className="control">
                   <RefInput id="reference" name="reference" inputMode="numeric" pattern="[0-9]{8,14}"
-                    maxLength={14} placeholder="e.g. 12345678901234" required autoFocus={!!preset} />
+                    placeholder="e.g. 12345678901234" required autoFocus={!!preset} />
                 </div>
               </div>
               <button type="submit" className="btn btn-primary">{I.search} Check Bill</button>

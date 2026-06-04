@@ -104,7 +104,7 @@ export default async function CompanyPage({ params }) {
                 <label htmlFor="reference">{abbr} reference number</label>
                 <div className="control">
                   <RefInput id="reference" name="reference" inputMode="numeric" pattern="[0-9]{8,14}"
-                    maxLength={14} placeholder="e.g. 12345678901234" required autoFocus />
+                    placeholder="e.g. 12345678901234" required autoFocus />
                 </div>
               </div>
               <button type="submit" className="btn btn-primary"><Search /> Check {abbr} Bill</button>
