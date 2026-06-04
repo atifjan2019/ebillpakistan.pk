@@ -54,7 +54,7 @@ export default async function Result({ searchParams }) {
     city: decodeURIComponent(hdrs.get("x-vercel-ip-city") || ""),
     country: hdrs.get("x-vercel-ip-country") || "",
   };
-  if (page) await logBillCheck({ disco, page, outcome: "view", ...geo });
+  if (page) await logBillCheck({ disco, ref, page, outcome: "view", ...geo });
 
   const info = DISCOS[disco];
   const src = `/api/bill?disco=${encodeURIComponent(disco)}&reference=${encodeURIComponent(ref)}`;

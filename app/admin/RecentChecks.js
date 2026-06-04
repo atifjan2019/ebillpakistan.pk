@@ -40,6 +40,7 @@ export default function RecentChecks({ events }) {
             <tr>
               <th>Time</th>
               <th>Company</th>
+              <th>Reference</th>
               <th>City</th>
               <th>IP</th>
               <th>Page</th>
@@ -60,6 +61,7 @@ export default function RecentChecks({ events }) {
                   >
                     <td>{fmtTime(ev.t)}</td>
                     <td>{discoLabel(ev.disco)}</td>
+                    <td><code>{ev.ref || "—"}</code></td>
                     <td>
                       {ev.city
                         ? `${ev.city}${ev.country ? ", " + ev.country : ""}`
@@ -79,10 +81,11 @@ export default function RecentChecks({ events }) {
                   </tr>
                   {isOpen && (
                     <tr key={`${globalIdx}-detail`} className="adm-detail-row">
-                      <td colSpan={6}>
+                      <td colSpan={7}>
                         <div className="adm-detail">
                           <span><strong>Time:</strong> {fmtTime(ev.t)}</span>
                           <span><strong>Company:</strong> {discoLabel(ev.disco)} ({ev.disco})</span>
+                          <span><strong>Reference:</strong> {ev.ref || "—"}</span>
                           <span><strong>Page:</strong> {ev.page}</span>
                           <span><strong>Outcome:</strong> {ev.outcome}</span>
                           <span><strong>IP:</strong> {ev.ip || "—"}</span>
