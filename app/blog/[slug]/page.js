@@ -36,7 +36,7 @@ export default async function ArticlePage({ params }) {
     headline: a.title,
     description: a.metaDescription,
     datePublished: a.publishedDate,
-    dateModified: a.publishedDate,
+    dateModified: a.lastUpdated || a.publishedDate,
     image: `${SITE_URL}${OG_IMAGE.url}`,
     mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
     author: { "@type": "Organization", name: "eBill Pakistan", url: `${SITE_URL}/` },
@@ -46,6 +46,15 @@ export default async function ArticlePage({ params }) {
       logo: { "@type": "ImageObject", url: `${SITE_URL}/images/logo.png` },
     },
   };
+  const faqLd = a.faqs?.length ? {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: a.faqs.map(([q, ans]) => ({
+      "@type": "Question",
+      name: q,
+      acceptedAnswer: { "@type": "Answer", text: ans },
+    })),
+  } : null;
   const breadcrumbLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -59,6 +68,7 @@ export default async function ArticlePage({ params }) {
   return (
     <section className="legal-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }} />
+      {faqLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
 
       <div className="container legal-inner">
@@ -66,9 +76,26 @@ export default async function ArticlePage({ params }) {
           <a href="/">Home</a> <span>/</span> <a href="/blog">Blog</a> <span>/</span> <span aria-current="page">{a.title}</span>
         </nav>
         <h1>{a.h1}</h1>
-        <p className="blog-meta">Published {formatDate(a.publishedDate)}</p>
+        <p className="blog-meta">
+          Published {formatDate(a.publishedDate)}
+          {a.lastUpdated && a.lastUpdated !== a.publishedDate && (
+            <> &nbsp;·&nbsp; Updated {formatDate(a.lastUpdated)}</>
+          )}
+        </p>
 
         <article className="prose" dangerouslySetInnerHTML={{ __html: a.content }} />
+
+        {a.faqs?.length > 0 && (
+          <div className="faq" style={{ marginTop: 32 }}>
+            <h2>Frequently asked questions</h2>
+            {a.faqs.map(([q, ans], i) => (
+              <details key={i} open={i === 0}>
+                <summary>{q}</summary>
+                <div className="a">{ans}</div>
+              </details>
+            ))}
+          </div>
+        )}
 
         <div className="blog-cta">
           <p>Ready to check your electricity bill? It takes about ten seconds, free and with no sign-up.</p>
