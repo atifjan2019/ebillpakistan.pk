@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { DISCOS } from "../../lib/discos";
 import { getStats } from "../../lib/store";
+import RecentChecks from "./RecentChecks";
 
 export const dynamic = "force-dynamic";
 
@@ -167,29 +168,7 @@ function Dashboard({ stats }) {
 
         <div className="adm-panel">
           <h2>Recent checks</h2>
-          {recent && recent.length ? (
-            <div className="adm-table-wrap">
-              <table className="adm-table">
-                <thead>
-                  <tr>
-                    <th>Time</th><th>Company</th><th>City</th><th>IP</th><th>Page</th><th>Outcome</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recent.map((ev, i) => (
-                    <tr key={i}>
-                      <td>{fmtTime(ev.t)}</td>
-                      <td>{discoLabel(ev.disco)}</td>
-                      <td>{ev.city ? `${ev.city}${ev.country ? ", " + ev.country : ""}` : "—"}</td>
-                      <td><code>{ev.ip || "—"}</code></td>
-                      <td><code>{ev.page}</code></td>
-                      <td>{ev.outcome}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : <p className="adm-empty">No checks recorded yet.</p>}
+          <RecentChecks events={recent || []} />
         </div>
       </div>
     </div>

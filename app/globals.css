@@ -328,6 +328,15 @@ body:has(.admin-page) > .footer { display: none; }
 .adm-table th { text-align: left; color: var(--muted); font-weight: 600; padding: 9px 10px; border-bottom: 1px solid var(--line); }
 .adm-table td { padding: 9px 10px; border-bottom: 1px solid var(--line); color: var(--body); white-space: nowrap; }
 .adm-table code { font-size: 12px; color: var(--ink); }
+.adm-table tbody tr:hover { background: color-mix(in srgb, var(--brand) 5%, transparent); }
+.adm-row-active td { background: color-mix(in srgb, var(--brand) 8%, transparent); }
+.adm-detail-row td { background: color-mix(in srgb, var(--brand) 4%, transparent); padding: 10px 14px 14px; }
+.adm-detail { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 12.5px; color: var(--body); }
+.adm-detail strong { color: var(--ink); }
+.adm-badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 12px; font-weight: 600; background: color-mix(in srgb, var(--brand) 12%, #fff); color: var(--brand); }
+.adm-badge-error { background: #fef2f2; color: #9b1c1c; }
+.adm-pagination { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 14px; }
+.adm-page-info { font-size: 13px; color: var(--muted); }
 .adm-empty { color: var(--muted); font-size: 14px; margin: 0; }
 
 .adm-login { max-width: 400px; margin-top: 9vh; }
