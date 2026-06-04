@@ -4,7 +4,7 @@ import { buildMeta } from "../../lib/seo";
 export const metadata = buildMeta({
   title: "Disclaimer | eBill Pakistan",
   description:
-    "eBill Pakistan is an independent tool and is not affiliated with PITC or any electricity distribution company. Bill information is provided for convenience only.",
+    "eBill Pakistan is an independent tool, not affiliated with PITC or any electricity distribution company. Bill information is shown for convenience only.",
   path: "/disclaimer",
 });
 
