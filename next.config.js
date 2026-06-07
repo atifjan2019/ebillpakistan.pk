@@ -2,19 +2,10 @@
 const nextConfig = {
   reactStrictMode: true,
 
-  // 301-redirect every variant to the canonical https://www.ebillpakistan.pk.
-  // Vercel handles http→https at the edge automatically; these rules cover the
-  // non-www host (both http and https) so there is never more than one hop.
-  async redirects() {
-    return [
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "ebillpakistan.pk" }],
-        destination: "https://www.ebillpakistan.pk/:path*",
-        permanent: true, // 301
-      },
-    ];
-  },
+  // Canonical host is the non-www https://ebillpakistan.pk. The www → non-www
+  // 301 is handled by Vercel at the domain level (Domains settings), so there is
+  // no app-level redirect here — adding one would fight Vercel's edge redirect
+  // and create an infinite www⇄non-www loop.
 
   images: {
     // Serve DISCO logos as modern formats (AVIF/WebP) automatically.

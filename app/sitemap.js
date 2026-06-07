@@ -3,7 +3,7 @@ import { slugFor } from "../lib/companies";
 import { HOME_URL } from "../lib/seo";
 import { ARTICLES } from "../lib/articles";
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL || "https://www.ebillpakistan.pk";
+const BASE = process.env.NEXT_PUBLIC_SITE_URL || "https://ebillpakistan.pk";
 
 // Stable last-modified dates per content group. Bump the relevant constant when
 // you actually change that content; using `new Date()` here would stamp every
