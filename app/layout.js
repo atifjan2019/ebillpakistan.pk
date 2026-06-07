@@ -54,6 +54,13 @@ export default function RootLayout({ children }) {
           cz-shortcut-listen) inject attributes on <body> before React hydrates,
           which otherwise triggers a benign hydration-mismatch warning. */}
       <body suppressHydrationWarning>
+        <Script
+          id="adsense"
+          async
+          strategy="afterInteractive"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4404208402043493"
+          crossOrigin="anonymous"
+        />
         <Script id="smartlook" strategy="afterInteractive">
           {`window.smartlook||(function(d) {
     var o=smartlook=function(){ o.api.push(arguments)},h=d.getElementsByTagName('head')[0];
