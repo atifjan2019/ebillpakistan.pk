@@ -1,5 +1,4 @@
 import "./globals.css";
-import Script from "next/script";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { DISCOS } from "../lib/discos";
 import { OG_IMAGE, OG_IMAGE_ALT, SITE_URL, TWITTER_SITE, SOCIAL } from "../lib/seo";
@@ -54,21 +53,6 @@ export default function RootLayout({ children }) {
           cz-shortcut-listen) inject attributes on <body> before React hydrates,
           which otherwise triggers a benign hydration-mismatch warning. */}
       <body suppressHydrationWarning>
-        <Script
-          id="adsense"
-          async
-          strategy="afterInteractive"
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4404208402043493"
-          crossOrigin="anonymous"
-        />
-        <Script id="smartlook" strategy="afterInteractive">
-          {`window.smartlook||(function(d) {
-    var o=smartlook=function(){ o.api.push(arguments)},h=d.getElementsByTagName('head')[0];
-    var c=d.createElement('script');o.api=new Array();c.async=true;c.type='text/javascript';
-    c.charset='utf-8';c.src='https://web-sdk.smartlook.com/recorder.js';h.appendChild(c);
-    })(document);
-    smartlook('init', 'd786ab97cf1cca0a059c30f84c46610810c4660a', { region: 'eu' });`}
-        </Script>
         <header className="nav">
           <div className="container nav-inner">
             <a className="logo" href="/" aria-label="eBill Pakistan home">

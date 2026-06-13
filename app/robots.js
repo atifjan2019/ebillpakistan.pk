@@ -5,7 +5,9 @@ export default function robots() {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/result", "/api/", "/admin"], // lookups, API + admin are not for indexing
+      // lookups, API + admin are not for indexing; /_next/image is the optimizer
+      // endpoint (query-string variants of logos that waste crawl budget and never index)
+      disallow: ["/result", "/api/", "/admin", "/_next/image"],
     },
     sitemap: `${BASE}/sitemap.xml`,
   };
