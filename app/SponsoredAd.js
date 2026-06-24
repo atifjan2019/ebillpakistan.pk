@@ -1,25 +1,41 @@
-// Reusable, disclosed sponsored slot (server component — no client JS, best for
-// Core Web Vitals). Renders one promotional image from /public/images/... as a
+"use client";
+
+// Reusable, disclosed sponsored slot. Shows a Khyber Wear promo image as a
 // labeled "Sponsored" placement with rel="sponsored" on the outbound link.
 //
-// Compliance notes:
-// - The "Sponsored" badge is a SEPARATE element from the <img>, so the disclosure
-//   persists even if the image fails to load (broken-image / no-JS path).
-// - The link uses rel="sponsored noopener noreferrer" per Google's ad guidelines.
-// - It is visually an aside/figure, never disguised as editorial content.
-// - Image is lazy-loaded and given width/height (aspect-ratio) to avoid layout shift.
-import { HOUSE_AD_URL, HOUSE_AD_NAME, HOUSE_AD_ALT } from "../lib/ads";
+// - If `src` is given, that exact creative is shown (static).
+// - Otherwise it picks a RANDOM creative on mount and rotates every few seconds,
+//   so visitors see a different image each visit.
+// - The "Sponsored" badge is a separate element, so the disclosure persists even
+//   if the image fails to load or JS is disabled (SSR renders the badge + first
+//   creative). Image is lazy-loaded; the slot is responsive and CWV-friendly.
+import { useEffect, useState } from "react";
+import { HOUSE_AD_URL, HOUSE_AD_NAME, HOUSE_AD_ALT, HOUSE_AD_CREATIVES } from "../lib/ads";
 
 export default function SponsoredAd({
   src,
   alt = HOUSE_AD_ALT,
   href = HOUSE_AD_URL,
   label = "Sponsored",
-  width = 600,
-  height = 600,
   className = "",
 }) {
-  if (!src) return null;
+  const fixed = Boolean(src);
+  // Start at 0 so SSR and first client paint match (no hydration mismatch).
+  const [i, setI] = useState(0);
+
+  useEffect(() => {
+    if (fixed || HOUSE_AD_CREATIVES.length <= 1) return;
+    setI(Math.floor(Math.random() * HOUSE_AD_CREATIVES.length));
+    const t = setInterval(
+      () => setI((p) => (p + 1) % HOUSE_AD_CREATIVES.length),
+      5000
+    );
+    return () => clearInterval(t);
+  }, [fixed]);
+
+  const image = fixed ? src : HOUSE_AD_CREATIVES[i];
+  if (!image) return null;
+
   return (
     <aside className={`sponsored ${className}`.trim()} aria-label="Sponsored content">
       <span className="sponsored-badge">{label}</span>
@@ -29,18 +45,7 @@ export default function SponsoredAd({
         rel="sponsored noopener noreferrer"
         aria-label={`${label}: ${HOUSE_AD_NAME} — ${alt}`}
       >
-        <img
-          src={src}
-          alt={alt}
-          width={width}
-          height={height}
-          loading="lazy"
-          decoding="async"
-          style={{
-            display: "block", width: "100%", height: "auto",
-            aspectRatio: `${width} / ${height}`, objectFit: "contain", background: "#fff",
-          }}
-        />
+        <img src={image} alt={alt} loading="lazy" decoding="async" />
       </a>
     </aside>
   );

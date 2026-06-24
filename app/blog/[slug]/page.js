@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import { ARTICLES, getArticle, formatDate } from "../../../lib/articles";
 import { SITE_URL, OG_IMAGE, buildMeta } from "../../../lib/seo";
 import { TARIFF_BY_KEY } from "../../../lib/tariffs";
-import { HOUSE_AD_CREATIVES } from "../../../lib/ads";
 import TariffTable from "../../TariffTable";
 import SponsoredAd from "../../SponsoredAd";
 
@@ -24,7 +23,7 @@ function renderBody(html) {
 
   const parts = [];
   const re = /<!--\s*(?:tariff:(\w+)|sponsored(?::(\S+))?)\s*-->/g;
-  let last = 0, m, i = 0, ad = 0;
+  let last = 0, m, i = 0;
   while ((m = re.exec(src))) {
     const before = src.slice(last, m.index);
     if (before.trim()) parts.push(<div key={`h${i}`} dangerouslySetInnerHTML={{ __html: before }} />);
@@ -32,9 +31,8 @@ function renderBody(html) {
       const data = TARIFF_BY_KEY[m[1]];
       if (data) parts.push(<TariffTable key={`t${i}`} data={data} />);
     } else {
-      const adSrc = m[2] || HOUSE_AD_CREATIVES[ad % HOUSE_AD_CREATIVES.length];
-      parts.push(<SponsoredAd key={`s${i}`} src={adSrc} />);
-      ad++;
+      // No explicit src -> the slot picks a random creative on the client.
+      parts.push(<SponsoredAd key={`s${i}`} src={m[2]} />);
     }
     last = m.index + m[0].length;
     i++;

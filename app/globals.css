@@ -240,7 +240,11 @@ img { max-width: 100%; }
 
 /* ---------- legal / prose pages ---------- */
 .legal-page { padding: 34px 0 60px; }
-.legal-inner { max-width: 820px; }
+/* Match the header/footer container width exactly (var(--container)); keep the
+   reading text left-aligned to the container edge. blog-list spans full width. */
+.legal-inner { max-width: var(--container); }
+.legal-inner > * { max-width: 880px; }
+.legal-inner > .blog-list { max-width: none; }
 .legal-page h1 { font-size: clamp(26px, 4vw, 34px); margin: 8px 0 6px; }
 .legal-updated { color: var(--muted); font-size: 14px; margin: 0 0 18px; }
 .legal-intro { font-size: 16.5px; line-height: 1.7; color: var(--body); margin: 0 0 8px; }
@@ -403,11 +407,11 @@ body:has(.admin-page) > .footer { display: none; }
 }
 .guide-links a:hover { border-color: var(--brand); }
 
-/* ---- Sponsored ad slot (<SponsoredAd>) ---- */
+/* ---- Sponsored ad slot (<SponsoredAd>) — responsive, fixed-height so rotating
+   creatives don't cause layout shift ---- */
 .sponsored {
-  position: relative; margin: 24px auto; max-width: 520px;
-  border: 1px solid var(--line); border-radius: 14px; background: #fff;
-  overflow: hidden; min-height: 80px;
+  position: relative; width: 100%; max-width: 360px; margin: 22px auto;
+  border: 1px solid var(--line); border-radius: 14px; background: #fff; overflow: hidden;
 }
 .sponsored-badge {
   position: absolute; top: 8px; left: 10px; z-index: 1;
@@ -416,7 +420,10 @@ body:has(.admin-page) > .footer { display: none; }
   border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px;
 }
 .sponsored a { display: block; line-height: 0; }
-.sponsored img { width: 100%; }
+.sponsored img {
+  display: block; width: 100%; height: clamp(200px, 46vw, 280px);
+  object-fit: contain; background: #fff;
+}
 
 /* ---- Urdu (RTL) article support ---- */
 .prose[dir="rtl"], h1[dir="rtl"] { text-align: right; }

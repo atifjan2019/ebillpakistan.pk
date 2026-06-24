@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { DISCOS, hasLogo, discoLogo } from "../../lib/discos";
 import { COMPANIES, faqsFor, slugFor, codeFromSlug, seoFor } from "../../lib/companies";
 import { guidesFor } from "../../lib/articles";
-import { HOUSE_AD_CREATIVES } from "../../lib/ads";
 import SponsoredAd from "../SponsoredAd";
 import { SITE_URL, HOME_URL, buildMeta } from "../../lib/seo";
 
@@ -52,7 +51,6 @@ export default async function CompanyPage({ params }) {
   const year = new Date().getFullYear();
   const others = Object.keys(DISCOS).filter((x) => x !== code);
   const guides = guidesFor(code);
-  const adCreative = HOUSE_AD_CREATIVES[Object.keys(DISCOS).indexOf(code) % HOUSE_AD_CREATIVES.length];
 
   const faqLd = {
     "@context": "https://schema.org",
@@ -155,7 +153,7 @@ export default async function CompanyPage({ params }) {
             ))}
           </div>
 
-          <SponsoredAd src={adCreative} />
+          <SponsoredAd />
 
           <h2>Tariff &amp; billing information</h2>
           <p>
