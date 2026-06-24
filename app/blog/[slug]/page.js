@@ -2,26 +2,44 @@ import { notFound } from "next/navigation";
 import { ARTICLES, getArticle, formatDate } from "../../../lib/articles";
 import { SITE_URL, OG_IMAGE, buildMeta } from "../../../lib/seo";
 import { TARIFF_BY_KEY } from "../../../lib/tariffs";
+import { HOUSE_AD_CREATIVES } from "../../../lib/ads";
 import TariffTable from "../../TariffTable";
+import SponsoredAd from "../../SponsoredAd";
 
 export const dynamicParams = false;
 
-// Render an article's HTML, swapping `<!-- tariff:KEY -->` sentinels for the
-// <TariffTable> component (a real React node can't live inside an HTML string).
-// Each HTML segment between sentinels is rendered via dangerouslySetInnerHTML.
+// Render an article's HTML, swapping inline sentinels for React components a real
+// node can't live inside an HTML string):
+//   <!-- tariff:KEY -->            -> <TariffTable> for that dataset
+//   <!-- sponsored -->             -> <SponsoredAd> (rotating house creative)
+//   <!-- sponsored:/images/x.png --> -> <SponsoredAd src="/images/x.png">
+// Posts with no explicit sponsored slot get ONE disclosed ad auto-injected right
+// after the intro (before the first <h2>), so every guide carries a labeled slot.
 function renderBody(html) {
+  let src = html;
+  if (!src.includes("<!-- sponsored")) {
+    const idx = src.indexOf("<h2");
+    if (idx !== -1) src = src.slice(0, idx) + "<!-- sponsored -->\n" + src.slice(idx);
+  }
+
   const parts = [];
-  const re = /<!--\s*tariff:(\w+)\s*-->/g;
-  let last = 0, m, i = 0;
-  while ((m = re.exec(html))) {
-    const before = html.slice(last, m.index);
+  const re = /<!--\s*(?:tariff:(\w+)|sponsored(?::(\S+))?)\s*-->/g;
+  let last = 0, m, i = 0, ad = 0;
+  while ((m = re.exec(src))) {
+    const before = src.slice(last, m.index);
     if (before.trim()) parts.push(<div key={`h${i}`} dangerouslySetInnerHTML={{ __html: before }} />);
-    const data = TARIFF_BY_KEY[m[1]];
-    if (data) parts.push(<TariffTable key={`t${i}`} data={data} />);
+    if (m[1]) {
+      const data = TARIFF_BY_KEY[m[1]];
+      if (data) parts.push(<TariffTable key={`t${i}`} data={data} />);
+    } else {
+      const adSrc = m[2] || HOUSE_AD_CREATIVES[ad % HOUSE_AD_CREATIVES.length];
+      parts.push(<SponsoredAd key={`s${i}`} src={adSrc} />);
+      ad++;
+    }
     last = m.index + m[0].length;
     i++;
   }
-  const rest = html.slice(last);
+  const rest = src.slice(last);
   if (rest.trim()) parts.push(<div key={`h${i}`} dangerouslySetInnerHTML={{ __html: rest }} />);
   return parts;
 }
@@ -97,7 +115,7 @@ export default async function ArticlePage({ params }) {
         <nav aria-label="Breadcrumb" className="crumb">
           <a href="/">Home</a> <span>/</span> <a href="/blog">Blog</a> <span>/</span> <span aria-current="page">{a.title}</span>
         </nav>
-        <h1>{a.h1}</h1>
+        <h1 lang={a.lang} dir={a.dir}>{a.h1}</h1>
         <p className="blog-meta">
           Published {formatDate(a.publishedDate)}
           {a.lastUpdated && a.lastUpdated !== a.publishedDate && (
@@ -105,7 +123,7 @@ export default async function ArticlePage({ params }) {
           )}
         </p>
 
-        <article className="prose">{renderBody(a.content)}</article>
+        <article className="prose" lang={a.lang} dir={a.dir}>{renderBody(a.content)}</article>
 
         {a.faqs?.length > 0 && (
           <div className="faq" style={{ marginTop: 32 }}>

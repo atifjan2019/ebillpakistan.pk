@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { DISCOS, hasLogo, discoLogo } from "../../lib/discos";
 import { COMPANIES, faqsFor, slugFor, codeFromSlug, seoFor } from "../../lib/companies";
 import { guidesFor } from "../../lib/articles";
+import { HOUSE_AD_CREATIVES } from "../../lib/ads";
+import SponsoredAd from "../SponsoredAd";
 import { SITE_URL, HOME_URL, buildMeta } from "../../lib/seo";
 
 export const dynamicParams = false;
@@ -50,6 +52,7 @@ export default async function CompanyPage({ params }) {
   const year = new Date().getFullYear();
   const others = Object.keys(DISCOS).filter((x) => x !== code);
   const guides = guidesFor(code);
+  const adCreative = HOUSE_AD_CREATIVES[Object.keys(DISCOS).indexOf(code) % HOUSE_AD_CREATIVES.length];
 
   const faqLd = {
     "@context": "https://schema.org",
@@ -152,6 +155,8 @@ export default async function CompanyPage({ params }) {
             ))}
           </div>
 
+          <SponsoredAd src={adCreative} />
+
           <h2>Tariff &amp; billing information</h2>
           <p>
             Your {abbr} tariff is set by the National Electric Power Regulatory Authority
@@ -166,8 +171,9 @@ export default async function CompanyPage({ params }) {
             recognises protected domestic consumers (those who keep usage below a set threshold
             over several consecutive months), who are charged lower rates than unprotected
             consumers. A bill can additionally carry a fixed or minimum charge, a TV licence fee and
-            applicable taxes. Because these rates are revised from time to time, always confirm the
-            latest schedule before estimating what you will pay.
+            applicable taxes. For a plain-language breakdown of how slabs, fuel price adjustment and
+            taxes combine, see our{" "}
+            <a href="/blog/unit-slabs-fuel-price-adjustment-taxes-explained">guide to unit slabs, FPA &amp; taxes</a>.
           </p>
 
           <h2 id="helpline">{abbr} helpline &amp; contact ({city})</h2>
