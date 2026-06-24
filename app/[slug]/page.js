@@ -96,7 +96,7 @@ export default async function CompanyPage({ params }) {
           <h1>
             {abbr} Bill Check Online <span className="grad">{year}</span>
           </h1>
-          <p className="sub">{c.full}. Enter your reference number below to view, print or download your latest {abbr} bill. Free and instant.</p>
+          <p className="sub">{c.full}. Check your {abbr} electricity bill online for {city} and across {c.region} — enter your reference number to view, print or download your latest bill. Free and instant.</p>
 
           <form id="lookup" className="search-card" action="/result" method="get">
             <input type="hidden" name="disco" value={code} />
@@ -126,6 +126,14 @@ export default async function CompanyPage({ params }) {
           <div className="chips">
             {c.cities.map((ct) => <span key={ct} className="chip" style={{ "--c": color }}>{ct}</span>)}
           </div>
+
+          <h2>{abbr} bill check in {city}</h2>
+          <p>
+            Whether you live in {city} or elsewhere on the {abbr} network across {c.region},
+            you can check your latest {abbr} bill here by reference number — there&apos;s no need
+            to visit a {abbr} customer-service centre in {city} in person. It works the same way
+            for homes, shops and offices on the {abbr} supply.
+          </p>
 
           <h2>How to check your {abbr} bill</h2>
           <ol className="howto">
@@ -162,14 +170,16 @@ export default async function CompanyPage({ params }) {
             latest schedule before estimating what you will pay.
           </p>
 
-          <h3>{abbr} helpline &amp; contact</h3>
+          <h2 id="helpline">{abbr} helpline &amp; contact ({city})</h2>
           <dl className="contact-dl">
-            <dt>Customer helpline</dt>
-            <dd>118 (the national DISCO helpline used across Pakistan)</dd>
-            <dt>Offices &amp; complaints</dt>
+            <dt>Complaint helpline</dt>
+            <dd>118 — the national power-distribution complaint helpline used across Pakistan, including {abbr}.</dd>
+            <dt>{abbr} offices &amp; customer service in {city}</dt>
             <dd>
-              For office locations and regional customer services, visit the{" "}
+              For {abbr}&apos;s verified {city}-area office numbers, complaint centres and regional
+              contacts, use the{" "}
               <a href={c.website} target="_blank" rel="noopener noreferrer">official {abbr} website</a>.
+              We link to the official source rather than publish numbers that may change.
             </dd>
           </dl>
 
