@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Script from "next/script";
+import { useEffect, useState } from "react";
 import { HOUSE_AD_URL, HOUSE_AD_NAME, HOUSE_AD_CREATIVES } from "../../lib/ads";
 
 // Seconds the visitor waits (ad dwell time) before the "View My Bill" button
@@ -9,14 +8,8 @@ import { HOUSE_AD_URL, HOUSE_AD_NAME, HOUSE_AD_CREATIVES } from "../../lib/ads";
 // an HTML form that POSTs straight from the visitor's (Pakistani) browser.
 const WAIT = 10;
 
-// AdSense is enabled by setting these in the environment (NEXT_PUBLIC_ so they
-// reach the browser). Until then a styled placeholder keeps the layout intact.
-const AD_CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT; // e.g. "ca-pub-1234567890123456"
-const AD_SLOT = process.env.NEXT_PUBLIC_ADSENSE_SLOT;     // e.g. "1234567890"
-
 export default function BillReady({ discoName, region, reference, pitcUrl }) {
   const [left, setLeft] = useState(WAIT);
-  const pushed = useRef(false);
 
   // House-ad creative index. Starts at 0 so the server-rendered and first
   // client paint match (no hydration mismatch); on mount we jump to a random
@@ -39,30 +32,11 @@ export default function BillReady({ discoName, region, reference, pitcUrl }) {
     return () => clearTimeout(t);
   }, [left]);
 
-  // Request the ad fill once (queued until adsbygoogle.js loads).
-  useEffect(() => {
-    if (pushed.current || !AD_CLIENT || !AD_SLOT) return;
-    pushed.current = true;
-    try {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch {}
-  }, []);
-
   const ready = left <= 0;
   const pct = Math.round(((WAIT - left) / WAIT) * 100);
 
   return (
     <div className="bill-card" style={{ maxWidth: 620, margin: "0 auto", padding: "32px 28px", textAlign: "center" }}>
-      {AD_CLIENT && (
-        <Script
-          id="adsbygoogle-js"
-          async
-          strategy="afterInteractive"
-          crossOrigin="anonymous"
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AD_CLIENT}`}
-        />
-      )}
-
       <span className="tag" style={{ marginBottom: 16 }}>
         <span className="dot" /> {ready ? "Bill ready" : "Preparing your bill"}
       </span>
@@ -75,50 +49,38 @@ export default function BillReady({ discoName, region, reference, pitcUrl }) {
         {region ? <> &middot; {region}</> : null}
       </p>
 
-      {/* ---- Advertisement ---- */}
+      {/* ---- Advertisement (Khyber Wear house ad) ---- */}
       <div
         style={{
-          position: "relative", margin: "0 auto 22px", maxWidth: 540, minHeight: 180,
-          border: "1px solid #e6e8ec", borderRadius: 14, background: "#fafbfc",
+          position: "relative", margin: "0 auto 22px", maxWidth: 540, minHeight: 200,
+          border: "1px solid #e6e8ec", borderRadius: 14, background: "#fff",
           display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden",
         }}
       >
         <span
           style={{
             position: "absolute", top: 8, left: 12, fontSize: 10, letterSpacing: ".08em",
-            textTransform: "uppercase", color: "#98a2b3", fontWeight: 700,
+            textTransform: "uppercase", color: "#98a2b3", fontWeight: 700, zIndex: 1,
           }}
         >
           Advertisement
         </span>
-        {AD_CLIENT && AD_SLOT ? (
-          <ins
-            className="adsbygoogle"
-            style={{ display: "block", width: "100%", minHeight: 160 }}
-            data-ad-client={AD_CLIENT}
-            data-ad-slot={AD_SLOT}
-            data-ad-format="auto"
-            data-full-width-responsive="true"
+        <a
+          href={HOUSE_AD_URL}
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          aria-label={`${HOUSE_AD_NAME} — visit store`}
+          style={{ display: "block", width: "100%", lineHeight: 0 }}
+        >
+          <img
+            src={HOUSE_AD_CREATIVES[adIndex]}
+            alt={`${HOUSE_AD_NAME} offer`}
+            style={{
+              display: "block", width: "100%", height: 300, maxHeight: "70vh",
+              objectFit: "contain", background: "#fff", margin: "0 auto",
+            }}
           />
-        ) : (
-          <a
-            href={HOUSE_AD_URL}
-            target="_blank"
-            rel="noopener noreferrer sponsored"
-            aria-label={`${HOUSE_AD_NAME} — visit store`}
-            style={{ display: "block", width: "100%", lineHeight: 0 }}
-          >
-            <img
-              src={HOUSE_AD_CREATIVES[adIndex]}
-              alt={`${HOUSE_AD_NAME} offer`}
-              loading="lazy"
-              style={{
-                display: "block", width: "100%", maxHeight: 260,
-                objectFit: "contain", margin: "0 auto",
-              }}
-            />
-          </a>
-        )}
+        </a>
       </div>
 
       {/* ---- Countdown -> Button ---- */}
