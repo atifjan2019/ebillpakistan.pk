@@ -1,8 +1,30 @@
 import { notFound } from "next/navigation";
 import { ARTICLES, getArticle, formatDate } from "../../../lib/articles";
 import { SITE_URL, OG_IMAGE, buildMeta } from "../../../lib/seo";
+import { TARIFF_BY_KEY } from "../../../lib/tariffs";
+import TariffTable from "../../TariffTable";
 
 export const dynamicParams = false;
+
+// Render an article's HTML, swapping `<!-- tariff:KEY -->` sentinels for the
+// <TariffTable> component (a real React node can't live inside an HTML string).
+// Each HTML segment between sentinels is rendered via dangerouslySetInnerHTML.
+function renderBody(html) {
+  const parts = [];
+  const re = /<!--\s*tariff:(\w+)\s*-->/g;
+  let last = 0, m, i = 0;
+  while ((m = re.exec(html))) {
+    const before = html.slice(last, m.index);
+    if (before.trim()) parts.push(<div key={`h${i}`} dangerouslySetInnerHTML={{ __html: before }} />);
+    const data = TARIFF_BY_KEY[m[1]];
+    if (data) parts.push(<TariffTable key={`t${i}`} data={data} />);
+    last = m.index + m[0].length;
+    i++;
+  }
+  const rest = html.slice(last);
+  if (rest.trim()) parts.push(<div key={`h${i}`} dangerouslySetInnerHTML={{ __html: rest }} />);
+  return parts;
+}
 
 export function generateStaticParams() {
   return ARTICLES.map((a) => ({ slug: a.slug }));
@@ -83,7 +105,7 @@ export default async function ArticlePage({ params }) {
           )}
         </p>
 
-        <article className="prose" dangerouslySetInnerHTML={{ __html: a.content }} />
+        <article className="prose">{renderBody(a.content)}</article>
 
         {a.faqs?.length > 0 && (
           <div className="faq" style={{ marginTop: 32 }}>

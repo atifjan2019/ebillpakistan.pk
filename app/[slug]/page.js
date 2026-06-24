@@ -4,6 +4,7 @@ import CheckBillLoader from "../CheckBillLoader";
 import { notFound } from "next/navigation";
 import { DISCOS, hasLogo, discoLogo } from "../../lib/discos";
 import { COMPANIES, faqsFor, slugFor, codeFromSlug, seoFor } from "../../lib/companies";
+import { guidesFor } from "../../lib/articles";
 import { SITE_URL, HOME_URL, buildMeta } from "../../lib/seo";
 
 export const dynamicParams = false;
@@ -48,6 +49,7 @@ export default async function CompanyPage({ params }) {
   const allFaqs = [...faqs, ...extraFaqs];
   const year = new Date().getFullYear();
   const others = Object.keys(DISCOS).filter((x) => x !== code);
+  const guides = guidesFor(code);
 
   const faqLd = {
     "@context": "https://schema.org",
@@ -183,6 +185,21 @@ export default async function CompanyPage({ params }) {
 
         </div>
       </section>
+
+      {guides.length > 0 && (
+        <section className="section">
+          <div className="container article">
+            <h2>Helpful {abbr} guides</h2>
+            <ul className="guide-links">
+              {guides.map((g) => (
+                <li key={g.slug}>
+                  <a href={`/blog/${g.slug}`}>{g.title}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
 
       <section className="section" style={{ background: "#fff", borderTop: "1px solid var(--line)" }}>
         <div className="container">

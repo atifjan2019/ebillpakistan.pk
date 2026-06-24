@@ -379,3 +379,26 @@ body:has(.admin-page) > .footer { display: none; }
 /* PESCO card: show the transparent logo image in place of the abbr text. */
 .disco-card .badge.badge--logo { background: transparent; box-shadow: none; border: 0; padding: 0; }
 .disco-card .badge-logo { width: 56px; height: 56px; object-fit: contain; display: block; }
+
+/* ---- Tariff table (lib/tariffs.js + <TariffTable>) ---- */
+.tariff { margin: 20px 0; }
+.tariff-heading { font-family: var(--font-display); font-weight: 800; font-size: 18px; margin-bottom: 8px; }
+.tariff-updated { font-size: 13px; color: var(--muted); margin: 0 0 10px; }
+.tariff-pending {
+  font-size: 14px; background: #fff7ed; border: 1px solid #fed7aa;
+  color: #9a3412; border-radius: 10px; padding: 10px 12px; margin: 0 0 14px;
+}
+.tariff-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+.tariff-table th, .tariff-table td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+.tariff-table thead th { background: #f4faf6; color: var(--ink); font-weight: 700; }
+.tariff-table .tariff-tier th { background: #eef6f1; color: var(--ink); font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; }
+.tariff-table td:last-child { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tariff-foot { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
+
+/* ---- DISCO "Helpful guides" links ---- */
+.guide-links { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 10px; }
+.guide-links a {
+  display: block; padding: 13px 16px; border: 1px solid var(--line); border-radius: 12px;
+  background: #fff; color: var(--ink); font-weight: 600; text-decoration: none;
+}
+.guide-links a:hover { border-color: var(--brand); }
