@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Script from "next/script";
+import { HOUSE_AD_URL, HOUSE_AD_NAME, HOUSE_AD_CREATIVES } from "../../lib/ads";
 
 // Seconds the visitor waits (ad dwell time) before the "View My Bill" button
 // unlocks. PITC's gbill.aspx renders the bill only on a POST, so the button is
@@ -16,6 +17,20 @@ const AD_SLOT = process.env.NEXT_PUBLIC_ADSENSE_SLOT;     // e.g. "1234567890"
 export default function BillReady({ discoName, region, reference, pitcUrl }) {
   const [left, setLeft] = useState(WAIT);
   const pushed = useRef(false);
+
+  // House-ad creative index. Starts at 0 so the server-rendered and first
+  // client paint match (no hydration mismatch); on mount we jump to a random
+  // creative and then rotate through the rest every few seconds, so each
+  // visitor sees several Khyber Wear variations during the countdown.
+  const [adIndex, setAdIndex] = useState(0);
+  useEffect(() => {
+    if (HOUSE_AD_CREATIVES.length <= 1) return;
+    setAdIndex(Math.floor(Math.random() * HOUSE_AD_CREATIVES.length));
+    const t = setInterval(() => {
+      setAdIndex((i) => (i + 1) % HOUSE_AD_CREATIVES.length);
+    }, 3500);
+    return () => clearInterval(t);
+  }, []);
 
   // Countdown.
   useEffect(() => {
@@ -86,7 +101,23 @@ export default function BillReady({ discoName, region, reference, pitcUrl }) {
             data-full-width-responsive="true"
           />
         ) : (
-          <span style={{ color: "#cbd2dc", fontSize: 14, fontWeight: 600 }}>Your ad here</span>
+          <a
+            href={HOUSE_AD_URL}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            aria-label={`${HOUSE_AD_NAME} — visit store`}
+            style={{ display: "block", width: "100%", lineHeight: 0 }}
+          >
+            <img
+              src={HOUSE_AD_CREATIVES[adIndex]}
+              alt={`${HOUSE_AD_NAME} offer`}
+              loading="lazy"
+              style={{
+                display: "block", width: "100%", maxHeight: 260,
+                objectFit: "contain", margin: "0 auto",
+              }}
+            />
+          </a>
         )}
       </div>
 

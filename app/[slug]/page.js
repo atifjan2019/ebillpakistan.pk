@@ -3,7 +3,7 @@ import RefInput from "../RefInput";
 import CheckBillLoader from "../CheckBillLoader";
 import { notFound } from "next/navigation";
 import { DISCOS, hasLogo, discoLogo } from "../../lib/discos";
-import { COMPANIES, faqsFor, slugFor, codeFromSlug } from "../../lib/companies";
+import { COMPANIES, faqsFor, slugFor, codeFromSlug, seoFor } from "../../lib/companies";
 import { SITE_URL, HOME_URL, buildMeta } from "../../lib/seo";
 
 export const dynamicParams = false;
@@ -18,8 +18,7 @@ export async function generateMetadata({ params }) {
   if (!code) return {};
   const [abbr] = DISCOS[code];
   const year = new Date().getFullYear();
-  const title = `${abbr} Bill Check Online ${year} | eBill Pakistan`;
-  const description = `Check your ${abbr} electricity bill online for free. Enter your 14-digit reference number to instantly view, download or print your latest bill.`;
+  const { title, description } = seoFor(code, year);
   return buildMeta({
     title,
     description,
