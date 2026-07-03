@@ -1,5 +1,10 @@
-import { ARTICLES, formatDate } from "../../lib/articles";
+import { formatDate } from "../../lib/articles";
+import { getAllPosts } from "../../lib/posts";
 import { SITE_URL, buildMeta } from "../../lib/seo";
+
+// Static + revalidated on demand: /api/posts calls revalidatePath("/blog")
+// when a new post is published, so the index picks it up without a redeploy.
+export const dynamic = "force-static";
 
 const BLOG_TITLE = "Electricity Bill Help & Guides | eBill Pakistan";
 const BLOG_DESC =
@@ -30,7 +35,8 @@ const breadcrumbLd = {
   ],
 };
 
-export default function BlogIndex() {
+export default async function BlogIndex() {
+  const posts = await getAllPosts();
   return (
     <section className="legal-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionLd) }} />
@@ -46,7 +52,7 @@ export default function BlogIndex() {
         </p>
 
         <div className="blog-list">
-          {ARTICLES.map((a) => (
+          {posts.map((a) => (
             <a key={a.slug} className="blog-card" href={`/blog/${a.slug}`}>
               <h2>{a.title}</h2>
               <span className="blog-meta">{formatDate(a.publishedDate)}</span>

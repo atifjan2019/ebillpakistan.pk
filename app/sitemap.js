@@ -1,7 +1,7 @@
 import { DISCOS } from "../lib/discos";
 import { slugFor } from "../lib/companies";
 import { HOME_URL } from "../lib/seo";
-import { ARTICLES } from "../lib/articles";
+import { getAllPosts } from "../lib/posts";
 
 const BASE = process.env.NEXT_PUBLIC_SITE_URL || "https://ebillpakistan.pk";
 
@@ -14,7 +14,8 @@ const UPDATED = {
   legal: "2026-01-10",  // privacy, terms, disclaimer
 };
 
-export default function sitemap() {
+export default async function sitemap() {
+  const posts = await getAllPosts();
   return [
     { url: HOME_URL, lastModified: UPDATED.core, changeFrequency: "weekly", priority: 1 },
     ...Object.keys(DISCOS).map((code) => ({
@@ -36,7 +37,7 @@ export default function sitemap() {
       priority: 0.3,
     })),
     { url: `${BASE}/blog`, lastModified: UPDATED.core, changeFrequency: "weekly", priority: 0.6 },
-    ...ARTICLES.map((a) => ({
+    ...posts.map((a) => ({
       url: `${BASE}/blog/${a.slug}`,
       lastModified: a.lastUpdated || a.publishedDate,
       changeFrequency: "monthly",

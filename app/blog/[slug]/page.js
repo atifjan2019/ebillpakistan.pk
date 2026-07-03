@@ -1,11 +1,15 @@
 import { notFound } from "next/navigation";
-import { ARTICLES, getArticle, formatDate } from "../../../lib/articles";
+import { formatDate } from "../../../lib/articles";
+import { getAllPosts, getPost } from "../../../lib/posts";
 import { SITE_URL, OG_IMAGE, buildMeta } from "../../../lib/seo";
 import { TARIFF_BY_KEY } from "../../../lib/tariffs";
 import TariffTable from "../../TariffTable";
 import SponsoredAd from "../../SponsoredAd";
 
-export const dynamicParams = false;
+// dynamicParams + force-static: slugs published via /api/posts after the build
+// are rendered on first request and cached (the API revalidates their path).
+export const dynamicParams = true;
+export const dynamic = "force-static";
 
 // Render an article's HTML, swapping inline sentinels for React components a real
 // node can't live inside an HTML string):
@@ -42,13 +46,13 @@ function renderBody(html) {
   return parts;
 }
 
-export function generateStaticParams() {
-  return ARTICLES.map((a) => ({ slug: a.slug }));
+export async function generateStaticParams() {
+  return (await getAllPosts()).map((a) => ({ slug: a.slug }));
 }
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const a = getArticle(slug);
+  const a = await getPost(slug);
   if (!a) return {};
   // twitter:image:alt + og:image:alt use the article title (FIX 5).
   const meta = buildMeta({
@@ -64,7 +68,7 @@ export async function generateMetadata({ params }) {
 
 export default async function ArticlePage({ params }) {
   const { slug } = await params;
-  const a = getArticle(slug);
+  const a = await getPost(slug);
   if (!a) notFound();
 
   const pageUrl = `${SITE_URL}/blog/${a.slug}`;
@@ -75,7 +79,7 @@ export default async function ArticlePage({ params }) {
     description: a.metaDescription,
     datePublished: a.publishedDate,
     dateModified: a.lastUpdated || a.publishedDate,
-    image: `${SITE_URL}${OG_IMAGE.url}`,
+    image: a.coverImage || `${SITE_URL}${OG_IMAGE.url}`,
     mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
     author: { "@type": "Organization", name: "eBill Pakistan", url: `${SITE_URL}/` },
     publisher: {
