@@ -19,6 +19,13 @@ export const metadata = {
   description:
     "Check and download your latest electricity bill online for LESCO, IESCO, MEPCO, FESCO, GEPCO, HESCO, PESCO, QESCO, SEPCO, TESCO, HAZECO and AJK. Free, instant and secure.",
   robots: { index: true, follow: true },
+  // Favicon: points to the site logo so /favicon.ico 404s stop appearing in
+  // crawl stats. For a proper .ico file, place one at public/favicon.ico.
+  icons: {
+    icon: "/images/logo.png",
+    shortcut: "/images/logo.png",
+    apple: "/images/logo.png",
+  },
   openGraph: {
     type: "website",
     siteName: "eBill Pakistan",

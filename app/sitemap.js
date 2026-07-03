@@ -1,9 +1,9 @@
 import { DISCOS } from "../lib/discos";
 import { slugFor } from "../lib/companies";
-import { HOME_URL } from "../lib/seo";
+import { SITE_URL, HOME_URL } from "../lib/seo";
 import { getAllPosts } from "../lib/posts";
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL || "https://ebillpakistan.pk";
+const BASE = SITE_URL;
 
 // Stable last-modified dates per content group. Bump the relevant constant when
 // you actually change that content; using `new Date()` here would stamp every

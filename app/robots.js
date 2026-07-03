@@ -1,6 +1,7 @@
-const BASE = process.env.NEXT_PUBLIC_SITE_URL || "https://ebillpakistan.pk";
+import { SITE_URL } from "../lib/seo";
 
 export default function robots() {
+  const BASE = SITE_URL;
   return {
     rules: {
       userAgent: "*",
