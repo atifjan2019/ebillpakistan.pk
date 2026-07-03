@@ -108,9 +108,10 @@ export default function RootLayout({ children }) {
             <div className="footer-col">
               <h4>Guides</h4>
               <ul>
-                {ARTICLES.map((a) => (
+                {ARTICLES.slice(0, 4).map((a) => (
                   <li key={a.slug}><a href={`/blog/${a.slug}`}>{a.navLabel}</a></li>
                 ))}
+                <li><a className="footer-more" href="/blog">See all guides →</a></li>
               </ul>
             </div>
 
