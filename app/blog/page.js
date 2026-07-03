@@ -35,7 +35,7 @@ export default function BlogIndex() {
     <section className="legal-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
-      <div className="container legal-inner">
+      <div className="container">
         <nav aria-label="Breadcrumb" className="crumb">
           <a href="/">Home</a> <span>/</span> <span aria-current="page">Blog</span>
         </nav>
