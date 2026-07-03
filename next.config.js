@@ -14,6 +14,20 @@ const nextConfig = {
   // Also update NEXT_PUBLIC_SITE_URL in Vercel environment variables to
   // "https://www.ebillpakistan.pk" so the build-time default matches.
 
+  async redirects() {
+    return [
+      {
+        // Browsers and crawlers request /favicon.ico directly regardless of
+        // <link rel="icon"> in <head>. Redirect permanently to the site logo
+        // so the literal path returns 200 (after following the redirect) instead
+        // of 404, stopping the repeated GSC crawl-error reports.
+        source: "/favicon.ico",
+        destination: "/images/logo.png",
+        permanent: true,
+      },
+    ];
+  },
+
   async headers() {
     return [
       {
