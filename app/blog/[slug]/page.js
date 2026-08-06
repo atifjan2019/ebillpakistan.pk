@@ -4,29 +4,22 @@ import { getAllPosts, getPost } from "../../../lib/posts";
 import { SITE_URL, OG_IMAGE, buildMeta } from "../../../lib/seo";
 import { TARIFF_BY_KEY } from "../../../lib/tariffs";
 import TariffTable from "../../TariffTable";
-import SponsoredAd from "../../SponsoredAd";
 
 // dynamicParams + force-static: slugs published via /api/posts after the build
 // are rendered on first request and cached (the API revalidates their path).
 export const dynamicParams = true;
 export const dynamic = "force-static";
 
-// Render an article's HTML, swapping inline sentinels for React components a real
+// Render an article's HTML, swapping inline sentinels for React components (a real
 // node can't live inside an HTML string):
-//   <!-- tariff:KEY -->            -> <TariffTable> for that dataset
-//   <!-- sponsored -->             -> <SponsoredAd> (rotating house creative)
-//   <!-- sponsored:/images/x.png --> -> <SponsoredAd src="/images/x.png">
-// Posts with no explicit sponsored slot get ONE disclosed ad auto-injected right
-// after the intro (before the first <h2>), so every guide carries a labeled slot.
+//   <!-- tariff:KEY -->  -> <TariffTable> for that dataset
+// Legacy `<!-- sponsored -->` sentinels left in older posts are matched and
+// dropped so they render nothing.
 function renderBody(html) {
-  let src = html;
-  if (!src.includes("<!-- sponsored")) {
-    const idx = src.indexOf("<h2");
-    if (idx !== -1) src = src.slice(0, idx) + "<!-- sponsored -->\n" + src.slice(idx);
-  }
+  const src = html;
 
   const parts = [];
-  const re = /<!--\s*(?:tariff:(\w+)|sponsored(?::(\S+))?)\s*-->/g;
+  const re = /<!--\s*(?:tariff:(\w+)|sponsored(?::\S+)?)\s*-->/g;
   let last = 0, m, i = 0;
   while ((m = re.exec(src))) {
     const before = src.slice(last, m.index);
@@ -34,9 +27,6 @@ function renderBody(html) {
     if (m[1]) {
       const data = TARIFF_BY_KEY[m[1]];
       if (data) parts.push(<TariffTable key={`t${i}`} data={data} />);
-    } else {
-      // No explicit src -> the slot picks a random creative on the client.
-      parts.push(<SponsoredAd key={`s${i}`} src={m[2]} />);
     }
     last = m.index + m[0].length;
     i++;

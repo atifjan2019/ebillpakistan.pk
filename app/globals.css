@@ -484,24 +484,6 @@ body:has(.admin-page) > .footer { display: none; }
 }
 .guide-links a:hover { border-color: var(--brand); }
 
-/* ---- Sponsored ad slot (<SponsoredAd>) — responsive, fixed-height so rotating
-   creatives don't cause layout shift ---- */
-.sponsored {
-  position: relative; width: 100%; max-width: 360px; margin: 22px auto;
-  border: 1px solid var(--line); border-radius: 14px; background: #fff; overflow: hidden;
-}
-.sponsored-badge {
-  position: absolute; top: 8px; left: 10px; z-index: 1;
-  font-size: 10px; letter-spacing: .08em; text-transform: uppercase; font-weight: 800;
-  color: #475467; background: rgba(255,255,255,.92);
-  border: 1px solid var(--line); border-radius: 999px; padding: 2px 8px;
-}
-.sponsored a { display: block; line-height: 0; }
-.sponsored img {
-  display: block; width: 100%; height: clamp(200px, 46vw, 280px);
-  object-fit: contain; background: #fff;
-}
-
 /* ---- Urdu (RTL) article support ---- */
 .prose[dir="rtl"], h1[dir="rtl"] { text-align: right; }
 .prose[dir="rtl"] ol, .prose[dir="rtl"] ul { padding-right: 1.2em; padding-left: 0; }

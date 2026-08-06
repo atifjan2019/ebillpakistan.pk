@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { DISCOS, hasLogo, discoLogo } from "../../lib/discos";
 import { COMPANIES, faqsFor, slugFor, codeFromSlug, seoFor } from "../../lib/companies";
 import { guidesFor } from "../../lib/articles";
-import SponsoredAd from "../SponsoredAd";
 import { SITE_URL, HOME_URL, buildMeta } from "../../lib/seo";
 
 export const dynamicParams = false;
@@ -152,8 +151,6 @@ export default async function CompanyPage({ params }) {
               </details>
             ))}
           </div>
-
-          <SponsoredAd />
 
           <h2>Tariff &amp; billing information</h2>
           <p>

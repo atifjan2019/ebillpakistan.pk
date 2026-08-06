@@ -1,29 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { HOUSE_AD_URL, HOUSE_AD_NAME, HOUSE_AD_CREATIVES } from "../../lib/ads";
 
-// Seconds the visitor waits (ad dwell time) before the "View My Bill" button
-// unlocks. PITC's gbill.aspx renders the bill only on a POST, so the button is
-// an HTML form that POSTs straight from the visitor's (Pakistani) browser.
+// Seconds the visitor waits before the "View My Bill" button unlocks. PITC's
+// gbill.aspx renders the bill only on a POST, so the button is an HTML form
+// that POSTs straight from the visitor's (Pakistani) browser.
 const WAIT = 10;
 
 export default function BillReady({ discoName, region, reference, pitcUrl }) {
   const [left, setLeft] = useState(WAIT);
-
-  // House-ad creative index. Starts at 0 so the server-rendered and first
-  // client paint match (no hydration mismatch); on mount we jump to a random
-  // creative and then rotate through the rest every few seconds, so each
-  // visitor sees several Khyber Wear variations during the countdown.
-  const [adIndex, setAdIndex] = useState(0);
-  useEffect(() => {
-    if (HOUSE_AD_CREATIVES.length <= 1) return;
-    setAdIndex(Math.floor(Math.random() * HOUSE_AD_CREATIVES.length));
-    const t = setInterval(() => {
-      setAdIndex((i) => (i + 1) % HOUSE_AD_CREATIVES.length);
-    }, 3500);
-    return () => clearInterval(t);
-  }, []);
 
   // Countdown.
   useEffect(() => {
@@ -48,40 +33,6 @@ export default function BillReady({ discoName, region, reference, pitcUrl }) {
         Reference No: <b style={{ color: "#1f2937" }}>{reference}</b>
         {region ? <> &middot; {region}</> : null}
       </p>
-
-      {/* ---- Advertisement (Khyber Wear house ad) ---- */}
-      <div
-        style={{
-          position: "relative", margin: "0 auto 22px", maxWidth: 540, minHeight: 200,
-          border: "1px solid #e6e8ec", borderRadius: 14, background: "#fff",
-          display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden",
-        }}
-      >
-        <span
-          style={{
-            position: "absolute", top: 8, left: 12, fontSize: 10, letterSpacing: ".08em",
-            textTransform: "uppercase", color: "#98a2b3", fontWeight: 700, zIndex: 1,
-          }}
-        >
-          Advertisement
-        </span>
-        <a
-          href={HOUSE_AD_URL}
-          target="_blank"
-          rel="noopener noreferrer sponsored"
-          aria-label={`${HOUSE_AD_NAME} — visit store`}
-          style={{ display: "block", width: "100%", lineHeight: 0 }}
-        >
-          <img
-            src={HOUSE_AD_CREATIVES[adIndex]}
-            alt={`${HOUSE_AD_NAME} offer`}
-            style={{
-              display: "block", width: "100%", height: 300, maxHeight: "70vh",
-              objectFit: "contain", background: "#fff", margin: "0 auto",
-            }}
-          />
-        </a>
-      </div>
 
       {/* ---- Countdown -> Button ---- */}
       {ready ? (
