@@ -191,7 +191,9 @@ export default async function CompanyPage({ params }) {
             Consumed</strong> is the electricity used during the month, <strong>Amount
             Payable</strong> is the total due, and the <strong>Due Date</strong> is the last day
             to pay before a late-payment surcharge is added. Extra lines such as fuel-price
-            adjustment and taxes appear as <strong>surcharges</strong>.
+            adjustment and taxes appear as <strong>surcharges</strong>. For a field-by-field
+            walkthrough of all of them, see our{" "}
+            <a href="/sample-bill-explained">annotated sample bill</a>.
           </p>
 
         </div>

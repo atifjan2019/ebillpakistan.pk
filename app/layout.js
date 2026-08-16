@@ -3,7 +3,10 @@ import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { DISCOS } from "../lib/discos";
 import { OG_IMAGE, OG_IMAGE_ALT, SITE_URL, TWITTER_SITE, SOCIAL } from "../lib/seo";
 import { ARTICLES } from "../lib/articles";
+import { BUSINESS } from "../lib/contact";
 import Nav from "./Nav";
+import CookieConsent, { CookieSettingsLink } from "./CookieConsent";
+import AdSense from "./AdSense";
 
 const body = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
 const display = Plus_Jakarta_Sans({
@@ -107,6 +110,7 @@ export default function RootLayout({ children }) {
                 <li><a href="/">Home</a></li>
                 <li><a href="/about">About</a></li>
                 <li><a href="/contact">Contact</a></li>
+                <li><a href="/sample-bill-explained">Sample bill explained</a></li>
                 <li><a href="/#companies">All companies</a></li>
                 <li><a href="/#faq">FAQ</a></li>
               </ul>
@@ -123,20 +127,32 @@ export default function RootLayout({ children }) {
             </div>
 
             <div className="footer-col">
-              <h4>Legal</h4>
+              <h4>Legal &amp; trust</h4>
               <ul>
+                <li><a href="/editorial-policy">Editorial policy</a></li>
                 <li><a href="/privacy">Privacy policy</a></li>
                 <li><a href="/terms">Terms of use</a></li>
                 <li><a href="/disclaimer">Disclaimer</a></li>
+                <li><CookieSettingsLink /></li>
               </ul>
             </div>
           </div>
 
           <div className="container footer-bottom">
             <span>© {new Date().getFullYear()} eBill Pakistan. All rights reserved.</span>
+            <address className="footer-address">
+              {BUSINESS.address.street}, {BUSINESS.address.locality} {BUSINESS.address.postalCode},{" "}
+              {BUSINESS.address.region}, Pakistan ·{" "}
+              <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>
+            </address>
             <span>Not affiliated with PITC or any DISCO. Bill data belongs to the respective company.</span>
           </div>
         </footer>
+
+        {/* Consent gate + the advertising loader it controls. AdSense renders no
+            DOM and injects nothing until the visitor opts in. */}
+        <CookieConsent />
+        <AdSense />
       </body>
     </html>
   );

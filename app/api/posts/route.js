@@ -3,7 +3,11 @@
 // Auth:    Authorization: Bearer <BLOG_API_KEY>   (401 on mismatch/missing,
 //          503 if the server has no BLOG_API_KEY configured — fail closed)
 // Body:    { title, slug, metaDescription, content (Markdown), excerpt?,
-//            tags?, coverImage?, publishedAt?, metaTitle?, faqs? }
+//            tags?, coverImage?, publishedAt?, updatedAt?, metaTitle?, faqs?,
+//            author? }
+// author is an author slug from lib/authors.js; omitted posts fall back to the
+// site's default editor at render time (see authorFor), so every post — including
+// ones published before this field existed — carries a byline.
 // faqs is an array of [question, answer] string pairs; it feeds the FAQ
 // accordion and FAQPage JSON-LD exactly like static articles' faqs field.
 // Result:  201 { success: true, url } | 400 | 401 | 409 | 413 | 503
@@ -18,6 +22,7 @@ import { revalidatePath } from "next/cache";
 import { marked } from "marked";
 import { SITE_URL } from "../../../lib/seo";
 import { getPost, savePost } from "../../../lib/posts";
+import { AUTHORS, DEFAULT_AUTHOR } from "../../../lib/authors";
 
 export const runtime = "nodejs";
 
@@ -49,7 +54,7 @@ export async function POST(req) {
     return bad(400, "Request body must be valid JSON.");
   }
 
-  const { title, slug, metaDescription, content, excerpt, tags, coverImage, publishedAt, metaTitle, faqs } = body || {};
+  const { title, slug, metaDescription, content, excerpt, tags, coverImage, publishedAt, updatedAt, metaTitle, faqs, author } = body || {};
 
   const errors = [];
   if (typeof title !== "string" || !title.trim()) errors.push("title is required (non-empty string)");
@@ -62,6 +67,8 @@ export async function POST(req) {
   if (tags !== undefined && !(Array.isArray(tags) && tags.every((t) => typeof t === "string"))) errors.push("tags must be an array of strings");
   if (coverImage !== undefined && !/^https?:\/\/\S+$/.test(String(coverImage))) errors.push("coverImage must be an http(s) URL");
   if (publishedAt !== undefined && Number.isNaN(Date.parse(publishedAt))) errors.push("publishedAt must be an ISO date string");
+  if (updatedAt !== undefined && Number.isNaN(Date.parse(updatedAt))) errors.push("updatedAt must be an ISO date string");
+  if (author !== undefined && !AUTHORS[author]) errors.push(`author must be one of: ${Object.keys(AUTHORS).join(", ")}`);
   if (metaTitle !== undefined && (typeof metaTitle !== "string" || !metaTitle.trim() || metaTitle.length > 70)) errors.push("metaTitle must be a non-empty string of 70 characters or fewer");
   if (faqs !== undefined && !(Array.isArray(faqs) && faqs.length <= 8 && faqs.every((f) => Array.isArray(f) && f.length === 2 && f.every((s) => typeof s === "string" && s.trim())))) errors.push("faqs must be an array (max 8) of [question, answer] string pairs");
   if (errors.length) return bad(400, errors.join("; "));
@@ -70,13 +77,16 @@ export async function POST(req) {
   if (await getPost(slug)) return bad(409, `A post with slug "${slug}" already exists.`);
 
   const date = (publishedAt ? new Date(publishedAt) : new Date()).toISOString().slice(0, 10);
+  const updated = (updatedAt ? new Date(updatedAt) : new Date(date)).toISOString().slice(0, 10);
+  const authorSlug = author || DEFAULT_AUTHOR;
   const post = {
     slug,
     title: title.trim(),
     metaTitle: (metaTitle || title).trim(),
     metaDescription: metaDescription.trim(),
     publishedDate: date,
-    lastUpdated: date,
+    lastUpdated: updated,
+    author: authorSlug,
     h1: title.trim(),
     content: marked.parse(content, { async: false }),
     ...(excerpt ? { excerpt: excerpt.trim() } : {}),
@@ -95,6 +105,7 @@ export async function POST(req) {
   // Make the post visible without a redeploy.
   revalidatePath("/blog");
   revalidatePath(`/blog/${slug}`);
+  revalidatePath(`/author/${authorSlug}`); // author page lists their posts
   revalidatePath("/sitemap.xml");
 
   return Response.json({ success: true, url: `${SITE_URL}/blog/${slug}` }, { status: 201 });

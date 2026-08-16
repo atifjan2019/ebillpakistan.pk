@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
-import { formatDate } from "../../../lib/articles";
 import { getAllPosts, getPost } from "../../../lib/posts";
+import { authorFor } from "../../../lib/authors";
 import { SITE_URL, OG_IMAGE, buildMeta } from "../../../lib/seo";
 import { TARIFF_BY_KEY } from "../../../lib/tariffs";
 import TariffTable from "../../TariffTable";
+import { Byline } from "../../Byline";
 
 // dynamicParams + force-static: slugs published via /api/posts after the build
 // are rendered on first request and cached (the API revalidates their path).
@@ -61,6 +62,7 @@ export default async function ArticlePage({ params }) {
   const a = await getPost(slug);
   if (!a) notFound();
 
+  const author = authorFor(a);
   const pageUrl = `${SITE_URL}/blog/${a.slug}`;
   const articleLd = {
     "@context": "https://schema.org",
@@ -71,10 +73,20 @@ export default async function ArticlePage({ params }) {
     dateModified: a.lastUpdated || a.publishedDate,
     image: a.coverImage || `${SITE_URL}${OG_IMAGE.url}`,
     mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
-    author: { "@type": "Organization", name: "eBill Pakistan", url: `${SITE_URL}/` },
+    // A named Person (not the Organization) so the byline, the author page and
+    // the structured data all agree on who is accountable for this article.
+    author: {
+      "@type": "Person",
+      "@id": `${SITE_URL}/author/${author.slug}#person`,
+      name: author.name,
+      url: `${SITE_URL}/author/${author.slug}`,
+      jobTitle: author.role,
+    },
     publisher: {
       "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
       name: "eBill Pakistan",
+      url: `${SITE_URL}/`,
       logo: { "@type": "ImageObject", url: `${SITE_URL}/images/logo.png` },
     },
   };
@@ -108,12 +120,7 @@ export default async function ArticlePage({ params }) {
           <a href="/">Home</a> <span>/</span> <a href="/blog">Blog</a> <span>/</span> <span aria-current="page">{a.title}</span>
         </nav>
         <h1 lang={a.lang} dir={a.dir}>{a.h1}</h1>
-        <p className="blog-meta">
-          Published {formatDate(a.publishedDate)}
-          {a.lastUpdated && a.lastUpdated !== a.publishedDate && (
-            <> &nbsp;·&nbsp; Updated {formatDate(a.lastUpdated)}</>
-          )}
-        </p>
+        <Byline author={author} publishedDate={a.publishedDate} lastUpdated={a.lastUpdated} />
 
         <article className="prose" lang={a.lang} dir={a.dir}>{renderBody(a.content)}</article>
 
@@ -134,7 +141,20 @@ export default async function ArticlePage({ params }) {
           <a className="btn btn-primary" href="/">Check your bill now</a>
         </div>
 
-        <p className="legal-note"><a href="/blog">← Back to all guides</a></p>
+        <footer className="post-foot">
+          <div className="post-foot-author">
+            <p>
+              Written by <a href={`/author/${author.slug}`} rel="author">{author.name}</a>,{" "}
+              {author.role.toLowerCase()}.
+            </p>
+            <p>
+              Figures on this page are sourced and reviewed under our{" "}
+              <a href="/editorial-policy">editorial policy</a>. Spotted a mistake?{" "}
+              <a href="/contact">Tell us</a> and we&apos;ll fix it.
+            </p>
+          </div>
+          <p className="legal-note"><a href="/blog">← Back to all guides</a></p>
+        </footer>
       </div>
     </section>
   );

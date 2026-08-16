@@ -70,7 +70,9 @@ img { max-width: 100%; }
 .nav-links a:hover { color: var(--brand); }
 
 /* hamburger button (hidden on desktop) */
-.nav-toggle { display: none; background: none; border: 0; padding: 8px; margin: -8px; cursor: pointer; }
+/* min 44x44 touch target: the hamburger is the primary navigation control on a
+   phone, and 24x18 of icon inside 8px padding fell short of it. */
+.nav-toggle { display: none; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; background: none; border: 0; padding: 10px; margin: -10px; cursor: pointer; }
 .nav-bars { display: inline-block; width: 24px; height: 18px; position: relative; }
 .nav-bars span { position: absolute; left: 0; width: 100%; height: 2.5px; border-radius: 2px; background: var(--ink); transition: transform .2s, opacity .2s, top .2s; }
 .nav-bars span:nth-child(1) { top: 0; }
@@ -197,18 +199,21 @@ img { max-width: 100%; }
 .footer-grid { display: grid; grid-template-columns: 1.8fr 1.6fr 1fr 1fr 1fr; gap: 36px; padding-block: 56px 40px; }
 .footer .logo { color: #fff; margin-bottom: 14px; }
 .footer-brand .blurb { font-size: 14.5px; max-width: 320px; line-height: 1.65; margin: 0; }
-.footer-soon { display: inline-block; margin-top: 16px; font-size: 13px; font-weight: 600; color: #cdd6e4; background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .1); padding: 7px 13px; border-radius: 999px; }
+.footer-soon { display: inline-block; margin-top: 16px; font-size: 14px; font-weight: 600; color: #cdd6e4; background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .1); padding: 7px 13px; border-radius: 999px; }
 .footer-social { display: flex; gap: 10px; margin-top: 18px; }
 .footer-social a { display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .12); color: #cdd6e4; }
 .footer-social a:hover { color: #fff; background: rgba(255, 255, 255, .12); }
 .footer-social svg { width: 17px; height: 17px; }
-.footer h4 { color: #fff; font-size: 13px; letter-spacing: .6px; margin-bottom: 16px; text-transform: uppercase; }
+.footer h4 { color: #fff; font-size: 14px; letter-spacing: .6px; margin-bottom: 16px; text-transform: uppercase; }
 .footer ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 11px; font-size: 14px; }
+/* Footer links are the densest tap targets on the site. Padding grows the hit
+   area to 44px; the matching negative margin keeps the visual rhythm unchanged. */
+.footer ul li > a, .footer ul li > button { display: inline-block; padding: 11px 0; margin: -11px 0; }
 .footer ul.cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 11px 20px; }
 .footer a { color: #a9c4ba; transition: color .12s; }
 .footer a:hover { color: #fff; }
 .footer a.footer-more { color: #fff; font-weight: 700; }
-.footer-bottom { border-top: 1px solid rgba(255, 255, 255, .1); padding-block: 20px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 12.5px; color: #7fa093; }
+.footer-bottom { border-top: 1px solid rgba(255, 255, 255, .1); padding-block: 20px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 14px; color: #7fa093; }
 
 /* ---------- result page ---------- */
 .result-wrap { padding: 32px 0 50px; }
@@ -270,7 +275,7 @@ img { max-width: 100%; }
 .blog-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
 .blog-card h2 { font-size: 18px; color: var(--ink); margin: 0 0 8px; line-height: 1.3; }
 .blog-card p { font-size: 14.5px; color: var(--body); line-height: 1.6; margin: 8px 0 12px; }
-.blog-meta { font-size: 12.5px; color: var(--muted); }
+.blog-meta { font-size: 14px; color: var(--muted); }
 .blog-card .blog-more { font-size: 13px; font-weight: 600; color: var(--brand); }
 
 /* blog article CTA */
@@ -445,6 +450,19 @@ body:has(.admin-page) > .footer { display: none; }
 @media (max-width: 620px) {
   .search-grid, .search-grid.solo { grid-template-columns: 1fr; } /* stack field then button */
   .search-grid .btn { width: 100%; }
+
+  /* Vertical budget on a 360x780 phone: the lookup form is the product, and it
+     has to finish above the consent bar (~132px of the bottom). These rules only
+     tighten spacing — no font drops below the 14px floor and nothing is hidden. */
+  .hero { padding: 20px 0 20px; }
+  .hero h1 { font-size: 27px; margin: 14px auto 10px; letter-spacing: -.6px; }
+  .hero p.sub { margin-bottom: 18px; }
+  .search-card { padding: 16px; border-radius: var(--r); }
+  .search-grid { gap: 10px; }
+  .control select, .control input { height: 50px; }
+  .field label { margin-bottom: 4px; }
+  .search-foot { margin: 12px 2px 0; }
+  .trust { margin-top: 22px; gap: 10px 18px; }
   .features { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 28px 20px; }
   .footer-brand { grid-column: 1 / -1; }
@@ -487,3 +505,256 @@ body:has(.admin-page) > .footer { display: none; }
 /* ---- Urdu (RTL) article support ---- */
 .prose[dir="rtl"], h1[dir="rtl"] { text-align: right; }
 .prose[dir="rtl"] ol, .prose[dir="rtl"] ul { padding-right: 1.2em; padding-left: 0; }
+
+/* =========================================================================
+   Phase 1 additions. Mobile is the design target throughout: base styles are
+   the 360px layout and media queries only ADD columns at wider widths, so a
+   narrow screen can never inherit a desktop-shaped rule it cannot fit.
+   ========================================================================= */
+
+/* ---- unresolved {{VERIFY}} placeholder ---- */
+.verify-mark {
+  background: #fff3cd; color: #7a4b00; border: 1px dashed #e0a800;
+  border-radius: 6px; padding: 1px 7px; font-size: .93em; font-weight: 600;
+}
+
+/* ---- bylines & author identity ---- */
+.author-avatar { border-radius: 999px; object-fit: cover; flex: none; display: block; background: var(--brand-50); }
+/* font-size comes from the inline style in <AuthorAvatar> (scaled to the avatar),
+   because an em-relative size here inherits from the surrounding byline text and
+   collapses to ~5px inside a 12.5px meta line. */
+.author-avatar--mono {
+  display: grid; place-items: center; background: var(--brand-50); color: var(--brand-700);
+  font-family: var(--font-display), sans-serif; font-weight: 800; letter-spacing: .5px;
+  line-height: 1; border: 1px solid var(--line);
+}
+.byline { display: flex; flex-direction: column; gap: 8px; margin: 14px 0 22px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+.byline-who { display: inline-flex; align-items: center; gap: 11px; min-height: 44px; }
+.byline-who > span { display: flex; flex-direction: column; }
+.byline-name { font-family: var(--font-display), sans-serif; font-weight: 700; color: var(--ink); font-size: 15px; }
+.byline-who:hover .byline-name { color: var(--brand); }
+.byline-role { font-size: 14px; color: var(--muted); }
+.byline-dates { margin: 0; font-size: 14px; color: var(--muted); }
+.byline-compact { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 14px; color: var(--muted); margin: 8px 0 0; }
+.byline-compact .byline-name { font-size: 14px; }
+/* padding + matching negative margin: a 44px touch height without moving anything */
+.byline-compact a.byline-name { color: var(--brand-700); padding: 12px 2px; margin: -12px 0; }
+.byline-compact a.byline-name:hover { color: var(--brand); text-decoration: underline; }
+.byline-sep { color: var(--line); }
+
+.author-head { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; margin: 10px 0 6px; }
+.author-head h1 { margin: 0; }
+.author-role { margin: 4px 0 0; font-weight: 600; color: var(--brand-700); font-size: 15px; }
+.author-loc { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+.author-bio { font-size: 16.5px; line-height: 1.75; }
+.author-posts-head { font-size: 20px; margin: 34px 0 4px; }
+@media (min-width: 700px) { .author-head { flex-direction: row; align-items: center; gap: 22px; } }
+
+/* article footer: authorship + editorial policy on every post */
+.post-foot { margin-top: 26px; }
+.post-foot-author { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; }
+.post-foot-author p { margin: 0 0 8px; font-size: 14.5px; color: var(--body); line-height: 1.65; }
+.post-foot-author p:last-child { margin-bottom: 0; }
+.post-foot-author a { color: var(--brand); font-weight: 600; }
+
+/* blog cards became <article> (two real links), so restyle the inner anchors */
+.blog-card h2 { margin: 0 0 4px; }
+.blog-card h2 a, .blog-card h3 a { color: var(--ink); }
+.blog-card:hover h2 a, .blog-card:hover h3 a { color: var(--brand); }
+.blog-card h3 { font-size: 17px; color: var(--ink); margin: 0 0 4px; line-height: 1.35; }
+.blog-card .blog-more { display: inline-block; font-size: 14px; padding: 12px 2px; margin: -12px 0; }
+
+/* ---- annotated sample bill (/sample-bill-explained) ---- */
+.sample-warning {
+  background: #fff7ed; border: 1px solid #fed7aa; color: #7c2d12;
+  border-radius: var(--r-sm); padding: 14px 16px; margin: 18px 0 24px;
+  font-size: 15px; line-height: 1.65;
+}
+.sample-bill { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow-sm); overflow: hidden; }
+.sample-bill-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 16px 18px; border-bottom: 1px solid var(--line); background: #fbfcfe; }
+.sample-bill-top h2 { font-size: 17px; margin: 0; }
+.sample-stamp {
+  font-family: var(--font-display), sans-serif; font-weight: 800; font-size: 14px; letter-spacing: .12em;
+  color: #9b1c1c; background: #fef2f2; border: 1.5px solid #f6cccc; border-radius: 6px; padding: 4px 10px;
+}
+/* header block: definition rows that stack on a phone, two columns on desktop */
+.sample-head { margin: 0; padding: 14px 18px; border-bottom: 1px solid var(--line); display: grid; gap: 10px; }
+.sample-head-row { display: flex; flex-direction: column; gap: 2px; }
+.sample-head dt { font-size: 14px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: var(--muted); }
+.sample-head dd { margin: 0; font-size: 15px; color: var(--ink); font-weight: 600; word-break: break-word; }
+.sample-head dd.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .5px; }
+@media (min-width: 640px) { .sample-head { grid-template-columns: 1fr 1fr; gap: 12px 24px; } }
+
+/* line items: a LIST, not a table — so there is nothing to scroll sideways */
+.sample-lines { list-style: none; margin: 0; padding: 6px 0; }
+.sample-line { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 0 18px; border-bottom: 1px solid #f0f5f2; }
+.sample-lines li:last-child { border-bottom: 0; }
+/* padding lives on the anchor, not the row, so the tap target is the full 44px
+   row height rather than the 21px of text inside it */
+.sample-line a { display: block; color: var(--body); font-size: 14.5px; line-height: 1.45; padding: 13px 0; }
+.sample-line a:hover { color: var(--brand); text-decoration: underline; }
+.sample-amount { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ink); font-size: 15px; white-space: nowrap; }
+.sample-line--total { background: var(--brand-50); }
+.sample-line--total .sample-amount { color: var(--brand-700); }
+.sample-line--penalty .sample-amount { color: #9b1c1c; }
+.sample-line--tax a { color: var(--muted); }
+
+.sample-h2 { font-size: 22px; margin: 38px 0 6px; }
+.sample-lede { color: var(--body); font-size: 15.5px; margin: 0 0 18px; }
+
+/* annotation cards: one column on a phone, two from 900px */
+.field-cards { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 900px) { .field-cards { grid-template-columns: 1fr 1fr; } }
+.field-card { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--brand); border-radius: var(--r-sm); padding: 16px 18px; scroll-margin-top: 84px; }
+.field-card h3 { font-size: 16px; margin: 0 0 8px; }
+.field-card--tax { border-left-color: #d97706; }
+.field-card--total { border-left-color: var(--brand-700); }
+.field-card--penalty { border-left-color: #9b1c1c; }
+.field-card--status { border-left-color: #6741d9; }
+.field-card--id, .field-card--usage { border-left-color: #1f6feb; }
+.field-card--date { border-left-color: #0c8599; }
+.field-value { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin: 0 0 10px; }
+.field-value-tag { font-size: 14px; font-weight: 600; color: var(--muted); }
+.field-value-num { font-variant-numeric: tabular-nums; font-weight: 800; color: var(--ink); font-size: 16px; word-break: break-word; }
+.field-meaning { margin: 0; font-size: 15px; line-height: 1.7; color: var(--body); }
+
+.sample-math { list-style: none; padding: 0; margin: 14px 0 18px; border: 1px solid var(--line); border-radius: var(--r-sm); overflow: hidden; background: var(--card); }
+.sample-math li { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; padding: 11px 16px; border-bottom: 1px solid #f0f5f2; font-size: 15px; }
+.sample-math li:last-child { border-bottom: 0; }
+.sample-math b { font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink); }
+.sample-math-total { background: var(--brand-50); font-weight: 700; }
+.sample-math-total b { color: var(--brand-700); }
+
+.section-foot { text-align: center; margin: 26px auto 0; max-width: 640px; font-size: 15.5px; color: var(--body); }
+.section-foot a { color: var(--brand); font-weight: 600; }
+
+/* ---- cookie consent bar ---- */
+/* position:fixed => occupies no space in the flow => contributes zero CLS.
+   Anchored bottom and height-capped so it can never cover the lookup form,
+   which sits at the top of every page. */
+.cc {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 300;
+  background: #fff; border-top: 3px solid var(--brand);
+  box-shadow: 0 -18px 44px -20px rgba(7, 28, 19, .45);
+  max-height: 78vh; overflow-y: auto;
+  padding: 13px 16px calc(13px + env(safe-area-inset-bottom, 0px));
+  animation: cc-in .22s ease both;
+}
+@media (min-width: 560px) { .cc { padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0px)); } }
+@keyframes cc-in { from { transform: translateY(12px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .cc { animation: none; } }
+.cc-inner { max-width: var(--container); margin: 0 auto; display: flex; flex-direction: column; gap: 10px; }
+/* On a phone the heading is announced to screen readers but not drawn: every
+   pixel of banner height is a pixel of the lookup form it could cover. */
+.cc-copy h2 {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+.cc-copy p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--body); }
+.cc-copy a { color: var(--brand); font-weight: 600; text-decoration: underline; }
+/* the long-form wording is desktop-only; mobile gets the short version */
+.cc-long { display: none; }
+@media (min-width: 560px) {
+  .cc-copy h2 { position: static; width: auto; height: auto; margin: 0 0 6px; clip-path: none; white-space: normal; font-size: 16px; }
+  .cc-long { display: inline; }
+}
+
+.cc-prefs { border: 1px solid var(--line); border-radius: var(--r-sm); padding: 12px 14px; margin: 0; display: grid; gap: 12px; background: #fbfcfe; }
+.cc-prefs-legend { font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 0 4px; }
+.cc-pref { display: flex; gap: 11px; align-items: flex-start; cursor: pointer; min-height: 44px; }
+.cc-pref input { width: 22px; height: 22px; margin: 2px 0 0; flex: none; accent-color: var(--brand); }
+.cc-pref b { display: block; font-size: 14.5px; color: var(--ink); }
+.cc-pref em { display: block; font-style: normal; font-size: 13px; color: var(--muted); line-height: 1.55; margin-top: 2px; }
+.cc-pref--locked { opacity: .8; cursor: default; }
+
+/* Equal-weight actions: Reject is the same size and prominence as Accept, so
+   the "easy" path is not biased towards consenting. */
+/* Three equal columns on a phone rather than a 150px-tall stack. Reject sits
+   first and is exactly as large as Accept — refusing must not be the harder tap. */
+.cc-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.cc-actions:has(> :nth-child(2):last-child) { grid-template-columns: repeat(2, 1fr); }
+.cc-btn { width: 100%; min-height: 48px; font-size: 14px; padding-inline: 6px; }
+@media (min-width: 560px) {
+  .cc-actions { grid-auto-flow: column; grid-template-columns: none; justify-content: flex-end; gap: 10px; }
+  .cc-btn { width: auto; min-width: 150px; font-size: 15px; padding-inline: 24px; }
+}
+@media (min-width: 1000px) {
+  .cc-inner { flex-direction: row; align-items: center; gap: 24px; }
+  .cc-copy { flex: 1; }
+  .cc-actions { flex: none; }
+  .cc-prefs { flex-basis: 100%; order: 3; }
+}
+.cc-btn-more {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+@media (min-width: 560px) {
+  .cc-btn-more { position: static; width: auto; height: auto; margin: 0; clip-path: none; }
+}
+.cc-reopen {
+  background: none; border: 0; padding: 0; margin: 0; cursor: pointer;
+  font: inherit; color: inherit; text-align: left;
+}
+.cc-reopen:hover { color: #fff; }
+
+/* ---- contact page ---- */
+.contact-layout { display: grid; grid-template-columns: 1fr; gap: 34px; margin-top: 24px; }
+@media (min-width: 900px) { .contact-layout { grid-template-columns: 1.25fr 1fr; gap: 44px; } }
+.contact-form-col h2, .contact-details h2 { font-size: 20px; margin: 0 0 14px; }
+.contact-details h3 { font-size: 16px; margin: 26px 0 8px; }
+.contact-details p, .contact-list li { font-size: 15px; line-height: 1.7; color: var(--body); }
+.contact-details a { color: var(--brand); font-weight: 600; }
+.contact-list { padding-left: 20px; margin: 6px 0 0; }
+.contact-list li { margin: 7px 0; }
+.contact-address { font-style: normal; line-height: 1.7; }
+
+/* the form itself: labels ABOVE inputs, 16px text (iOS won't zoom), 48px targets */
+.cform { display: grid; gap: 18px; }
+.cform-field { display: flex; flex-direction: column; gap: 6px; }
+.cform-field label { font-size: 14px; font-weight: 700; color: var(--ink); }
+.cform-field input, .cform-field textarea, .cform-select select {
+  width: 100%; font-size: 16px; font-family: inherit; color: var(--ink);
+  background: #fbfcfe; border: 1.5px solid var(--line); border-radius: var(--r-sm);
+  padding: 13px 14px; min-height: 48px; transition: border .15s, box-shadow .15s;
+}
+.cform-field textarea { min-height: 140px; resize: vertical; line-height: 1.6; }
+.cform-field input:focus, .cform-field textarea:focus, .cform-select select:focus {
+  outline: none; border-color: var(--brand); background: #fff;
+  box-shadow: 0 0 0 4px rgba(22, 160, 61, .12);
+}
+.cform-field [aria-invalid="true"] { border-color: #d33; background: #fff8f8; }
+.cform-select { position: relative; }
+.cform-select select { appearance: none; padding-right: 40px; }
+.cform-select::after {
+  content: ""; position: absolute; right: 16px; top: 50%; width: 9px; height: 9px;
+  border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
+  transform: translateY(-65%) rotate(45deg); pointer-events: none;
+}
+.cform-hint { margin: 0; font-size: 14px; color: var(--muted); }
+.cform-error { margin: 0; padding: 12px 14px; border-radius: var(--r-sm); background: #fff5f5; border: 1px solid #f6cccc; color: #9b1c1c; font-size: 14.5px; }
+.cform-submit { width: 100%; min-height: 50px; font-size: 16px; }
+@media (min-width: 560px) { .cform-submit { width: auto; justify-self: start; padding-inline: 40px; } }
+.cform-privacy { margin: 0; font-size: 14px; color: var(--muted); }
+.cform-privacy a { color: var(--brand); font-weight: 600; }
+/* Honeypot: the standard visually-hidden clip pattern rather than a big negative
+   offset. It stays display:block (so bots that skip display:none still fill it)
+   but occupies 1px in place, so it can never extend the page box. */
+.cform-hp {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+/* the child must be sized too: overflow:hidden clips painting, not the box, and
+   a default-width input inside the 1px wrapper still measures ~174px wide. */
+.cform-hp label, .cform-hp input { display: block; width: 1px; height: 1px; min-height: 0; padding: 0; font-size: 16px; }
+.form-done { background: var(--brand-50); border: 1px solid var(--line); border-radius: var(--r); padding: 24px 22px; }
+.form-done h2 { font-size: 20px; margin: 0 0 8px; }
+.form-done p { font-size: 15.5px; line-height: 1.7; color: var(--body); margin: 0 0 10px; }
+.form-done-note { font-size: 14px; color: var(--muted); }
+.form-done a { color: var(--brand); font-weight: 600; }
+
+.contact-extra { margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--line); }
+.contact-extra ol, .contact-extra ul { padding-left: 20px; margin: 8px 0 14px; }
+.contact-extra li { font-size: 15.5px; line-height: 1.7; color: var(--body); margin: 10px 0; }
+
+.footer-address { font-style: normal; font-size: 14px; color: #7fa093; }
+.footer-address a { color: #a9c4ba; }

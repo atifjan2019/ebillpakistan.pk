@@ -3,6 +3,7 @@ import RefInput from "./RefInput";
 import CheckBillLoader from "./CheckBillLoader";
 import { DISCOS, hasLogo, discoLogo } from "../lib/discos";
 import { SITE_URL, HOME_URL, OG_IMAGE, TWITTER_SITE, SOCIAL } from "../lib/seo";
+import { BUSINESS } from "../lib/contact";
 
 const HOME_TITLE = "eBill Pakistan | Check Your Electricity Bill Online";
 const HOME_DESC =
@@ -79,6 +80,22 @@ export default async function Home({ searchParams }) {
         name: "eBill Pakistan",
         url: `${SITE_URL}/`,
         logo: `${SITE_URL}/images/logo.png`,
+        email: BUSINESS.email,
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: BUSINESS.address.street,
+          addressLocality: BUSINESS.address.locality,
+          addressRegion: BUSINESS.address.region,
+          postalCode: BUSINESS.address.postalCode,
+          addressCountry: BUSINESS.address.country,
+        },
+        contactPoint: {
+          "@type": "ContactPoint",
+          contactType: "customer support",
+          email: BUSINESS.email,
+          areaServed: "PK",
+          availableLanguage: ["en", "ur"],
+        },
         sameAs: [SOCIAL.facebook, SOCIAL.twitter],
       },
       {
@@ -191,6 +208,13 @@ export default async function Home({ searchParams }) {
             <div className="step"><span className="num">2</span><div className="ic">{I.grid}</div><h3>Pick your company</h3><p>Select your company from the list and type in your reference number. That&apos;s all we need.</p></div>
             <div className="step"><span className="num">3</span><div className="ic">{I.doc}</div><h3>There&apos;s your bill</h3><p>View it right away, save it as a PDF, or send it on WhatsApp in one tap.</p></div>
           </div>
+
+          <p className="section-foot">
+            Not sure what the lines on your bill mean? See our{" "}
+            <a href="/sample-bill-explained">annotated sample bill</a> — every field explained,
+            from the reference number and units consumed to FPA, GST and the late payment
+            surcharge.
+          </p>
         </div>
       </section>
 

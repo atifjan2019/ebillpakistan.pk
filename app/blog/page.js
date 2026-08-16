@@ -1,6 +1,7 @@
-import { formatDate } from "../../lib/articles";
 import { getAllPosts } from "../../lib/posts";
+import { authorFor } from "../../lib/authors";
 import { SITE_URL, buildMeta } from "../../lib/seo";
+import { BylineCompact } from "../Byline";
 
 // Static + revalidated on demand: /api/posts calls revalidatePath("/blog")
 // when a new post is published, so the index picks it up without a redeploy.
@@ -53,12 +54,20 @@ export default async function BlogIndex() {
 
         <div className="blog-list">
           {posts.map((a) => (
-            <a key={a.slug} className="blog-card" href={`/blog/${a.slug}`}>
-              <h2>{a.title}</h2>
-              <span className="blog-meta">{formatDate(a.publishedDate)}</span>
+            // An <article> rather than a wrapping <a>: the card carries two real
+            // links (the guide and its author), which cannot legally nest inside
+            // a single anchor.
+            <article key={a.slug} className="blog-card">
+              <h2><a href={`/blog/${a.slug}`}>{a.title}</a></h2>
+              <BylineCompact
+                author={authorFor(a)}
+                publishedDate={a.publishedDate}
+                lastUpdated={a.lastUpdated}
+                linked
+              />
               <p>{a.metaDescription}</p>
-              <span className="blog-more">Read guide →</span>
-            </a>
+              <a className="blog-more" href={`/blog/${a.slug}`}>Read guide →</a>
+            </article>
           ))}
         </div>
       </div>
