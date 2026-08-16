@@ -4,7 +4,7 @@ import { DISCOS, isValidRef } from "../../lib/discos";
 import { getIp, logBillCheck, rateLimitBill } from "../../lib/store";
 import { fetchBillJson } from "../../lib/pitc";
 import { normaliseBill } from "../../lib/billData";
-import { marginalRateFor, PROTECTED } from "../../lib/tariffs";
+import { PROTECTED, adjustmentsOn, categoryFor } from "../../lib/tariffs";
 import {
   anomalyCheck, chargeBreakdown, effectiveRate, largestSurcharge,
   monthOverMonth, protectedStatus, slabPosition, slabSaving,
@@ -98,6 +98,10 @@ export default async function Result({ searchParams }) {
   const breakdown = bill ? chargeBreakdown(bill) : null;
   const protectedInfo = bill ? protectedStatus(bill) : null;
   if (protectedInfo) protectedInfo.qualifyingNote = PROTECTED.qualifyingNote;
+  // The tariff code on the bill wins; units are only a fallback.
+  const billCategory = protectedInfo?.declared === true
+    ? "protected"
+    : bill ? categoryFor(bill.unitsConsumed) : null;
 
   return (
     <section className="result-wrap">
@@ -127,7 +131,8 @@ export default async function Result({ searchParams }) {
               breakdown={breakdown}
               largest={largestSurcharge(breakdown)}
               protectedInfo={protectedInfo}
-              saving={slabSaving(bill, slab, { marginalRateFor: (u) => marginalRateFor(disco, u) })}
+              saving={slabSaving(bill, slab, billCategory)}
+              adjustments={adjustmentsOn(new Date().toISOString())}
               effective={effectiveRate(bill)}
               anomaly={anomalyCheck(bill)}
               discoAbbr={info[0]}

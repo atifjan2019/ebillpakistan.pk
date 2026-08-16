@@ -35,6 +35,12 @@ export default async function sitemap() {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    {
+      url: `${BASE}/electricity-tariff`,
+      lastModified: UPDATED.info,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
     ...["about", "contact", "editorial-policy"].map((p) => ({
       url: `${BASE}/${p}`,
       lastModified: UPDATED.info,

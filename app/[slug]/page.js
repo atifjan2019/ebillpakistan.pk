@@ -157,7 +157,7 @@ export default async function CompanyPage({ params }) {
             distribution company alike. What {abbr} does is read your meter and bill you in the
             bands below.
           </p>
-          <TariffTable data={tariff} heading={`${abbr} domestic tariff bands`} />
+          <TariffTable data={tariff} heading={`${abbr} domestic tariff bands`} compact />
 
           <ComplaintChannels abbr={abbr} city={city} website={c.website} data={complaints} />
 

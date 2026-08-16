@@ -111,6 +111,7 @@ export default function RootLayout({ children }) {
                 <li><a href="/about">About</a></li>
                 <li><a href="/contact">Contact</a></li>
                 <li><a href="/sample-bill-explained">Sample bill explained</a></li>
+                <li><a href="/electricity-tariff">Electricity tariff 2026</a></li>
                 <li><a href="/#companies">All companies</a></li>
                 <li><a href="/#faq">FAQ</a></li>
               </ul>

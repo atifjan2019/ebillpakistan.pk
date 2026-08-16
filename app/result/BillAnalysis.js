@@ -14,7 +14,7 @@ const Card = ({ title, tone = "", children }) => (
 );
 
 export default function BillAnalysis({
-  slab, mom, breakdown, largest, protectedInfo, saving, effective, anomaly, discoAbbr,
+  slab, mom, breakdown, largest, protectedInfo, saving, effective, anomaly, adjustments, discoAbbr,
 }) {
   const any = slab || mom || breakdown || protectedInfo || saving || effective || anomaly;
   if (!any) return null;
@@ -86,8 +86,8 @@ export default function BillAnalysis({
                 This bill does not state a protected/unprotected code we can read. On this
                 month&apos;s <b>{fmtUnits(protectedInfo.units)}</b> alone you are{" "}
                 {protectedInfo.overThreshold ? "above" : "at or below"} the{" "}
-                {protectedInfo.threshold}-unit threshold — but status depends on several
-                consecutive months, not one.
+                {protectedInfo.threshold}-unit threshold — though status is assessed over a run of
+                billing cycles rather than a single month.
               </p>
             )}
             {protectedInfo.atRisk && (
@@ -96,6 +96,9 @@ export default function BillAnalysis({
                 {protectedInfo.threshold}-unit threshold. Going over it can cost you protected
                 status, and the lower rate that comes with it, from the next billing cycle.
               </p>
+            )}
+            {protectedInfo.carryForwardRule && (
+              <p className="an-note">{protectedInfo.carryForwardRule}</p>
             )}
             <p className="an-note">
               <Verify text={protectedInfo.qualifyingNote || ""} />
@@ -131,12 +134,47 @@ export default function BillAnalysis({
         )}
 
         {saving && (
-          <Card title="If you dropped below the boundary">
+          <Card title="If you dropped below the boundary" tone="good">
+            <p className="an-big">
+              {fmtMoney(saving.estimate)}<span>estimated saving on the energy charge</span>
+            </p>
             <p>
-              Cutting <b>{saving.unitsToDrop} units</b> would bring you under the band boundary. At
-              the verified marginal rate of Rs {saving.marginal}/unit that is roughly{" "}
-              <b>{fmtMoney(saving.estimate)}</b> off the energy charge — before tax, which scales
-              with it.
+              Cutting <b>{saving.unitsToDrop} units</b> would bring you to {saving.targetUnits} units,
+              under the band boundary.
+              {saving.repricesWholeMonth ? (
+                <>
+                  {" "}Domestic bills are not telescopic: every unit is charged at the rate of the
+                  band you reach, so crossing back down reprices the <b>whole month</b> — the energy
+                  charge falls from about {fmtMoney(saving.currentCharge)} to{" "}
+                  {fmtMoney(saving.targetCharge)}, not just the {saving.unitsToDrop} units you saved.
+                </>
+              ) : (
+                <>
+                  {" "}As a protected consumer you keep the benefit of one previous slab, so the
+                  energy charge falls from about {fmtMoney(saving.currentCharge)} to{" "}
+                  {fmtMoney(saving.targetCharge)}.
+                </>
+              )}
+            </p>
+            <p className="an-note">
+              Energy charge only, before tax — GST and duty are calculated on it, so the real saving
+              is larger. Rates from S.R.O. 279(I)/2026.
+            </p>
+          </Card>
+        )}
+
+        {adjustments?.length > 0 && (
+          <Card title="A tariff adjustment is live on this bill" tone={adjustments.some((a) => a.perUnit < 0) ? "good" : "warn"}>
+            {adjustments.map((a) => (
+              <p key={a.id}>
+                <b>{a.perUnit < 0 ? "Rebate" : "Surcharge"} of Rs {Math.abs(a.perUnit).toFixed(4)}/unit</b>{" "}
+                — {a.label}, applied to {a.monthsLabel} only.{" "}
+                <a href={a.url} target="_blank" rel="noopener noreferrer">{a.sro}</a>.
+              </p>
+            ))}
+            <p className="an-note">
+              Applied per unit on top of the slab rate, and it expires: a bill after that window will
+              not carry it. Lifeline and prepaid consumers are excluded.
             </p>
           </Card>
         )}

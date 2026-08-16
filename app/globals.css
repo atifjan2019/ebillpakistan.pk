@@ -938,3 +938,28 @@ body:has(.admin-page) > .footer { display: none; }
   .districts--mobile { display: none; }
   .districts--wide { display: block; }
 }
+
+/* ---- tariff table: verified rates + fixed charges + adjustments ---- */
+.tariff-tier-note { display: block; font-weight: 500; text-transform: none; letter-spacing: 0; font-size: 14px; color: var(--muted); margin-top: 2px; }
+.tariff-cards-note { font-size: 14px; color: var(--muted); margin: 0 0 8px; line-height: 1.5; }
+.tariff-cards-group li { flex-wrap: wrap; }
+.tariff-card-fixed { flex-basis: 100%; font-size: 14px; color: var(--muted); }
+.tariff-rules { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 10px; }
+.tariff-rules li { font-size: 15px; line-height: 1.65; color: var(--body); background: #f7faf8; border-left: 3px solid var(--brand); border-radius: 8px; padding: 11px 14px; }
+.tariff-adj { margin: 14px 0 0; border: 1px solid #fed7aa; background: #fff7ed; border-radius: var(--r-sm); padding: 13px 15px; }
+.tariff-adj h4 { font-size: 15px; margin: 0 0 8px; color: #7c2d12; }
+.tariff-adj ul { list-style: none; padding: 0; margin: 0 0 8px; display: grid; gap: 7px; }
+.tariff-adj li { font-size: 15px; line-height: 1.6; color: #7c2d12; }
+.tariff-adj a { color: #7c2d12; font-weight: 600; text-decoration: underline; }
+.tariff-adj p { font-size: 14px; color: #9a3412; margin: 0; }
+.tariff-compact-note { font-size: 15px; line-height: 1.7; color: var(--body); background: #f7faf8; border-left: 3px solid var(--brand); border-radius: 8px; padding: 12px 14px; margin: 14px 0 0; }
+.tariff-compact-note a { color: var(--brand); font-weight: 600; }
+.tariff-quote { margin: 12px 0; padding: 14px 16px; background: var(--brand-50); border-left: 4px solid var(--brand); border-radius: 8px; font-size: 15.5px; line-height: 1.7; color: var(--ink); }
+.sro-list { list-style: none; padding: 0; margin: 10px 0 14px; display: grid; gap: 8px; }
+@media (min-width: 620px) { .sro-list { grid-template-columns: 1fr 1fr; } }
+.sro-list li { font-size: 15px; color: var(--body); }
+.sro-list a { color: var(--brand); font-weight: 600; }
+/* Safety net: long unbreakable tokens (URLs, reference numbers, email addresses)
+   must never widen the page on a 360px screen. */
+.cs p, .cs-list li, .cc-head-office, .cc-offices-note, .tariff-compact-src { overflow-wrap: anywhere; }
+.cs-url { color: var(--brand); font-weight: 600; overflow-wrap: anywhere; }

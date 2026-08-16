@@ -1,41 +1,52 @@
 // Server component (no client JS). Renders a tariff dataset from lib/tariffs.js.
 //
-// The important behaviour: when no rate has been verified yet, this does NOT
-// render a price column full of em-dashes. A grid of blanks reads as an
-// abandoned page. Instead it presents the band STRUCTURE — which is real,
-// stable information a reader can use — and points at the official schedule for
-// the figures. When rates are filled in, the price column appears automatically.
-//
 // Layout: a semantic <table> above 640px, and the same rows as stacked cards
 // below it, so nothing ever scrolls sideways on a phone.
-import { fmtRate, hasVerifiedRates } from "../lib/tariffs";
+//
+// Where a company has no verified schedule of its own (AJK, which is billed by a
+// government department rather than a NEPRA licensee), this renders the reason
+// rather than borrowing the mainland figures.
+import {
+  ADJUSTMENTS, ADJUSTMENT_EXCLUDES, MINIMUM_CHARGE, SLAB_BENEFIT, fmtFixed, fmtRate, hasVerifiedRates,
+} from "../lib/tariffs";
 import { safe } from "../lib/verify";
 
-function Rows({ title, rows, priced }) {
+const GROUPS = [
+  ["Lifeline", "lifeline", "No fixed charge; a minimum monthly charge applies instead."],
+  ["Protected", "protected", "Gets the benefit of one previous slab."],
+  ["Unprotected", "unprotected", "Every unit is charged at the rate of the band reached."],
+];
+
+function Rows({ title, rows, note }) {
   return (
     <>
       <tr className="tariff-tier">
-        <th colSpan={priced ? 2 : 1}>{title}</th>
+        <th colSpan={3}>
+          {title} <span className="tariff-tier-note">{note}</span>
+        </th>
       </tr>
-      {rows.map(({ slab, rate }) => (
+      {rows.map(({ slab, rate, fixed }) => (
         <tr key={slab}>
           <td>{slab}</td>
-          {priced && <td>{fmtRate(rate)}</td>}
+          <td>{fmtRate(rate)}</td>
+          <td>{fixed == null ? "—" : `${fmtFixed(fixed)}/month`}</td>
         </tr>
       ))}
     </>
   );
 }
 
-function Cards({ title, rows, priced }) {
+function Cards({ title, rows, note }) {
   return (
     <div className="tariff-cards-group">
       <h4>{title}</h4>
+      <p className="tariff-cards-note">{note}</p>
       <ul>
-        {rows.map(({ slab, rate }) => (
+        {rows.map(({ slab, rate, fixed }) => (
           <li key={slab}>
             <span className="tariff-card-slab">{slab}</span>
-            {priced && <span className="tariff-card-rate">{fmtRate(rate)}</span>}
+            <span className="tariff-card-rate">{fmtRate(rate)}</span>
+            {fixed != null && <span className="tariff-card-fixed">+ {fmtFixed(fixed)}/month fixed</span>}
           </li>
         ))}
       </ul>
@@ -43,76 +54,150 @@ function Cards({ title, rows, priced }) {
   );
 }
 
-export default function TariffTable({ data, heading }) {
+export default function TariffTable({ data, heading, compact = false }) {
   if (!data) return null;
-  const { tiers, source, sourceUrl, effectiveFrom, notification, note, lastVerified } = data;
+  const { tiers, source, sourceUrl, htmlMirror, effectiveFrom, notification, note, lastVerified, tou, prepaid } = data;
   const priced = hasVerifiedRates(data);
 
-  const groups = [
-    ["Protected domestic", tiers.protected],
-    ["Unprotected domestic", tiers.unprotected],
-  ];
+  // No schedule of its own (AJK): say why, do not borrow another company's.
+  if (!priced) {
+    return (
+      <figure className="tariff" role="group" aria-label={heading || "Electricity tariff"}>
+        {heading && <figcaption className="tariff-heading">{heading}</figcaption>}
+        <p className="tariff-pending" role="note">
+          {note || "We have not verified a rate schedule for this supplier."} For the figures in
+          force, see the{" "}
+          <a href={sourceUrl} target="_blank" rel="noopener noreferrer">official source</a>, and{" "}
+          <a href="/editorial-policy">why we leave a rate blank</a> rather than estimate it.
+        </p>
+      </figure>
+    );
+  }
+
+  if (compact) {
+    const lo = tiers.protected[0];
+    const hi = tiers.unprotected[tiers.unprotected.length - 1];
+    const mid = tiers.unprotected[1];
+    return (
+      <div className="tariff-compact">
+        <p>
+          Domestic rates run from <strong>{fmtRate(lo.rate)}</strong> (protected, first 100 units) to{" "}
+          <strong>{fmtRate(hi.rate)}</strong> (unprotected, above 700), plus a fixed charge per
+          kilowatt of sanctioned load. The band most households sit in, 101–200 units unprotected, is{" "}
+          <strong>{fmtRate(mid.rate)}</strong>.
+        </p>
+        <p>
+          Crucially, billing is <strong>not telescopic</strong>: an unprotected consumer pays the
+          rate of the band their month reaches on <em>every</em> unit.{" "}
+          <a href="/electricity-tariff">
+            See the full schedule, fixed charges and the adjustment in force →
+          </a>
+        </p>
+        <p className="tariff-compact-src">
+          {source}, effective {effectiveFrom}. {safe(notification)}
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <figure className="tariff" role="group" aria-label={heading || "Electricity tariff bands"}>
+    <figure className="tariff" role="group" aria-label={heading || "Electricity tariff"}>
       {heading && <figcaption className="tariff-heading">{heading}</figcaption>}
 
-      {/* Task 2 de-duplication: the full explanation of why a band can be shown
-          without a price lives once, in /editorial-policy. Repeating it here
-          would put the same 60 words on all twelve DISCO pages. */}
-      {!priced && (
-        <p className="tariff-pending" role="note">
-          Bands only — see the{" "}
-          <a href={sourceUrl} target="_blank" rel="noopener noreferrer">official NEPRA schedule</a>{" "}
-          for rates, and <a href="/editorial-policy">why we leave them blank</a>.
-        </p>
-      )}
-
-      {/* table for tablet/desktop */}
       <table className="tariff-table">
         <thead>
           <tr>
             <th>Monthly usage band</th>
-            {priced && <th>Rate per unit</th>}
+            <th>Rate per unit</th>
+            <th>Fixed charge</th>
           </tr>
         </thead>
         <tbody>
-          {groups.map(([t, rows]) => (
-            <Rows key={t} title={t} rows={rows} priced={priced} />
+          {GROUPS.map(([label, key, n]) => (
+            <Rows key={key} title={label} rows={tiers[key]} note={n} />
           ))}
         </tbody>
       </table>
 
-      {/* stacked cards for phones */}
-      <div className="tariff-cards" aria-hidden="true">
-        {groups.map(([t, rows]) => (
-          <Cards key={t} title={t} rows={rows} priced={priced} />
+      <div className="tariff-cards">
+        {GROUPS.map(([label, key, n]) => (
+          <Cards key={key} title={label} rows={tiers[key]} note={n} />
         ))}
       </div>
+
+      {compact ? (
+        <p className="tariff-compact-note">
+          Domestic billing is <strong>not telescopic</strong> — for unprotected consumers every unit
+          is charged at the rate of the band the month reaches. That rule, the fixed-charge and
+          minimum-charge mechanics, Time-of-Use and pre-paid rates, and the quarterly adjustment
+          currently in force are all explained on our{" "}
+          <a href="/electricity-tariff">Pakistan electricity tariff guide</a>.
+        </p>
+      ) : (
+      <ul className="tariff-rules">
+        <li>
+          <strong>Not telescopic.</strong> {SLAB_BENEFIT.note} For everyone else, every unit is
+          charged at the rate of the band the month reaches — which is why crossing a boundary can
+          cost far more than the extra units.
+        </li>
+        <li>
+          <strong>Fixed charges</strong> are per kilowatt of sanctioned load, per month. Where they
+          apply, no minimum charge is added even if you use nothing. Where they do not (lifeline), a
+          minimum monthly charge of Rs {MINIMUM_CHARGE.singlePhase} single-phase or Rs{" "}
+          {MINIMUM_CHARGE.threePhase} three-phase applies instead.
+        </li>
+        {tou && (
+          <li>
+            <strong>5 kW and above</strong> is billed Time-of-Use: Rs {tou.peak.toFixed(2)}/unit peak,
+            Rs {tou.offPeak.toFixed(2)}/unit off-peak, fixed Rs {tou.fixed}/kW/month on 50% of
+            sanctioned load or MDI, whichever is higher.
+          </li>
+        )}
+        {prepaid && (
+          <li>
+            <strong>Pre-paid residential</strong>: Rs {prepaid.rate.toFixed(2)}/unit, fixed Rs{" "}
+            {prepaid.fixed}/kW/month.
+          </li>
+        )}
+      </ul>
+      )}
+
+      {!compact && ADJUSTMENTS.length > 0 && (
+        <div className="tariff-adj">
+          <h4>Adjustments applied on top, for limited periods</h4>
+          <ul>
+            {ADJUSTMENTS.map((a) => (
+              <li key={a.id}>
+                <strong>
+                  {a.perUnit < 0 ? "−" : "+"}Rs {Math.abs(a.perUnit).toFixed(4)}/unit
+                </strong>{" "}
+                — {a.label}, {a.monthsLabel}.{" "}
+                <a href={a.url} target="_blank" rel="noopener noreferrer">{a.sro}</a>
+              </li>
+            ))}
+          </ul>
+          <p>Excludes {ADJUSTMENT_EXCLUDES.join(", ")}. These expire — check the window against your billing month.</p>
+        </div>
+      )}
 
       <div className="tariff-src">
         <p>
           <strong>Source:</strong>{" "}
           <a href={sourceUrl} target="_blank" rel="noopener noreferrer">{source}</a>
+          {htmlMirror && (
+            <>
+              {" "}(cross-checked against{" "}
+              <a href={htmlMirror} target="_blank" rel="noopener noreferrer">IESCO&apos;s published tariff guide</a>)
+            </>
+          )}
         </p>
-        {/* Whole row omitted when the notification is still a {{VERIFY}} —
-            a "Notification:" label with nothing after it reads as broken. */}
-        {safe(notification) && (
-          <p><strong>Notification:</strong> {safe(notification)}</p>
-        )}
-        {effectiveFrom && (
-          <p><strong>Effective from:</strong> {effectiveFrom}</p>
-        )}
-        <p>
-          <strong>Rates checked by us:</strong>{" "}
-          {lastVerified || <em>not yet — bands only, see the note above</em>}
-        </p>
-        {note && <p className="tariff-note">{note}</p>}
+        {safe(notification) && <p><strong>Schedule:</strong> {safe(notification)}</p>}
+        {effectiveFrom && <p><strong>Effective from:</strong> {effectiveFrom}</p>}
+        {lastVerified && <p><strong>Checked by us:</strong> {lastVerified}</p>}
       </div>
 
-      {/* One line, not a paragraph: the full explanation is on the sample bill. */}
       <p className="tariff-foot">
-        FPA, adjustments and taxes are added on top —{" "}
+        FPA, duty, GST and the PTV fee are added on top —{" "}
         <a href="/sample-bill-explained">see a worked example</a>.
       </p>
     </figure>
