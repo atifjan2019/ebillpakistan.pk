@@ -463,11 +463,11 @@ body:has(.admin-page) > .footer { display: none; }
   .hero { padding: 20px 0 20px; }
   .hero h1 { font-size: 27px; margin: 14px auto 10px; letter-spacing: -.6px; }
   .hero p.sub { margin-bottom: 18px; }
-  .search-card { padding: 16px; border-radius: var(--r); }
+  .search-card { padding: 14px; border-radius: var(--r); }
   .search-grid { gap: 10px; }
   .control select, .control input { height: 50px; }
   .field label { margin-bottom: 4px; }
-  .search-foot { margin: 12px 2px 0; }
+  .search-foot { margin: 10px 2px 0; }
   .trust { margin-top: 22px; gap: 10px 18px; }
   .features { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 28px 20px; }
@@ -989,3 +989,4 @@ body:has(.admin-page) > .footer { display: none; }
 .billimg img { width: 100%; height: auto; border: 1px solid var(--line); border-radius: var(--r-sm); }
 .billimg figcaption { font-size: 14px; color: var(--muted); margin-top: 8px; }
 .billimg-slot { font-size: 14px; color: var(--muted); border: 1px dashed var(--line); border-radius: var(--r-sm); padding: 14px; }
+.lookup-error { max-width: 760px; margin: 0 auto 14px; background: #fff5f5; border: 1px solid #f6cccc; color: #9b1c1c; border-radius: var(--r-sm); padding: 12px 14px; font-size: 15px; line-height: 1.6; text-align: left; }

@@ -52,8 +52,11 @@ export default async function Result({ searchParams }) {
   const disco = (sp?.disco || "").toLowerCase();
   const ref = (sp?.reference || "").trim();
 
-  if (!isValidRef(ref)) redirect("/");
-  if (!DISCOS[disco]) redirect("/");
+  // A direct hit with a malformed reference used to redirect to "/" silently,
+  // leaving the visitor on the homepage with no idea what went wrong. Carry the
+  // reason so the homepage can say it.
+  if (!isValidRef(ref)) redirect(`/?e=${ref ? "badref" : "noref"}`);
+  if (!DISCOS[disco]) redirect("/?e=nodisco");
 
   const info = DISCOS[disco];
   const hdrs = await headers();

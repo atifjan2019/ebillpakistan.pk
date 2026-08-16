@@ -68,6 +68,12 @@ export default async function Home({ searchParams }) {
   const sp = await searchParams;
   const entries = Object.entries(DISCOS);
   const selected = (sp?.disco || "").toLowerCase();
+  const LOOKUP_ERRORS = {
+    badref: "That reference number doesn't look right. It is 8 to 14 digits, with no spaces or dashes — check it against the top-left of your bill.",
+    noref: "Enter the reference number printed at the top-left of your bill to check it.",
+    nodisco: "Choose the company printed on your bill first — a reference number only works on the company that issued it.",
+  };
+  const lookupError = LOOKUP_ERRORS[sp?.e] || null;
   const preset = DISCOS[selected] ? selected : "";
 
   const jsonLd = {
@@ -142,6 +148,10 @@ export default async function Home({ searchParams }) {
             No app to download, no account to make. Just pop in your reference number and we&apos;ll
             pull up your latest bill, ready to view, download or send on WhatsApp.
           </p>
+
+          {lookupError && (
+            <p className="lookup-error" role="alert">{lookupError}</p>
+          )}
 
           <form id="lookup" className="search-card" action="/result" method="get">
             <div className="search-grid">
