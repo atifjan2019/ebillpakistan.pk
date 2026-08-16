@@ -110,7 +110,10 @@ export default async function CompanyPage({ params }) {
               </div>
               <button type="submit" className="btn btn-primary"><Search /> Check {abbr} Bill</button>
             </div>
-            <p className="search-foot">Your 14-digit reference number is printed at the top-left of your {abbr} bill.</p>
+            <p className="search-foot">
+              <span className="only-wide">Your 14-digit reference number is printed at the top-left of your {abbr} bill.</span>
+              <span className="only-narrow">Reference number: top-left of your {abbr} bill.</span>
+            </p>
             <CheckBillLoader />
           </form>
         </div>

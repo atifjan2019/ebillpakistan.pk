@@ -67,12 +67,18 @@ export default function CookieConsent() {
               parties, prior visits, opt-out links — lives in the privacy policy. */}
           <p id="cc-desc">
             {/* Both halves are complete sentences, so hiding the first on mobile
-                still leaves text that starts with a capital letter. */}
+                still leaves text that starts with a capital letter. The mobile
+                half is held to two lines at 360px on purpose: banner height is
+                what determines the clearance above the Check Bill button. */}
             <span className="cc-long">
-              Checking your bill is free and always will be — advertising pays for it.{" "}
+              Checking your bill is free and always will be — advertising pays for it. Ads here use
+              cookies from Google and other partners, based on your visits to this and other sites.
+              Nothing loads until you accept.{" "}
             </span>
-            Ads here use cookies from Google and other partners, based on your visits to this and
-            other sites. Nothing loads until you accept. <a href="/privacy">Privacy policy</a>.
+            <span className="cc-short">
+              Ads use cookies from Google and partners — nothing loads until you accept.{" "}
+            </span>
+            <a href="/privacy">Privacy policy</a>.
           </p>
         </div>
 

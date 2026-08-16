@@ -158,7 +158,11 @@ export default async function Home({ searchParams }) {
               </div>
               <button type="submit" className="btn btn-primary">{I.search} Check Bill</button>
             </div>
-            <p className="search-foot">{I.shield} Pick your company, then enter the reference number printed at the top-left of your bill.</p>
+            <p className="search-foot">
+              {I.shield}
+              <span className="only-wide">Pick your company, then enter the reference number printed at the top-left of your bill.</span>
+              <span className="only-narrow">Reference number: top-left of your bill.</span>
+            </p>
             <CheckBillLoader />
           </form>
 
