@@ -760,9 +760,155 @@ body:has(.admin-page) > .footer { display: none; }
 .form-done-note { font-size: 14px; color: var(--muted); }
 .form-done a { color: var(--brand); font-weight: 600; }
 
+/* =========================================================================
+   Phase 2 — parsed bill on /result, analysis modules, tariff cards.
+   Mobile-first: no <table> anywhere in the bill or the analysis, so there is
+   nothing that can scroll sideways at 360px.
+   ========================================================================= */
+
+/* ---- the parsed bill ---- */
+.bv-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 14px 18px; border-bottom: 1px solid var(--line); background: #fbfcfe; }
+.bv-co { font-family: var(--font-display), sans-serif; font-weight: 800; color: var(--ink); font-size: 16px; }
+.bv-month { display: block; font-size: 14px; color: var(--muted); }
+.bv-headline { padding: 20px 18px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; }
+.bv-headline-label { font-size: 14px; color: var(--muted); font-weight: 600; }
+.bv-headline-amount { font-family: var(--font-display), sans-serif; font-size: clamp(30px, 8vw, 40px); font-weight: 800; color: var(--ink); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.bv-headline-due { font-size: 15px; color: var(--body); }
+.bv-headline-due b { color: var(--ink); }
+.bv-headline-after { font-size: 14px; color: #9b1c1c; }
+
+.bv-grid { margin: 0; padding: 14px 18px; display: grid; gap: 12px; }
+@media (min-width: 640px) { .bv-grid { grid-template-columns: 1fr 1fr; gap: 14px 26px; } }
+.bv-row { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.bv-row dt { font-size: 14px; font-weight: 700; color: var(--muted); }
+.bv-row dd { margin: 0; font-size: 15.5px; color: var(--ink); overflow-wrap: anywhere; }
+.bv-row dd.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .4px; }
+
+.bv-charges { border-top: 1px solid var(--line); padding: 16px 18px 6px; }
+.bv-charges h3 { font-size: 16px; margin: 0 0 10px; }
+.bv-lines { list-style: none; margin: 0 0 12px; padding: 0; }
+.bv-line { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; padding: 10px 0; border-bottom: 1px solid #f0f5f2; font-size: 15px; }
+.bv-line:last-child { border-bottom: 0; }
+.bv-line-label { color: var(--body); }
+.bv-line-amt { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ink); white-space: nowrap; }
+.bv-line--tax .bv-line-label { color: var(--muted); }
+.bv-line--total { border-top: 2px solid var(--line); margin-top: 4px; padding-top: 12px; font-weight: 700; }
+.bv-line--total .bv-line-amt { color: var(--brand-700); font-size: 17px; }
+
+.bill-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0 8px; }
+.bill-actions .btn { width: 100%; min-height: 48px; }
+.bill-actions .btn-wa { grid-column: 1 / -1; }
+@media (min-width: 620px) {
+  .bill-actions { display: flex; justify-content: flex-end; }
+  .bill-actions .btn { width: auto; }
+  .bill-actions .btn-wa { grid-column: auto; }
+}
+
+/* ---- analysis modules ---- */
+.analysis { margin-top: 34px; }
+.analysis-head h2 { font-size: clamp(21px, 4.4vw, 27px); margin: 0 0 6px; }
+.analysis-head p { color: var(--body); font-size: 15.5px; margin: 0 0 18px; }
+.an-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 760px) { .an-grid { grid-template-columns: 1fr 1fr; } }
+.an-card { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--brand); border-radius: var(--r-sm); padding: 16px 18px; }
+.an-card--warn { border-left-color: #d97706; }
+.an-card--good { border-left-color: var(--brand); }
+.an-card h3 { font-size: 16px; margin: 0 0 8px; }
+.an-card p { font-size: 15px; line-height: 1.65; color: var(--body); margin: 0 0 8px; }
+.an-card p:last-child { margin-bottom: 0; }
+.an-big { font-family: var(--font-display), sans-serif; font-size: 24px; font-weight: 800; color: var(--ink); line-height: 1.2; }
+.an-big span { display: block; font-size: 14px; font-weight: 600; color: var(--muted); }
+.an-note { font-size: 14px; color: var(--muted); }
+.an-alert { background: #fff7ed; border: 1px solid #fed7aa; color: #7c2d12; border-radius: 8px; padding: 10px 12px; font-size: 14.5px; }
+
+.an-breakdown { margin-top: 22px; background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; }
+.an-breakdown h3 { font-size: 17px; margin: 0 0 12px; }
+.an-lines { list-style: none; margin: 0; padding: 0; }
+.an-line { padding: 11px 0; border-bottom: 1px solid #f0f5f2; }
+.an-line:last-child { border-bottom: 0; }
+.an-line-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.an-line-top a { color: var(--body); font-size: 15px; padding: 4px 0; }
+.an-line-top a:hover { color: var(--brand); text-decoration: underline; }
+.an-line-amt { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ink); white-space: nowrap; font-size: 15px; }
+.an-line-amt em { font-style: normal; color: var(--muted); font-weight: 600; margin-left: 8px; font-size: 14px; }
+.an-bar { height: 5px; border-radius: 999px; background: #eef4ef; margin-top: 7px; overflow: hidden; }
+.an-bar span { display: block; height: 100%; background: var(--brand); border-radius: 999px; }
+.an-line--tax .an-bar span { background: #d97706; }
+.an-line--carry .an-bar span { background: #9b1c1c; }
+.an-largest { margin: 14px 0 0; font-size: 15px; line-height: 1.65; color: var(--body); background: var(--brand-50); border-radius: 10px; padding: 12px 14px; }
+.an-largest a { color: var(--brand-700); font-weight: 600; }
+.an-foot { margin-top: 16px; font-size: 14px; color: var(--muted); line-height: 1.65; }
+.an-foot a { color: var(--brand); font-weight: 600; }
+
+.orig-bill { margin-top: 22px; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 4px 16px; }
+.orig-bill summary { cursor: pointer; padding: 13px 0; font-weight: 600; color: var(--brand-700); font-size: 15px; }
+.orig-bill p { font-size: 14.5px; color: var(--body); margin: 0 0 12px; }
+
+/* ---- fallback (no bill retrieved) ---- */
+.fallback-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 22px 20px; box-shadow: var(--shadow-sm); }
+.fallback-head { display: flex; gap: 14px; align-items: flex-start; }
+.fallback-ic { flex: none; width: 40px; height: 40px; border-radius: 11px; background: #fde2e2; color: #9b1c1c; display: grid; place-items: center; }
+.fallback-head h2 { font-size: 19px; margin: 0 0 6px; }
+.fallback-head p { font-size: 15px; line-height: 1.7; color: var(--body); margin: 0; }
+.fallback-actions { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 18px 0 12px; }
+.fallback-actions .btn { width: 100%; min-height: 48px; }
+@media (min-width: 560px) { .fallback-actions { display: flex; } .fallback-actions .btn { width: auto; } }
+.fallback-ref { font-size: 14px; color: var(--muted); margin: 0 0 8px; overflow-wrap: anywhere; }
+.fallback-help { font-size: 14px; color: var(--muted); margin: 0; }
+.fallback-help a { color: var(--brand); font-weight: 600; }
+
+/* ---- tariff: table above 640px, stacked cards below ---- */
+.tariff-cards { display: grid; gap: 14px; }
+.tariff-cards-group h4 { font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 0 8px; }
+.tariff-cards-group ul { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: var(--r-sm); overflow: hidden; }
+.tariff-cards-group li { display: flex; justify-content: space-between; gap: 12px; padding: 11px 14px; border-bottom: 1px solid #f0f5f2; background: #fff; font-size: 15px; }
+.tariff-cards-group li:last-child { border-bottom: 0; }
+.tariff-card-slab { color: var(--body); }
+.tariff-card-rate { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ink); }
+@media (min-width: 641px) { .tariff-cards { display: none; } }
+@media (max-width: 640px) { .tariff-table { display: none; } }
+.tariff-src { margin: 12px 0 0; padding: 12px 14px; background: #f7faf8; border: 1px solid var(--line); border-radius: var(--r-sm); }
+.tariff-src p { margin: 0 0 5px; font-size: 14px; color: var(--body); line-height: 1.6; }
+.tariff-src p:last-child { margin-bottom: 0; }
+.tariff-src a { color: var(--brand); font-weight: 600; }
+.tariff-note { color: var(--muted); }
+
+/* ---- print: just the bill ---- */
+@media print {
+  .nav, .footer, .cc, .bill-actions, .analysis, .orig-bill, .crumb, .result-head .btn { display: none !important; }
+  body { background: #fff; }
+  #bill-print-area { border: 0; box-shadow: none; }
+  .bv-grid { grid-template-columns: 1fr 1fr; }
+}
+
 .contact-extra { margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--line); }
 .contact-extra ol, .contact-extra ul { padding-left: 20px; margin: 8px 0 14px; }
 .contact-extra li { font-size: 15.5px; line-height: 1.7; color: var(--body); margin: 10px 0; }
 
 .footer-address { font-style: normal; font-size: 14px; color: #7fa093; }
 .footer-address a { color: #a9c4ba; }
+
+/* ---- per-DISCO complaint channels (lib/discoContent.js) ---- */
+.cc-block { margin-top: 34px; }
+.cc-block h2 { font-size: 22px; margin: 0 0 8px; }
+.cc-block h3 { font-size: 17px; margin: 24px 0 8px; }
+.cc-block > p { font-size: 16px; color: var(--body); line-height: 1.7; margin: 0 0 14px; }
+.cc-channels { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 4px 0 6px; }
+@media (min-width: 760px) { .cc-channels { grid-template-columns: 1fr 1fr; } }
+.cc-channel { display: flex; flex-direction: column; gap: 3px; background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: var(--r-sm); padding: 13px 15px; }
+.cc-channel--primary { border-left-color: var(--brand); background: var(--brand-50); }
+.cc-channel-k { font-size: 14px; font-weight: 700; color: var(--muted); }
+.cc-channel-v { font-size: 18px; font-weight: 700; color: var(--ink); overflow-wrap: anywhere; }
+.cc-channel-v a { color: var(--brand-700); display: inline-block; padding: 6px 0; min-height: 34px; }
+.cc-channel-v a:hover { color: var(--brand); text-decoration: underline; }
+.cc-channel-n { font-size: 14px; color: var(--muted); line-height: 1.55; }
+.cc-head-office { font-size: 16px; color: var(--body); line-height: 1.7; margin: 0; }
+.cc-offices { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 10px; }
+@media (min-width: 760px) { .cc-offices { grid-template-columns: 1fr 1fr; } }
+.cc-offices li { display: flex; flex-direction: column; gap: 2px; border: 1px solid var(--line); border-radius: var(--r-sm); padding: 12px 14px; background: #fff; }
+.cc-office-name { font-weight: 700; color: var(--ink); font-size: 15px; }
+.cc-office-phone a { color: var(--brand-700); font-weight: 600; font-size: 16px; display: inline-block; padding: 8px 0; min-height: 40px; }
+.cc-office-covers { font-size: 14px; color: var(--muted); line-height: 1.5; }
+.cc-offices-note { font-size: 15px; color: var(--body); line-height: 1.7; margin: 12px 0 0; }
+.cc-provenance { font-size: 14px; color: var(--muted); line-height: 1.65; margin: 16px 0 0; padding-top: 12px; border-top: 1px solid var(--line); }
+.cc-provenance a { color: var(--brand); font-weight: 600; }

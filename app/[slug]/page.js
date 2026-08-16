@@ -5,7 +5,11 @@ import { notFound } from "next/navigation";
 import { DISCOS, hasLogo, discoLogo } from "../../lib/discos";
 import { COMPANIES, faqsFor, slugFor, codeFromSlug, seoFor } from "../../lib/companies";
 import { guidesFor } from "../../lib/articles";
+import { complaintsFor } from "../../lib/discoContent";
+import { tariffFor } from "../../lib/tariffs";
 import { SITE_URL, HOME_URL, buildMeta } from "../../lib/seo";
+import ComplaintChannels from "../ComplaintChannels";
+import TariffTable from "../TariffTable";
 
 export const dynamicParams = false;
 
@@ -50,6 +54,8 @@ export default async function CompanyPage({ params }) {
   const year = new Date().getFullYear();
   const others = Object.keys(DISCOS).filter((x) => x !== code);
   const guides = guidesFor(code);
+  const complaints = complaintsFor(code);
+  const tariff = tariffFor(code);
 
   const faqLd = {
     "@context": "https://schema.org",
@@ -155,37 +161,21 @@ export default async function CompanyPage({ params }) {
             ))}
           </div>
 
-          <h2>Tariff &amp; billing information</h2>
+          {/* The generic explainer that used to be restated in full on all 12
+              pages is now two sentences plus a link out to the guide (B4). */}
+          <h2>{abbr} tariff bands</h2>
           <p>
-            Your {abbr} tariff is set by the National Electric Power Regulatory Authority
-            (NEPRA), not by {abbr} itself. Domestic consumers are billed on a slab system, where
-            the per-unit rate steps up as monthly usage crosses thresholds such as 100, 200 and
-            300 units (with higher slabs beyond 300). The more units you use, the higher the rate
-            applied to the upper portion. For the current approved rates, see the{" "}
-            <a href="https://www.nepra.org.pk" target="_blank" rel="noopener noreferrer">official NEPRA tariff page</a>.
+            {abbr} does not set your rate: tariffs are notified by NEPRA and applied by every
+            distribution company alike. What {abbr} does is read your meter and bill you in the
+            bands below — our{" "}
+            <a href="/blog/unit-slabs-fuel-price-adjustment-taxes-explained">
+              guide to slabs, FPA &amp; taxes
+            </a>{" "}
+            explains how a total is built from them.
           </p>
-          <p>
-            {abbr} issues bills monthly, based on the reading taken from your meter. NEPRA also
-            recognises protected domestic consumers (those who keep usage below a set threshold
-            over several consecutive months), who are charged lower rates than unprotected
-            consumers. A bill can additionally carry a fixed or minimum charge, a TV licence fee and
-            applicable taxes. For a plain-language breakdown of how slabs, fuel price adjustment and
-            taxes combine, see our{" "}
-            <a href="/blog/unit-slabs-fuel-price-adjustment-taxes-explained">guide to unit slabs, FPA &amp; taxes</a>.
-          </p>
+          <TariffTable data={tariff} heading={`${abbr} domestic tariff bands`} />
 
-          <h2 id="helpline">{abbr} helpline &amp; contact ({city})</h2>
-          <dl className="contact-dl">
-            <dt>Complaint helpline</dt>
-            <dd>118 — the national power-distribution complaint helpline used across Pakistan, including {abbr}.</dd>
-            <dt>{abbr} offices &amp; customer service in {city}</dt>
-            <dd>
-              For {abbr}&apos;s verified {city}-area office numbers, complaint centres and regional
-              contacts, use the{" "}
-              <a href={c.website} target="_blank" rel="noopener noreferrer">official {abbr} website</a>.
-              We link to the official source rather than publish numbers that may change.
-            </dd>
-          </dl>
+          <ComplaintChannels abbr={abbr} city={city} website={c.website} data={complaints} />
 
           <h3>Understanding your {abbr} bill</h3>
           <p>
