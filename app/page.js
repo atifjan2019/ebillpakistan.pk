@@ -5,6 +5,8 @@ import { DISCOS, hasLogo, discoLogo } from "../lib/discos";
 import { SITE_URL, HOME_URL, OG_IMAGE, TWITTER_SITE, SOCIAL } from "../lib/seo";
 import { BUSINESS } from "../lib/contact";
 
+export const HOME_UPDATED = "2026-08-16";
+
 const HOME_TITLE = "eBill Pakistan | Check Your Electricity Bill Online";
 const HOME_DESC =
   "Check your electricity bill online for LESCO, IESCO, MEPCO, FESCO and all 12 major DISCOs in Pakistan. Free, instant, no sign-up needed.";
@@ -50,11 +52,16 @@ const I = {
 };
 
 const FAQS = [
-  ["Where do I find my reference number?", "Your 14-digit reference number is printed at the top-left of your paper electricity bill, usually labelled “Reference No”. You can also use your account number."],
-  ["Is eBill Pakistan free to use?", "Yes, checking and downloading your bill is completely free, with no sign-up required."],
-  ["Which companies are supported?", "All major Pakistani distribution companies: LESCO, IESCO, MEPCO, FESCO, GEPCO, HESCO, PESCO, QESCO, SEPCO, TESCO, HAZECO and AJK."],
-  ["Is my information safe?", "We fetch your bill on our own server and only ever look up the reference number you enter. We don’t store your bill or share your data."],
-  ["Can I print or download my bill?", "Yes. Once your bill loads you can print it or save it as a PDF in a single click."],
+  ["Where do I find my reference number?", "Top-left of your paper bill, under the name and address block, labelled Reference No. or Consumer No. It is normally the longest run of digits on the page, and it never changes — note it once and you can check every month without the paper copy."],
+  ["Do I need an account to check my bill?", "No. There is no sign-up, no password and no app to install. The reference number is the only thing required, and nothing about your bill is kept after the page is served."],
+  ["Which companies are supported?", "All twelve: LESCO, IESCO, MEPCO, FESCO, GEPCO, HESCO, PESCO, QESCO, SEPCO, TESCO, HAZECO and the AJK Electricity Department. Pick the one printed on your bill rather than guessing from your city — supply boundaries do not follow city limits."],
+  ["Why is my bill so much higher than last month for a few extra units?", "Almost always a slab crossing. Domestic billing is not calculated band by band for unprotected consumers: cross a boundary and every unit reprices at the higher rate, not just the units above the line. The tariff guide works through exactly what that costs."],
+  ["What is the difference between a protected and unprotected consumer?", "Protected consumers keep their monthly usage at or below 200 units and are charged materially lower rates. Unprotected consumers pay the standard schedule. Your tariff code is printed on the bill, and the gap between the two is large enough to be worth watching."],
+  ["Why are there two totals on my bill?", "One is payable within the due date, the other after it — the second includes the late payment surcharge. Check which one a counter or app is asking for before you pay."],
+  ["How long after paying does it show as paid?", "One to two working days. Counter payments at a bank branch post fastest; wallet and app payments take longer to reach the billing system. A bill still showing as due the morning after you paid is normal — keep the receipt until it clears."],
+  ["Can I get a bill for an earlier month?", "Not from the online lookup, which returns your current bill only. For a past month you need a duplicate from your distribution company. Downloading the PDF each month is the easier habit."],
+  ["Is my information safe here?", "The reference number you type is used once to fetch your bill and is not stored in a database. We do not create an account, we do not keep your bill, and we never ask for a CNIC or an OTP — no legitimate bill service will."],
+  ["Do you take payment?", "No. We show you the bill so you have the amount and reference number ready; you pay through JazzCash, Easypaisa, a bank app, an ATM or a bank counter. We are independent of PITC and of every distribution company."],
 ];
 
 export default async function Home({ searchParams }) {
@@ -235,6 +242,90 @@ export default async function Home({ searchParams }) {
             <div className="feature"><div className="ic">{I.lock}</div><h3>Yours stays yours</h3><p>We only ever look up the number you type. Nothing is saved or shared.</p></div>
             <div className="feature"><div className="ic">{I.doc}</div><h3>Easy to keep</h3><p>Download a tidy one-page PDF, or share it on WhatsApp in a tap.</p></div>
           </div>
+        </div>
+      </section>
+
+
+      {/* ---------- how billing works: substantive content below the form ---------- */}
+      <section className="section home-explain">
+        <div className="container article">
+          <p className="page-updated">Last updated: {HOME_UPDATED}</p>
+          <h2>How electricity billing works in Pakistan</h2>
+          <p>
+            Every month a meter reader from your distribution company records the reading on your
+            meter. The difference between that reading and the previous month&apos;s is your{" "}
+            <strong>units consumed</strong>, and almost everything on the bill follows from it. That
+            figure goes into the national billing system run by the Power Information Technology
+            Company, which applies the tariff your connection sits on, adds the adjustments and taxes
+            in force that month, and produces the bill delivered to your door — and the identical
+            copy you can pull up here with the reference number.
+          </p>
+          <p>
+            The bill carries two totals and one date that matters: an amount payable{" "}
+            <strong>within</strong> the due date, a higher amount payable <strong>after</strong> it,
+            and the due date itself. The gap between the two is the late payment surcharge. Payment
+            channels credit on their own timetable — a counter payment usually posts the same working
+            day, a wallet or app payment takes one to two — so paying on the due date itself is
+            cutting it fine.
+          </p>
+
+          <h2>The one rule that explains most surprising bills</h2>
+          <p>
+            Domestic billing in Pakistan is <strong>not telescopic</strong>. For an unprotected
+            consumer, every unit is charged at the rate of the band the month reaches — not the first
+            hundred at one rate and the next hundred at another. Crossing a band boundary therefore
+            reprices the entire month, which is why a handful of extra units can add far more to a
+            bill than they appear to be worth. Only protected consumers get the benefit of one
+            previous band, and lifeline consumers get none.
+          </p>
+          <p>
+            Our <a href="/electricity-tariff">tariff guide</a> has the full notified schedule, the
+            fixed charges, the adjustment currently in force and a worked example of what crossing
+            the 200-unit line actually costs.
+          </p>
+
+          <h2>Protected and lifeline consumers</h2>
+          <p>
+            Domestic consumers are split by usage. <strong>Lifeline</strong> consumers use very
+            little and pay the lowest rates with no fixed charge. <strong>Protected</strong>{" "}
+            consumers keep monthly usage at or below 200 units and pay materially less per unit than{" "}
+            <strong>unprotected</strong> consumers on the standard schedule. Your status is printed
+            on the bill as a tariff code, and losing it is expensive — the{" "}
+            <a href="/electricity-tariff">tariff guide</a> sets out the thresholds and what is and is
+            not established about how status is assessed.
+          </p>
+
+          <h2>What the lines on your bill mean</h2>
+          <p>
+            Only one line on a bill is the electricity itself. The rest are the fuel price adjustment,
+            any quarterly adjustment in force, a fixed charge tied to your sanctioned load, meter
+            rent, electricity duty, GST and the PTV licence fee. On a typical domestic bill the energy
+            charge is around seven rupees in every ten, which is why cutting usage reduces a bill by
+            less than people expect — the flat items do not move at all. Our{" "}
+            <a href="/sample-bill-explained">annotated sample bill</a> walks through every field on a
+            complete bill, including both totals and the late payment surcharge.
+          </p>
+
+          <h2>The twelve distribution companies</h2>
+          <p>
+            Pakistan&apos;s power distribution outside Karachi is divided between eleven distribution
+            companies and one government department. The company that bills you is printed on your
+            bill — worth checking rather than assuming, because supply boundaries do not follow city
+            or district limits, and consumers near an edge frequently guess wrong. Each page below
+            carries that company&apos;s own complaint numbers, coverage, bill layout and payment
+            channels.
+          </p>
+          <div className="home-disco-list">
+            {entries.map(([code, [abbr, city]]) => (
+              <a key={code} href={`/${code}-bill-check`}>
+                <b>{abbr}</b> <span>{city}</span>
+              </a>
+            ))}
+          </div>
+          <p className="home-explain-foot">
+            Not sure which is yours? <a href="/blog/what-is-disco-pakistan-electricity">
+            What a DISCO is and which one serves you</a> explains how the map is divided.
+          </p>
         </div>
       </section>
 

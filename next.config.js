@@ -14,8 +14,16 @@ const nextConfig = {
   // Also update NEXT_PUBLIC_SITE_URL in Vercel environment variables to
   // "https://www.ebillpakistan.pk" so the build-time default matches.
 
+  // Merged blog posts (Phase 3). Each thin post now 301s to the guide that
+  // absorbed it. Single hop: destination is a live URL, never another redirect.
   async redirects() {
     return [
+      ...[
+        ["/blog/how-to-find-ajk-electricity-reference-number", "/blog/how-to-find-reference-number-on-electricity-bill"],
+        ["/blog/ajk-electricity-bill-online-check", "/blog/how-to-check-electricity-bill-online-pakistan"],
+        ["/blog/how-to-check-electricity-bill-status", "/blog/how-to-check-electricity-bill-online-pakistan"],
+        ["/blog/how-to-download-print-electricity-bill-duplicate", "/blog/how-to-check-electricity-bill-online-pakistan"],
+      ].map(([source, destination]) => ({ source, destination, permanent: true })),
       {
         // Browsers and crawlers request /favicon.ico directly regardless of
         // <link rel="icon"> in <head>. Redirect permanently to the site logo

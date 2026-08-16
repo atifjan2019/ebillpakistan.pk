@@ -4,6 +4,7 @@ import { authorFor } from "../../../lib/authors";
 import { SITE_URL, OG_IMAGE, buildMeta } from "../../../lib/seo";
 import { TARIFF_BY_KEY } from "../../../lib/tariffs";
 import TariffTable from "../../TariffTable";
+import BillImage from "../../BillImage";
 import { Byline } from "../../Byline";
 
 // dynamicParams + force-static: slugs published via /api/posts after the build
@@ -13,22 +14,24 @@ export const dynamic = "force-static";
 
 // Render an article's HTML, swapping inline sentinels for React components (a real
 // node can't live inside an HTML string):
-//   <!-- tariff:KEY -->  -> <TariffTable> for that dataset
+//   <!-- tariff:KEY -->     -> <TariffTable> for that dataset
+//   <!-- billimage:CODE --> -> <BillImage> for that company (or nothing)
 // Legacy `<!-- sponsored -->` sentinels left in older posts are matched and
 // dropped so they render nothing.
 function renderBody(html) {
   const src = html;
 
   const parts = [];
-  const re = /<!--\s*(?:tariff:(\w+)|sponsored(?::\S+)?)\s*-->/g;
+  const re = /<!--\s*(?:tariff:(\w+)|billimage:(\w+)|sponsored(?::\S+)?)\s*-->/g;
   let last = 0, m, i = 0;
   while ((m = re.exec(src))) {
     const before = src.slice(last, m.index);
     if (before.trim()) parts.push(<div key={`h${i}`} dangerouslySetInnerHTML={{ __html: before }} />);
     if (m[1]) {
       const data = TARIFF_BY_KEY[m[1]];
-      if (data) parts.push(<TariffTable key={`t${i}`} data={data} />);
+      if (data) parts.push(<TariffTable key={`t${i}`} data={data} compact />);
     }
+    if (m[2]) parts.push(<BillImage key={`b${i}`} code={m[2]} />);
     last = m.index + m[0].length;
     i++;
   }

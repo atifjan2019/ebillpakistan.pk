@@ -10,6 +10,7 @@ import {
   ADJUSTMENTS, ADJUSTMENT_EXCLUDES, MINIMUM_CHARGE, SLAB_BENEFIT, fmtFixed, fmtRate, hasVerifiedRates,
 } from "../lib/tariffs";
 import { safe } from "../lib/verify";
+import TariffStale from "./TariffStale";
 
 const GROUPS = [
   ["Lifeline", "lifeline", "No fixed charge; a minimum monthly charge applies instead."],
@@ -80,6 +81,7 @@ export default function TariffTable({ data, heading, compact = false }) {
     const mid = tiers.unprotected[1];
     return (
       <div className="tariff-compact">
+        <TariffStale />
         <p>
           Domestic rates run from <strong>{fmtRate(lo.rate)}</strong> (protected, first 100 units) to{" "}
           <strong>{fmtRate(hi.rate)}</strong> (unprotected, above 700), plus a fixed charge per
@@ -103,6 +105,7 @@ export default function TariffTable({ data, heading, compact = false }) {
   return (
     <figure className="tariff" role="group" aria-label={heading || "Electricity tariff"}>
       {heading && <figcaption className="tariff-heading">{heading}</figcaption>}
+      <TariffStale />
 
       <table className="tariff-table">
         <thead>

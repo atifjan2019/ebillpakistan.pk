@@ -4,7 +4,7 @@ import CheckBillLoader from "../CheckBillLoader";
 import { notFound } from "next/navigation";
 import { DISCOS, hasLogo, discoLogo } from "../../lib/discos";
 import { COMPANIES, slugFor, codeFromSlug } from "../../lib/companies";
-import { complaintsFor, contentFor, faqsFor, seoFor, SECTIONS } from "../../lib/discoContent";
+import { complaintsFor, contentFor, faqsFor, seoFor, SECTIONS, CONTENT_UPDATED } from "../../lib/discoContent";
 import { guidesFor } from "../../lib/articles";
 import { tariffFor } from "../../lib/tariffs";
 import { safe, stripVerify } from "../../lib/verify";
@@ -133,6 +133,7 @@ export default async function CompanyPage({ params }) {
               bill" paragraph used to be restated in full on all twelve pages.
               They are now one sentence each, pointing at the single canonical
               explanation. One good guide linked twelve times beats twelve copies. */}
+          <p className="page-updated">Last updated: {CONTENT_UPDATED}</p>
           <p className="page-lede">
             Enter the reference number above and your latest {abbr} bill loads in a few seconds —
             free, with no account. New to reading one? Our{" "}

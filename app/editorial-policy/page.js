@@ -80,10 +80,10 @@ export default function EditorialPolicy() {
 
           <h2>What we do when we cannot verify something</h2>
           <p>
-            We leave it out. This is the single rule that matters most on a site like this. If a
-            per-unit rate cannot be traced to a current NEPRA notification, the table shows a dash
-            and a &ldquo;pending verification&rdquo; note with a link to the official schedule,
-            rather than a plausible-looking number. If a DISCO&apos;s regional office phone number
+            We leave it out. This is the single rule that matters most on a site like this. Where a
+            supplier&apos;s schedule cannot be traced to a current notification — Azad Kashmir, whose
+            tariff is issued separately — we say so and link to the source rather than borrow the
+            mainland figures and present them as that supplier&apos;s. If a DISCO&apos;s regional office phone number
             cannot be found on that DISCO&apos;s own site, we link to the site instead of printing
             a number that might send someone to a dead line — or worse, to a stranger.
           </p>
@@ -98,6 +98,60 @@ export default function EditorialPolicy() {
             Some guides walk through a calculation — how a 300-unit bill is built up slab by slab,
             for instance. Where the rates in a worked example are illustrative rather than the
             current approved rates, the page says so in the same paragraph, not in a footnote.
+          </p>
+
+          <h2>How we refresh the tariff figures</h2>
+          <p>
+            The rates on <a href="/electricity-tariff">the tariff page</a> are the most
+            time-sensitive thing we publish, so the refresh procedure is written down rather than
+            remembered:
+          </p>
+          <ol>
+            <li>
+              Open NEPRA&apos;s{" "}
+              <a href="https://nepra.org.pk/tariff/Distribution%20XWDISCOs.php" target="_blank" rel="noopener noreferrer">
+                XW-DISCO tariff listing
+              </a>{" "}
+              and its{" "}
+              <a href="https://nepra.org.pk/tariff/Tariff.php" target="_blank" rel="noopener noreferrer">
+                notifications index
+              </a>
+              .
+            </li>
+            <li>
+              Look for an S.R.O. later than the one we cite. A superseding notification says so in
+              its own text — the one in force at the time of writing states it is issued &ldquo;in
+              modification of&rdquo; the numbered SROs it replaces. That phrase is how you tell a
+              genuine replacement from a quarterly adjustment sitting alongside the schedule.
+            </li>
+            <li>
+              Distinguish the two kinds of change. A <strong>new Schedule of Tariff</strong> replaces
+              the per-unit rates and fixed charges. A <strong>quarterly adjustment</strong> or fuel
+              charges adjustment does not — it is a per-unit amount applied on top for a defined run
+              of billing months, and it belongs in the dated adjustments list, never folded into the
+              base rate.
+            </li>
+            <li>
+              Read the figures off Annex-B-1 for the ex-WAPDA companies. These documents are scanned
+              images; we do not run text recognition over them and publish the output. Cross-check
+              against a second source before changing anything — the K-Electric annex carries a real
+              text layer, and IESCO publishes a typed HTML tariff guide.
+            </li>
+            <li>
+              Update <code>lib/tariffs.js</code>: the rates, the governing notification, and{" "}
+              <code>LAST_VERIFIED_AGAINST_SOURCE</code>. Set that date only when you have actually
+              re-read the figures, not when you have glanced at the page.
+            </li>
+            <li>
+              Run <code>node scripts/tariff-staleness.mjs</code>. It exits non-zero when the figures
+              are outside the 90-day window and warns when no quarterly adjustment is live, which
+              usually means a new one has been notified and not yet added.
+            </li>
+          </ol>
+          <p>
+            If that date passes 90 days, every page showing a rate renders a visible notice saying
+            when the figures were last checked and linking to the current notification. The site is
+            built to degrade loudly rather than to go quietly stale.
           </p>
 
           <h2>How often pages are reviewed</h2>

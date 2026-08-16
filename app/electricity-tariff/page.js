@@ -1,7 +1,7 @@
 import { SITE_URL, buildMeta } from "../../lib/seo";
 import {
   A1_TOU, A1_PREPAID, ADJUSTMENTS, ADJUSTMENT_EXCLUDES, MINIMUM_CHARGE,
-  NEPRA_SOURCE, PROTECTED, SRO_BY_DISCO, TARIFFS, energyCharge,
+  NEPRA_SOURCE, PROTECTED, SRO_BY_DISCO, TARIFFS, energyCharge, LAST_VERIFIED_AGAINST_SOURCE,
 } from "../../lib/tariffs";
 import { DISCOS } from "../../lib/discos";
 import TariffTable from "../TariffTable";
@@ -75,7 +75,14 @@ export default function TariffPage() {
         </nav>
 
         <h1>Pakistan&apos;s Domestic Electricity Tariff, Explained</h1>
-        <p className="legal-updated">Rates checked 16 August 2026 · Effective from {NEPRA_SOURCE.effectiveFrom}</p>
+        {/* Three genuinely different dates, and a reader checking a rate needs
+            all three: when the notification took effect, when we last read the
+            figures off it, and when this page was last edited. */}
+        <dl className="tariff-dates">
+          <div><dt>SRO effective from</dt><dd>{NEPRA_SOURCE.effectiveFrom}</dd></div>
+          <div><dt>Figures last checked against source</dt><dd>{LAST_VERIFIED_AGAINST_SOURCE}</dd></div>
+          <div><dt>Page last updated</dt><dd>2026-08-16</dd></div>
+        </dl>
         <p className="legal-intro">
           These are the per-unit rates your electricity bill is actually calculated from, as notified
           in{" "}
