@@ -28,7 +28,7 @@ function walk(dir, out = []) {
 
 const files = walk(join(ROOT, "lib")).concat(walk(join(ROOT, "app")));
 const byFile = new Map();
-let total = 0;
+let total = 0; // recomputed below from the real data
 
 for (const f of files) {
   const rel = relative(ROOT, f);
@@ -42,9 +42,42 @@ for (const f of files) {
   }
 }
 
+// ── 1b. real marker instances in the data ─────────────────────────────────────
+// The source scan undercounts, because lib/discoContent.js builds markers with a
+// V() helper — one source literal can produce twenty rendered markers. Walk the
+// actual exported data to get the true number.
+const dataModules = {
+  "lib/discoContent.js": await import("../lib/discoContent.js"),
+  "lib/tariffs.js": await import("../lib/tariffs.js"),
+  "lib/contact.js": await import("../lib/contact.js"),
+  "lib/authors.js": await import("../lib/authors.js"),
+};
+
+function countMarkers(node, seen = new Set()) {
+  if (typeof node === "string") return [...node.matchAll(PATTERN)].map((m) => m[1].trim());
+  if (!node || typeof node !== "object" || seen.has(node)) return [];
+  seen.add(node);
+  return Object.values(node).flatMap((v) => countMarkers(v, seen));
+}
+
+let dataTotal = 0;
+const dataByModule = new Map();
+for (const [name, mod] of Object.entries(dataModules)) {
+  const labels = countMarkers(mod);
+  if (labels.length) {
+    dataByModule.set(name, labels);
+    dataTotal += labels.length;
+  }
+}
+// Files that are not data modules still need the source scan.
+for (const name of dataByModule.keys()) byFile.delete(name);
+const sourceTotal = [...byFile.values()].reduce((n, l) => n + l.length, 0);
+total = sourceTotal + dataTotal;
+for (const [k, v] of dataByModule) byFile.set(k, v);
+
 // ── 2. what each DISCO page loses in production ───────────────────────────────
 // Imported rather than parsed so the report reflects the real data structure.
-const { DISCO_CONTENT, SECTIONS } = await import("../lib/discoContent.js");
+const { DISCO_CONTENT, SECTIONS } = dataModules["lib/discoContent.js"];
 const MIN_SECTION_WORDS = 40;
 const has = (v) => typeof v === "string" && /\{\{VERIFY:/.test(v);
 const words = (s) => (typeof s === "string" ? s.trim().split(/\s+/).filter(Boolean).length : 0);

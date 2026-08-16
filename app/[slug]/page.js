@@ -7,7 +7,7 @@ import { COMPANIES, slugFor, codeFromSlug } from "../../lib/companies";
 import { complaintsFor, contentFor, faqsFor, seoFor, SECTIONS } from "../../lib/discoContent";
 import { guidesFor } from "../../lib/articles";
 import { tariffFor } from "../../lib/tariffs";
-import { stripVerify } from "../../lib/verify";
+import { safe, stripVerify } from "../../lib/verify";
 import { SITE_URL, HOME_URL, buildMeta } from "../../lib/seo";
 import ComplaintChannels from "../ComplaintChannels";
 import ContentSection from "../ContentSection";
@@ -143,8 +143,10 @@ export default async function CompanyPage({ params }) {
 
           {SECTIONS.map(({ key, heading }) => (
             <ContentSection key={key} id={key} heading={heading(abbr)} section={content?.[key]}>
-              {key === "billLayout" && content?.billLayout?.image && (
-                <p className="bill-image-slot">{content.billLayout.image}</p>
+              {/* safe() not a raw render: the image slot is a {{VERIFY}} until a
+                  real annotated photo exists, and must vanish in production. */}
+              {key === "billLayout" && safe(content?.billLayout?.image) && (
+                <p className="bill-image-slot">{safe(content.billLayout.image)}</p>
               )}
             </ContentSection>
           ))}

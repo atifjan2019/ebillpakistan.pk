@@ -9,7 +9,7 @@
 // Layout: a semantic <table> above 640px, and the same rows as stacked cards
 // below it, so nothing ever scrolls sideways on a phone.
 import { fmtRate, hasVerifiedRates } from "../lib/tariffs";
-import Verify from "./Verify";
+import { safe } from "../lib/verify";
 
 function Rows({ title, rows, priced }) {
   return (
@@ -95,8 +95,10 @@ export default function TariffTable({ data, heading }) {
           <strong>Source:</strong>{" "}
           <a href={sourceUrl} target="_blank" rel="noopener noreferrer">{source}</a>
         </p>
-        {notification && (
-          <p><strong>Notification:</strong> <Verify text={notification} /></p>
+        {/* Whole row omitted when the notification is still a {{VERIFY}} —
+            a "Notification:" label with nothing after it reads as broken. */}
+        {safe(notification) && (
+          <p><strong>Notification:</strong> {safe(notification)}</p>
         )}
         {effectiveFrom && (
           <p><strong>Effective from:</strong> {effectiveFrom}</p>
