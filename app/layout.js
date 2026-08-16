@@ -84,7 +84,7 @@ export default function RootLayout({ children }) {
                 A simple, free way to check your electricity bill online: no app, no sign-up,
                 just your reference number.
               </p>
-              <span className="footer-soon">⚡ Gas &amp; internet bills coming soon</span>
+              <span className="footer-soon">⚡ All 12 distribution companies covered</span>
               <div className="footer-social">
                 <a href={SOCIAL.facebook} target="_blank" rel="noopener noreferrer" aria-label="eBill Pakistan on Facebook">
                   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5h1.65V3.6c-.29-.04-1.27-.13-2.41-.13-2.39 0-4.02 1.46-4.02 4.13v2.3H7.5V13h2.74v8h3.26z" /></svg>
