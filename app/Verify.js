@@ -1,18 +1,23 @@
-// Renders text that may contain {{VERIFY: ...}} placeholders, highlighting each
-// one so an unresolved placeholder is impossible to miss during review (and easy
-// to spot in a screenshot). Once every placeholder is filled in, this component
-// renders plain text and can stay where it is.
+// Renders text that may contain {{VERIFY: ...}} placeholders.
 //
-// grep the repo for "{{VERIFY:" to list everything still outstanding.
-const RE = /\{\{VERIFY:\s*([^}]+)\}\}/g;
+//   development — each marker is highlighted, so the gap is impossible to miss.
+//   production  — a marked string renders NOTHING. Callers are expected to have
+//                 already dropped the surrounding block via lib/verify.js
+//                 (safe / safeList / resolveSection); this is the backstop that
+//                 guarantees braces cannot reach the DOM even if one is missed.
+//
+// grep the repo for "{{VERIFY:" or run `node scripts/verify-report.mjs`.
+import { SHOW_VERIFY, hasVerify } from "../lib/verify";
 
-export function hasVerify(text) {
-  return /\{\{VERIFY:/.test(String(text ?? ""));
-}
+export { hasVerify };
+
+const RE = /\{\{VERIFY:\s*([^}]+)\}\}/g;
 
 export default function Verify({ text, children }) {
   const src = String(text ?? children ?? "");
   if (!hasVerify(src)) return <>{src}</>;
+  // Production backstop: never emit the marker, in any form.
+  if (!SHOW_VERIFY) return null;
 
   const out = [];
   let last = 0;

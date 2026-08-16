@@ -3,13 +3,16 @@ import RefInput from "../RefInput";
 import CheckBillLoader from "../CheckBillLoader";
 import { notFound } from "next/navigation";
 import { DISCOS, hasLogo, discoLogo } from "../../lib/discos";
-import { COMPANIES, faqsFor, slugFor, codeFromSlug, seoFor } from "../../lib/companies";
+import { COMPANIES, slugFor, codeFromSlug } from "../../lib/companies";
+import { complaintsFor, contentFor, faqsFor, seoFor, SECTIONS } from "../../lib/discoContent";
 import { guidesFor } from "../../lib/articles";
-import { complaintsFor } from "../../lib/discoContent";
 import { tariffFor } from "../../lib/tariffs";
+import { stripVerify } from "../../lib/verify";
 import { SITE_URL, HOME_URL, buildMeta } from "../../lib/seo";
 import ComplaintChannels from "../ComplaintChannels";
+import ContentSection from "../ContentSection";
 import TariffTable from "../TariffTable";
+import Districts from "../Districts";
 
 export const dynamicParams = false;
 
@@ -22,11 +25,11 @@ export async function generateMetadata({ params }) {
   const code = codeFromSlug(slug);
   if (!code) return {};
   const [abbr] = DISCOS[code];
-  const year = new Date().getFullYear();
-  const { title, description } = seoFor(code, year);
+  const seo = seoFor(code, new Date().getFullYear());
+  if (!seo) return {};
   return buildMeta({
-    title,
-    description,
+    title: seo.title,
+    description: seo.description,
     path: `/${slugFor(code)}`,
     imageAlt: `Check your ${abbr} electricity bill online - eBill Pakistan`,
   });
@@ -43,29 +46,28 @@ export default async function CompanyPage({ params }) {
 
   const [abbr, city, color] = DISCOS[code];
   const c = COMPANIES[code];
+  const content = contentFor(code);
   const faqs = faqsFor(code);
-  // Two extra FAQs (helpline + reference number) appended to BOTH the visible
-  // list and the JSON-LD, so the structured data stays backed by on-page content.
-  const extraFaqs = [
-    [`What is the helpline number for ${c.full}?`, `You can reach ${abbr} customer support on 118, the national DISCO helpline.`],
-    [`What does the reference number on my ${abbr} bill look like?`, `It is a 14-digit number printed at the top-left of your ${abbr} paper bill, usually labelled Reference No. or Consumer No.`],
-  ];
-  const allFaqs = [...faqs, ...extraFaqs];
+  const complaints = complaintsFor(code);
+  const tariff = tariffFor(code);
   const year = new Date().getFullYear();
   const others = Object.keys(DISCOS).filter((x) => x !== code);
   const guides = guidesFor(code);
-  const complaints = complaintsFor(code);
-  const tariff = tariffFor(code);
 
-  const faqLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: allFaqs.map(([q, a]) => ({
-      "@type": "Question",
-      name: q,
-      acceptedAnswer: { "@type": "Answer", text: a },
-    })),
-  };
+  // FAQPage schema is built from this company's REAL questions. stripVerify is a
+  // belt-and-braces guard: structured data has no container to omit, so a marker
+  // must never survive into it.
+  const faqLd = faqs.length
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faqs.map(([q, a]) => ({
+          "@type": "Question",
+          name: stripVerify(q),
+          acceptedAnswer: { "@type": "Answer", text: stripVerify(a) },
+        })),
+      }
+    : null;
   const breadcrumbLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -77,7 +79,7 @@ export default async function CompanyPage({ params }) {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
+      {faqLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
 
       <section className="hero">
@@ -102,7 +104,7 @@ export default async function CompanyPage({ params }) {
           <h1>
             {abbr} Bill Check Online <span className="grad">{year}</span>
           </h1>
-          <p className="sub">{c.full}. Check your {abbr} electricity bill online for {city} and across {c.region} — enter your reference number to view, print or download your latest bill. Free and instant.</p>
+          <p className="sub">{content?.intro || `${c.full}. Check your ${abbr} bill by reference number.`}</p>
 
           <form id="lookup" className="search-card" action="/result" method="get">
             <input type="hidden" name="disco" value={code} />
@@ -127,68 +129,49 @@ export default async function CompanyPage({ params }) {
 
       <section className="section">
         <div className="container article">
-          <h2>About {abbr}</h2>
-          <p>{c.about}</p>
-
-          <h2>Areas {abbr} serves</h2>
-          <p>{abbr} distributes electricity across {c.region}, including:</p>
-          <div className="chips">
-            {c.cities.map((ct) => <span key={ct} className="chip" style={{ "--c": color }}>{ct}</span>)}
-          </div>
-
-          <h2>{abbr} bill check in {city}</h2>
-          <p>
-            Whether you live in {city} or elsewhere on the {abbr} network across {c.region},
-            you can check your latest {abbr} bill here by reference number — there&apos;s no need
-            to visit a {abbr} customer-service centre in {city} in person. It works the same way
-            for homes, shops and offices on the {abbr} supply.
+          {/* Task 2: the "how to check" steps and the generic "understanding your
+              bill" paragraph used to be restated in full on all twelve pages.
+              They are now one sentence each, pointing at the single canonical
+              explanation. One good guide linked twelve times beats twelve copies. */}
+          <p className="page-lede">
+            Enter the reference number above and your latest {abbr} bill loads in a few seconds —
+            free, with no account. New to reading one? Our{" "}
+            <a href="/sample-bill-explained">annotated sample bill</a> explains every line.
           </p>
 
-          <h2>How to check your {abbr} bill</h2>
-          <ol className="howto">
-            <li>Find the 14-digit <strong>reference number</strong> at the top-left of your paper {abbr} bill.</li>
-            <li>Type it into the box above and press <strong>Check {abbr} Bill</strong>.</li>
-            <li>Your latest bill appears instantly. <strong>Download it as a PDF</strong>, print it, or share it on WhatsApp.</li>
-          </ol>
+          <Districts abbr={abbr} cities={c.cities} region={c.region} color={color} />
 
-          <h2>{abbr} bill: frequently asked questions</h2>
-          <div className="faq" style={{ marginTop: 16 }}>
-            {allFaqs.map(([q, a], i) => (
-              <details key={i} open={i === 0}>
-                <summary>{q}</summary>
-                <div className="a">{a}</div>
-              </details>
-            ))}
-          </div>
+          {SECTIONS.map(({ key, heading }) => (
+            <ContentSection key={key} id={key} heading={heading(abbr)} section={content?.[key]}>
+              {key === "billLayout" && content?.billLayout?.image && (
+                <p className="bill-image-slot">{content.billLayout.image}</p>
+              )}
+            </ContentSection>
+          ))}
 
-          {/* The generic explainer that used to be restated in full on all 12
-              pages is now two sentences plus a link out to the guide (B4). */}
           <h2>{abbr} tariff bands</h2>
           <p>
-            {abbr} does not set your rate: tariffs are notified by NEPRA and applied by every
+            {abbr} does not set your rate — tariffs are notified by NEPRA and applied by every
             distribution company alike. What {abbr} does is read your meter and bill you in the
-            bands below — our{" "}
-            <a href="/blog/unit-slabs-fuel-price-adjustment-taxes-explained">
-              guide to slabs, FPA &amp; taxes
-            </a>{" "}
-            explains how a total is built from them.
+            bands below.
           </p>
           <TariffTable data={tariff} heading={`${abbr} domestic tariff bands`} />
 
           <ComplaintChannels abbr={abbr} city={city} website={c.website} data={complaints} />
 
-          <h3>Understanding your {abbr} bill</h3>
-          <p>
-            A {abbr} bill packs a lot into one page. The <strong>Reference No.</strong> is the
-            14-digit number at the top-left that identifies your connection. <strong>Units
-            Consumed</strong> is the electricity used during the month, <strong>Amount
-            Payable</strong> is the total due, and the <strong>Due Date</strong> is the last day
-            to pay before a late-payment surcharge is added. Extra lines such as fuel-price
-            adjustment and taxes appear as <strong>surcharges</strong>. For a field-by-field
-            walkthrough of all of them, see our{" "}
-            <a href="/sample-bill-explained">annotated sample bill</a>.
-          </p>
-
+          {faqs.length > 0 && (
+            <>
+              <h2>{abbr} bill: frequently asked questions</h2>
+              <div className="faq" style={{ marginTop: 16 }}>
+                {faqs.map(([q, a], i) => (
+                  <details key={i} open={i === 0}>
+                    <summary>{q}</summary>
+                    <div className="a">{a}</div>
+                  </details>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </section>
 

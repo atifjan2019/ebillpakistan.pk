@@ -57,13 +57,14 @@ export default function TariffTable({ data, heading }) {
     <figure className="tariff" role="group" aria-label={heading || "Electricity tariff bands"}>
       {heading && <figcaption className="tariff-heading">{heading}</figcaption>}
 
+      {/* Task 2 de-duplication: the full explanation of why a band can be shown
+          without a price lives once, in /editorial-policy. Repeating it here
+          would put the same 60 words on all twelve DISCO pages. */}
       {!priced && (
         <p className="tariff-pending" role="note">
-          <strong>Bands, not prices.</strong> These are the consumption bands your bill is
-          calculated in. We publish a per-unit figure only once we have read it off the notified
-          schedule ourselves, because a stale rate on a page people budget against is worse than no
-          rate at all. For the current approved figures, see the{" "}
-          <a href={sourceUrl} target="_blank" rel="noopener noreferrer">official NEPRA schedule</a>.
+          Bands only — see the{" "}
+          <a href={sourceUrl} target="_blank" rel="noopener noreferrer">official NEPRA schedule</a>{" "}
+          for rates, and <a href="/editorial-policy">why we leave them blank</a>.
         </p>
       )}
 
@@ -107,11 +108,10 @@ export default function TariffTable({ data, heading }) {
         {note && <p className="tariff-note">{note}</p>}
       </div>
 
+      {/* One line, not a paragraph: the full explanation is on the sample bill. */}
       <p className="tariff-foot">
-        A fuel price adjustment (FPA), quarterly adjustments, electricity duty, GST, a TV licence
-        fee and other charges are applied on top of the per-unit energy charge, so what you actually
-        pay per unit changes month to month. Our{" "}
-        <a href="/sample-bill-explained">annotated sample bill</a> walks through each line.
+        FPA, adjustments and taxes are added on top —{" "}
+        <a href="/sample-bill-explained">see a worked example</a>.
       </p>
     </figure>
   );

@@ -1,86 +1,85 @@
 // That company's OWN complaint channels, from lib/discoContent.js.
 //
 // This block is the single biggest de-duplication win across the 12 DISCO pages:
-// previously every page printed "118" and nothing else, which is identical text
-// on all twelve. Now each page renders that company's own numbers, portal and
-// offices, and says plainly which of them we have verified and which we haven't.
+// every page used to print "118" and nothing else — identical text on all twelve.
+//
+// Suppression: any channel, office or address whose value is an unresolved
+// {{VERIFY}} is dropped entirely in production (see lib/verify.js), heading
+// included. A page with three channels beats a page with five where two of them
+// are template braces.
 import { SHARED_CHANNELS } from "../lib/discoContent";
-import Verify, { hasVerify } from "./Verify";
+import { safe, safeList, hasVerify } from "../lib/verify";
 
-// Phone numbers become tel: links (mobile requirement), but only when the value
-// is a real number rather than an unresolved placeholder.
 function Tel({ value }) {
   if (!value) return null;
-  if (hasVerify(value)) return <Verify text={value} />;
   return <a href={`tel:${String(value).replace(/[^\d+]/g, "")}`}>{value}</a>;
+}
+
+function Channel({ label, children, note, primary }) {
+  return (
+    <div className={`cc-channel${primary ? " cc-channel--primary" : ""}`}>
+      <span className="cc-channel-k">{label}</span>
+      <span className="cc-channel-v">{children}</span>
+      {note && <span className="cc-channel-n">{note}</span>}
+    </div>
+  );
 }
 
 export default function ComplaintChannels({ abbr, city, website, data }) {
   if (!data) return null;
   const { NATIONAL, CITIZEN_PORTAL } = SHARED_CHANNELS;
 
+  const helpline = safe(data.helpline);
+  const headOffice = safe(data.headOffice);
+  const officesNote = safe(data.officesNote);
+  const offices = safeList(data.offices || [], ["name", "phone", "covers"]);
+
   return (
     <section id="complaints" className="cc-block">
       <h2>How to complain to {abbr}</h2>
-      <p>
-        Billing disputes, a meter that looks wrong, an outage or a connection problem all go to{" "}
-        {abbr} directly — this site cannot act on any of them. These are {abbr}&apos;s own channels,
-        strongest first.
-      </p>
+      {data.intro && <p>{data.intro}</p>}
 
       <div className="cc-channels">
-        {data.whatsapp && (
-          <div className="cc-channel cc-channel--primary">
-            <span className="cc-channel-k">{abbr} complaint cell</span>
-            <span className="cc-channel-v"><Tel value={data.whatsapp} /></span>
-            {data.whatsappNote && <span className="cc-channel-n">{data.whatsappNote}</span>}
-          </div>
+        {data.whatsapp && !hasVerify(data.whatsapp) && (
+          <Channel label={`${abbr} complaint cell`} note={data.whatsappNote} primary>
+            <Tel value={data.whatsapp} />
+          </Channel>
         )}
-        {data.uan && (
-          <div className="cc-channel cc-channel--primary">
-            <span className="cc-channel-k">{abbr} toll-free UAN</span>
-            <span className="cc-channel-v"><Tel value={data.uan} /></span>
-            {data.uanNote && <span className="cc-channel-n">{data.uanNote}</span>}
-          </div>
+        {data.uan && !hasVerify(data.uan) && (
+          <Channel label={`${abbr} toll-free UAN`} note={data.uanNote} primary>
+            <Tel value={data.uan} />
+          </Channel>
         )}
-        <div className="cc-channel">
-          <span className="cc-channel-k">National helpline</span>
-          <span className="cc-channel-v"><Tel value={data.helpline} /></span>
-          <span className="cc-channel-n">{NATIONAL.note}</span>
-        </div>
+        {helpline && (
+          <Channel label="National helpline" note={NATIONAL.note}>
+            <Tel value={helpline} />
+          </Channel>
+        )}
         {data.sms && (
-          <div className="cc-channel">
-            <span className="cc-channel-k">SMS short code</span>
-            <span className="cc-channel-v">{data.sms}</span>
-            <span className="cc-channel-n">Text your complaint if the line is busy.</span>
-          </div>
+          <Channel label="SMS short code"><span>{data.sms}</span></Channel>
         )}
         {data.portal && (
-          <div className="cc-channel">
-            <span className="cc-channel-k">Online complaint portal</span>
-            <span className="cc-channel-v">
-              <a href={data.portal.url} target="_blank" rel="noopener noreferrer">{data.portal.name}</a>
-            </span>
-            <span className="cc-channel-n">{data.portal.note}</span>
-          </div>
+          <Channel label="Online complaint portal" note={data.portal.note}>
+            <a href={data.portal.url} target="_blank" rel="noopener noreferrer">{data.portal.name}</a>
+          </Channel>
         )}
-        <div className="cc-channel">
-          <span className="cc-channel-k">If {abbr} does not resolve it</span>
-          <span className="cc-channel-v">
-            <a href={CITIZEN_PORTAL.url} target="_blank" rel="noopener noreferrer">{CITIZEN_PORTAL.name}</a>
-          </span>
-          <span className="cc-channel-n">{CITIZEN_PORTAL.note}</span>
-        </div>
+        <Channel label={`If ${abbr} does not resolve it`} note={CITIZEN_PORTAL.note}>
+          <a href={CITIZEN_PORTAL.url} target="_blank" rel="noopener noreferrer">{CITIZEN_PORTAL.name}</a>
+        </Channel>
       </div>
 
-      <h3>{abbr} head office</h3>
-      <p className="cc-head-office"><Verify text={data.headOffice} /></p>
+      {headOffice && (
+        <>
+          <h3>{abbr} head office</h3>
+          <p className="cc-head-office">{headOffice}</p>
+        </>
+      )}
 
-      {data.offices?.length > 0 && (
+      {offices.length > 0 && (
         <>
           <h3>{abbr} circle &amp; area offices</h3>
           <ul className="cc-offices">
-            {data.offices.map((o) => (
+            {offices.map((o) => (
               <li key={o.name}>
                 <span className="cc-office-name">{o.name}</span>
                 <span className="cc-office-phone"><Tel value={o.phone} /></span>
@@ -90,20 +89,16 @@ export default function ComplaintChannels({ abbr, city, website, data }) {
           </ul>
         </>
       )}
-      {data.officesNote && (
-        <p className="cc-offices-note"><Verify text={data.officesNote} /></p>
-      )}
+      {officesNote && <p className="cc-offices-note">{officesNote}</p>}
 
       <p className="cc-provenance">
         Checked against{" "}
         {website ? (
-          <a href={website} target="_blank" rel="noopener noreferrer">{abbr}&apos;s own website</a>
+          <a href={website} target="_blank" rel="noopener noreferrer">{abbr}&apos;s site</a>
         ) : (
-          <>{abbr}&apos;s own website</>
-        )}{" "}
-        on {data.verifiedOn}. Numbers do change — if one of these is wrong,{" "}
-        <a href="/contact">tell us</a> and we&apos;ll correct it. See our{" "}
-        <a href="/editorial-policy">editorial policy</a> for how we source contact details.
+          <>{abbr}&apos;s site</>
+        )}
+        , {data.verifiedOn}. Wrong number? <a href="/contact">Tell us</a>.
       </p>
     </section>
   );

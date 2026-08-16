@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "prebuild": "node scripts/verify-report.mjs",
+    "verify": "node scripts/verify-report.mjs --full"
   },
   "dependencies": {
     "@upstash/ratelimit": "^2.0.8",
