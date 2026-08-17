@@ -19,10 +19,9 @@
 // arbitrary HTML, so treat BLOG_API_KEY like a deploy credential.
 import crypto from "node:crypto";
 import { revalidatePath } from "next/cache";
-import { marked } from "marked";
 import { SITE_URL } from "../../../lib/seo";
 import { getPost, savePost } from "../../../lib/posts";
-import { AUTHORS, DEFAULT_AUTHOR } from "../../../lib/authors";
+import { buildPost } from "../../../lib/publishPost";
 
 export const runtime = "nodejs";
 
@@ -54,47 +53,13 @@ export async function POST(req) {
     return bad(400, "Request body must be valid JSON.");
   }
 
-  const { title, slug, metaDescription, content, excerpt, tags, coverImage, publishedAt, updatedAt, metaTitle, faqs, author } = body || {};
-
-  const errors = [];
-  if (typeof title !== "string" || !title.trim()) errors.push("title is required (non-empty string)");
-  if (typeof slug !== "string" || !SLUG_RE.test(slug)) errors.push("slug is required and must be url-safe (lowercase letters, digits, hyphens)");
-  else if (slug.length > 100) errors.push("slug must be 100 characters or fewer");
-  if (typeof metaDescription !== "string" || !metaDescription.trim()) errors.push("metaDescription is required");
-  else if (metaDescription.length > 160) errors.push("metaDescription must be 160 characters or fewer");
-  if (typeof content !== "string" || !content.trim()) errors.push("content is required (Markdown string)");
-  if (excerpt !== undefined && typeof excerpt !== "string") errors.push("excerpt must be a string");
-  if (tags !== undefined && !(Array.isArray(tags) && tags.every((t) => typeof t === "string"))) errors.push("tags must be an array of strings");
-  if (coverImage !== undefined && !/^https?:\/\/\S+$/.test(String(coverImage))) errors.push("coverImage must be an http(s) URL");
-  if (publishedAt !== undefined && Number.isNaN(Date.parse(publishedAt))) errors.push("publishedAt must be an ISO date string");
-  if (updatedAt !== undefined && Number.isNaN(Date.parse(updatedAt))) errors.push("updatedAt must be an ISO date string");
-  if (author !== undefined && !AUTHORS[author]) errors.push(`author must be one of: ${Object.keys(AUTHORS).join(", ")}`);
-  if (metaTitle !== undefined && (typeof metaTitle !== "string" || !metaTitle.trim() || metaTitle.length > 70)) errors.push("metaTitle must be a non-empty string of 70 characters or fewer");
-  if (faqs !== undefined && !(Array.isArray(faqs) && faqs.length <= 8 && faqs.every((f) => Array.isArray(f) && f.length === 2 && f.every((s) => typeof s === "string" && s.trim())))) errors.push("faqs must be an array (max 8) of [question, answer] string pairs");
+  // Validation and normalisation are shared with the admin dashboard form via
+  // lib/publishPost.js, so the two publishing paths cannot drift apart.
+  const { errors, post } = buildPost(body || {});
   if (errors.length) return bad(400, errors.join("; "));
-  if (content.length > MAX_CONTENT) return bad(413, "content exceeds the 200 KB limit");
+  const { slug } = post;
 
   if (await getPost(slug)) return bad(409, `A post with slug "${slug}" already exists.`);
-
-  const date = (publishedAt ? new Date(publishedAt) : new Date()).toISOString().slice(0, 10);
-  const updated = (updatedAt ? new Date(updatedAt) : new Date(date)).toISOString().slice(0, 10);
-  const authorSlug = author || DEFAULT_AUTHOR;
-  const post = {
-    slug,
-    title: title.trim(),
-    metaTitle: (metaTitle || title).trim(),
-    metaDescription: metaDescription.trim(),
-    publishedDate: date,
-    lastUpdated: updated,
-    author: authorSlug,
-    h1: title.trim(),
-    content: marked.parse(content, { async: false }),
-    ...(excerpt ? { excerpt: excerpt.trim() } : {}),
-    ...(tags?.length ? { tags } : {}),
-    ...(coverImage ? { coverImage } : {}),
-    ...(faqs?.length ? { faqs } : {}),
-    source: "api",
-  };
 
   try {
     await savePost(post);
@@ -105,7 +70,7 @@ export async function POST(req) {
   // Make the post visible without a redeploy.
   revalidatePath("/blog");
   revalidatePath(`/blog/${slug}`);
-  revalidatePath(`/author/${authorSlug}`); // author page lists their posts
+  revalidatePath(`/author/${post.author}`); // author page lists their posts
   revalidatePath("/sitemap.xml");
 
   return Response.json({ success: true, url: `${SITE_URL}/blog/${slug}` }, { status: 201 });

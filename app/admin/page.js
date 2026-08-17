@@ -5,7 +5,9 @@ import { revalidatePath } from "next/cache";
 import { DISCOS } from "../../lib/discos";
 import { getStats } from "../../lib/store";
 import { getArticle } from "../../lib/articles";
-import { getAllPosts, deletePost } from "../../lib/posts";
+import { getAllPosts, deletePost, getPost, savePost } from "../../lib/posts";
+import { buildPost, slugify } from "../../lib/publishPost";
+import { AUTHORS, DEFAULT_AUTHOR } from "../../lib/authors";
 import RecentChecks from "./RecentChecks";
 
 export const dynamic = "force-dynamic";
@@ -65,6 +67,63 @@ async function unpublish(formData) {
   redirect("/admin?tab=posts");
 }
 
+// Publish a post from the dashboard.
+//
+// This writes through lib/publishPost.js, the same validator POST /api/posts
+// uses, so a post created here is byte-identical in shape to one published by an
+// integration. No bearer token is involved: the admin session is the auth
+// boundary, and it is re-checked here because a server action is a reachable
+// endpoint in its own right.
+async function publish(formData) {
+  "use server";
+  if (!(await isAuthed())) redirect("/admin");
+
+  const get = (k) => String(formData.get(k) || "").trim();
+  const title = get("title");
+  const slug = get("slug") || slugify(title);
+
+  const { errors, post } = buildPost({
+    title,
+    slug,
+    metaTitle: get("metaTitle"),
+    metaDescription: get("metaDescription"),
+    content: get("content"),
+    excerpt: get("excerpt"),
+    tags: get("tags"),
+    faqs: get("faqs"),
+    author: get("author") || DEFAULT_AUTHOR,
+    publishedAt: get("publishedAt"),
+    updatedAt: get("updatedAt"),
+  });
+
+  if (errors.length) {
+    redirect(`/admin?tab=posts&err=${encodeURIComponent(errors.join(" · "))}`);
+  }
+
+  // A static article in lib/articles.js always wins in getPost(), so publishing
+  // over one would create a post that silently never renders. Refuse it.
+  if (getArticle(post.slug)) {
+    redirect(`/admin?tab=posts&err=${encodeURIComponent(`"${post.slug}" is a static article in lib/articles.js — edit it in the repo, not here.`)}`);
+  }
+
+  const existing = await getPost(post.slug);
+  if (existing && get("overwrite") !== "yes") {
+    redirect(`/admin?tab=posts&err=${encodeURIComponent(`A post with slug "${post.slug}" already exists. Tick "replace existing" to overwrite it.`)}`);
+  }
+
+  try {
+    await savePost(post);
+  } catch {
+    redirect(`/admin?tab=posts&err=${encodeURIComponent("Could not write to the post store. Check the KV credentials and try again.")}`);
+  }
+
+  revalidatePath("/blog");
+  revalidatePath(`/blog/${post.slug}`);
+  revalidatePath(`/author/${post.author}`);
+  revalidatePath("/sitemap.xml");
+  redirect(`/admin?tab=posts&msg=${encodeURIComponent(`${existing ? "Replaced" : "Published"} /blog/${post.slug}`)}`);
+}
+
 const TABS = ["overview", "companies", "cities", "days", "recent", "posts"];
 
 export default async function AdminPage({ searchParams }) {
@@ -75,11 +134,13 @@ export default async function AdminPage({ searchParams }) {
   const tab = TABS.includes(sp?.tab) ? sp.tab : "overview";
   const page = Math.max(1, parseInt(sp?.page, 10) || 1);
   // The posts page doesn't need analytics, and vice versa.
-  const [stats, posts] = await Promise.all([
+  const editSlug = tab === "posts" ? String(sp?.edit || "") : "";
+  const [stats, posts, editing] = await Promise.all([
     tab === "posts" ? null : getStats(),
     tab === "posts" ? getAllPosts() : null,
+    editSlug ? getPost(editSlug) : null,
   ]);
-  return <Dashboard tab={tab} stats={stats} posts={posts} page={page} />;
+  return <Dashboard tab={tab} stats={stats} posts={posts} page={page} msg={sp?.msg} err={sp?.err} editing={editing} />;
 }
 
 /* ---------------- login ---------------- */
@@ -168,7 +229,7 @@ function Bars({ rows, total, limit = 8 }) {
   );
 }
 
-function Dashboard({ tab, stats, posts, page }) {
+function Dashboard({ tab, stats, posts, page, msg, err, editing }) {
   const configured = stats ? stats.configured : true;
   const [title, subtitle] = TAB_TITLES[tab];
 
@@ -234,7 +295,7 @@ function Dashboard({ tab, stats, posts, page }) {
                 <RecentChecks events={stats.recent || []} />
               </div>
             )}
-            {tab === "posts" && <PostsTab posts={posts} page={page} />}
+            {tab === "posts" && <PostsTab posts={posts} page={page} msg={msg} err={err} editing={editing} />}
           </div>
         </div>
       </div>
@@ -294,58 +355,179 @@ function DaysTab({ byDay }) {
 
 const POSTS_PAGE_SIZE = 10;
 
-function PostsTab({ posts, page }) {
+// One post's editable fields, rendered from `editing` when present. Uncontrolled
+// inputs with defaultValue: this is a server component, so the form is plain
+// HTML posting to a server action — no client JS, no hydration.
+function PostForm({ editing }) {
+  const e = editing || null;
+  // Prefer the original input the author typed. Posts published before
+  // contentSource existed only have rendered HTML, so those are edited as HTML
+  // rather than pushed back through the Markdown converter, which would mangle
+  // them.
+  const body = e ? (e.contentSource ?? e.content ?? "") : "";
+  const fmt = e ? (e.contentFormat || (e.contentSource ? "markdown" : "html")) : "markdown";
+  const faqText = (e?.faqs || []).map(([q, a]) => `${q} :: ${a}`).join("\n");
+
+  return (
+    <details className="adm-panel adm-newpost" open={!!e}>
+      <summary>
+        <b>{e ? `Edit: ${e.slug}` : "New post"}</b>
+        <span>{e ? "editing an existing post" : "write a post and publish it straight to the blog"}</span>
+      </summary>
+
+      <form action={publish} className="adm-form">
+        {e && <input type="hidden" name="overwrite" value="yes" />}
+        {e && <input type="hidden" name="contentFormat" value={fmt} />}
+
+        <label>
+          <span>Title <em>required</em></span>
+          <input name="title" defaultValue={e?.title || ""} required maxLength={200} />
+        </label>
+
+        <label>
+          <span>Slug <em>{e ? "changing this creates a new post" : "leave blank to generate from the title"}</em></span>
+          <input name="slug" defaultValue={e?.slug || ""} pattern="[a-z0-9]+(-[a-z0-9]+)*" maxLength={100}
+            placeholder="lowercase-with-hyphens" readOnly={!!e} />
+        </label>
+
+        <label>
+          <span>Meta title <em>optional, ≤70 chars — defaults to the title</em></span>
+          <input name="metaTitle" defaultValue={e?.metaTitle || ""} maxLength={70} />
+        </label>
+
+        <label>
+          <span>Meta description <em>required, ≤160 chars</em></span>
+          <textarea name="metaDescription" defaultValue={e?.metaDescription || ""} required maxLength={160} rows={2} />
+        </label>
+
+        <div className="adm-form-row">
+          <label>
+            <span>Author</span>
+            <select name="author" defaultValue={e?.author || DEFAULT_AUTHOR}>
+              {Object.values(AUTHORS).map((a) => (
+                <option key={a.slug} value={a.slug}>{a.name}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span>Published</span>
+            <input type="date" name="publishedAt" defaultValue={e?.publishedDate || ""} />
+          </label>
+          <label>
+            <span>Last updated</span>
+            <input type="date" name="updatedAt" defaultValue={e?.lastUpdated || ""} />
+          </label>
+        </div>
+
+        <label>
+          <span>Tags <em>optional, comma separated</em></span>
+          <input name="tags" defaultValue={(e?.tags || []).join(", ")} />
+        </label>
+
+        <label>
+          <span>
+            Body <em>{fmt === "html" ? "HTML — this post predates source tracking, so it is edited as HTML" : "Markdown"}</em>
+          </span>
+          <textarea name="content" defaultValue={body} required rows={18} spellCheck="true"
+            placeholder={"## A heading\n\nA paragraph with **bold** and a [link](/electricity-tariff)."} />
+        </label>
+
+        <label>
+          <span>FAQs <em>optional, max 8 — one per line as “Question :: Answer”</em></span>
+          <textarea name="faqs" defaultValue={faqText} rows={4}
+            placeholder={"Is this thing on? :: Yes, it is."} />
+        </label>
+
+        <label>
+          <span>Excerpt <em>optional</em></span>
+          <textarea name="excerpt" defaultValue={e?.excerpt || ""} rows={2} />
+        </label>
+
+        <div className="adm-form-actions">
+          <button type="submit" className="btn btn-primary">{e ? "Save changes" : "Publish post"}</button>
+          {e && <a className="btn btn-ghost" href="/admin?tab=posts">Cancel</a>}
+          <span className="adm-form-note">
+            Publishes to the live blog immediately and revalidates /blog, the post, the author page and the sitemap.
+          </span>
+        </div>
+      </form>
+    </details>
+  );
+}
+
+function PostsTab({ posts, page, msg, err, editing }) {
   // Newest first; 10 per page, navigated via ?tab=posts&page=N (server-rendered).
   const sorted = [...posts].sort((a, b) =>
     String(b.publishedDate).localeCompare(String(a.publishedDate)));
   const totalPages = Math.max(1, Math.ceil(sorted.length / POSTS_PAGE_SIZE));
   const p = Math.min(page, totalPages);
   const pageRows = sorted.slice((p - 1) * POSTS_PAGE_SIZE, p * POSTS_PAGE_SIZE);
-  return (
-    <div className="adm-panel">
-      <h2>Blog posts <span className="adm-count">{posts.length}</span></h2>
-      <div className="adm-table-wrap">
-        <table className="adm-table">
-          <thead>
-            <tr><th>Title</th><th>Slug</th><th>Published</th><th>Source</th><th></th></tr>
-          </thead>
-          <tbody>
-            {pageRows.map((post) => (
-              <tr key={post.slug}>
-                <td><a href={`/blog/${post.slug}`} target="_blank" rel="noreferrer">{post.title}</a></td>
-                <td><code>{post.slug}</code></td>
-                <td>{post.publishedDate}</td>
-                <td>
-                  <span className={post.source === "api" ? "adm-chip adm-chip-api" : "adm-chip"}>
-                    {post.source === "api" ? "API" : "Static"}
-                  </span>
-                </td>
-                <td>
-                  {post.source === "api" && (
-                    <form action={unpublish}>
-                      <input type="hidden" name="slug" value={post.slug} />
-                      <button type="submit" className="adm-unpub">Unpublish</button>
-                    </form>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+  const apiCount = posts.filter((x) => x.source === "api").length;
 
-      {totalPages > 1 && (
-        <div className="adm-pagination">
-          {p > 1
-            ? <a className="btn btn-ghost" href={`/admin?tab=posts&page=${p - 1}`}>← Prev</a>
-            : <span className="btn btn-ghost adm-btn-off">← Prev</span>}
-          <span className="adm-page-info">Page {p} of {totalPages} &nbsp;·&nbsp; {sorted.length} posts</span>
-          {p < totalPages
-            ? <a className="btn btn-ghost" href={`/admin?tab=posts&page=${p + 1}`}>Next →</a>
-            : <span className="btn btn-ghost adm-btn-off">Next →</span>}
+  return (
+    <>
+      {msg && <div className="adm-banner adm-banner-ok">{msg}</div>}
+      {err && <div className="adm-banner adm-banner-err">{err}</div>}
+
+      <PostForm editing={editing} />
+
+      <div className="adm-panel">
+        <h2>
+          Blog posts <span className="adm-count">{posts.length}</span>
+          <span className="adm-more">{apiCount} editable · {posts.length - apiCount} in code</span>
+        </h2>
+        <div className="adm-table-wrap">
+          <table className="adm-table">
+            <thead>
+              <tr><th>Title</th><th>Slug</th><th>Published</th><th>Updated</th><th>Source</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+              {pageRows.map((post) => (
+                <tr key={post.slug}>
+                  <td><a href={`/blog/${post.slug}`} target="_blank" rel="noreferrer">{post.title}</a></td>
+                  <td><code>{post.slug}</code></td>
+                  <td>{post.publishedDate}</td>
+                  <td>{post.lastUpdated || "—"}</td>
+                  <td>
+                    <span className={post.source === "api" ? "adm-chip adm-chip-api" : "adm-chip"}>
+                      {post.source === "api" ? "KV" : "Static"}
+                    </span>
+                  </td>
+                  <td>
+                    {post.source === "api" ? (
+                      <div className="adm-actions">
+                        <a className="adm-edit" href={`/admin?tab=posts&edit=${encodeURIComponent(post.slug)}`}>Edit</a>
+                        <form action={unpublish}>
+                          <input type="hidden" name="slug" value={post.slug} />
+                          <button type="submit" className="adm-unpub"
+                            title="Removes the post from the blog. The content is not recoverable from here — copy it first if you may want it back.">
+                            Delete
+                          </button>
+                        </form>
+                      </div>
+                    ) : (
+                      <span className="adm-static-note" title="Static articles live in lib/articles.js and are edited in the repo">in code</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      )}
-    </div>
+
+        {totalPages > 1 && (
+          <div className="adm-pagination">
+            {p > 1
+              ? <a className="btn btn-ghost" href={`/admin?tab=posts&page=${p - 1}`}>← Prev</a>
+              : <span className="btn btn-ghost adm-btn-off">← Prev</span>}
+            <span className="adm-page-info">Page {p} of {totalPages} &nbsp;·&nbsp; {sorted.length} posts</span>
+            {p < totalPages
+              ? <a className="btn btn-ghost" href={`/admin?tab=posts&page=${p + 1}`}>Next →</a>
+              : <span className="btn btn-ghost adm-btn-off">Next →</span>}
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
