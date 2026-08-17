@@ -4,7 +4,7 @@ import { DISCOS, isValidRef } from "../../lib/discos";
 import { getIp, logBillCheck, rateLimitBill } from "../../lib/store";
 import { fetchBillJson } from "../../lib/pitc";
 import { normaliseBill } from "../../lib/billData";
-import { PROTECTED, adjustmentsOn, categoryFor } from "../../lib/tariffs";
+import { adjustmentsOn, categoryFor } from "../../lib/tariffs";
 import {
   anomalyCheck, chargeBreakdown, effectiveRate, largestSurcharge,
   monthOverMonth, protectedStatus, slabPosition, slabSaving,
@@ -100,7 +100,6 @@ export default async function Result({ searchParams }) {
   const slab = bill ? slabPosition(bill.unitsConsumed) : null;
   const breakdown = bill ? chargeBreakdown(bill) : null;
   const protectedInfo = bill ? protectedStatus(bill) : null;
-  if (protectedInfo) protectedInfo.qualifyingNote = PROTECTED.qualifyingNote;
   // The tariff code on the bill wins; units are only a fallback.
   const billCategory = protectedInfo?.declared === true
     ? "protected"

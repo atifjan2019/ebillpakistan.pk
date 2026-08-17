@@ -154,6 +154,46 @@ export default function EditorialPolicy() {
             built to degrade loudly rather than to go quietly stale.
           </p>
 
+          <h2>Where definitions live, and why they are easy to miss</h2>
+          <p>
+            A hard-won note for whoever looks next. NEPRA publishes two quite different kinds of
+            document, and only one of them contains definitions:
+          </p>
+          <ul>
+            <li>
+              A <strong>full Schedule of Tariff</strong> carries <strong>PART-II</strong> —
+              &ldquo;Definitions and Conditions for supply of power specific to each consumer
+              category&rdquo; — which is where terms like <em>protected consumer</em> and{" "}
+              <em>lifeline consumer</em> are actually defined.
+            </li>
+            <li>
+              <strong>Quarterly adjustments, rationalisation notifications and fuel charge
+              adjustments</strong> are rate tables. They contain no PART-II at all.
+            </li>
+          </ul>
+          <p>
+            We searched five separate notifications for the protected-consumer qualifying period and
+            found nothing, because every one of them was the second kind — S.R.O. 279(I)/2026,
+            1285(I)/2025 and 1286(I)/2025 are rate tables, and the Consumer Service Manual covers
+            pro-rata billing rather than eligibility. The definition was in{" "}
+            <a href="https://nepra.org.pk/tariff/Tariff/Notifications/2022/July/S.R.O%201165%20(I)-2022%20dated%2025-07-2022.pdf" target="_blank" rel="noopener noreferrer">
+              S.R.O. 1165(I)/2022
+            </a>{" "}
+            of 25 July 2022 the whole time, at PART-II, A-1 Residential, page 29 — still in force at
+            page 69 of{" "}
+            <a href="https://nepra.org.pk/tariff/Tariff/Notifications/2025/07%20Jul/SRO%201287%20(I)%202025%2018-07-2025.pdf" target="_blank" rel="noopener noreferrer">
+              S.R.O. 1287(I)/2025
+            </a>
+            .
+          </p>
+          <p>
+            <strong>So: if you are hunting a definition rather than a rate, open the most recent full
+            Schedule of Tariff and go to PART-II.</strong> Note also that these PDFs are OCR&apos;d
+            scans whose text layer is imperfect — &ldquo;≤&rdquo; can render as &ldquo;~&rdquo; and
+            &ldquo;PART-II&rdquo; as &ldquo;PART-Il&rdquo; — so a text search can miss what a visual
+            read finds. Render the page and read it.
+          </p>
+
           <h2>How often pages are reviewed</h2>
           <ul>
             <li>

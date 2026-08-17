@@ -1,11 +1,10 @@
 import { SITE_URL, buildMeta } from "../../lib/seo";
 import {
   A1_TOU, A1_PREPAID, ADJUSTMENTS, ADJUSTMENT_EXCLUDES, MINIMUM_CHARGE,
-  NEPRA_SOURCE, PROTECTED, SRO_BY_DISCO, TARIFFS, energyCharge, LAST_VERIFIED_AGAINST_SOURCE,
+  NEPRA_SOURCE, PROTECTED, LIFELINE, CATEGORY_SOURCE, UNPROTECTED_NOTE, SRO_BY_DISCO, TARIFFS, energyCharge, LAST_VERIFIED_AGAINST_SOURCE,
 } from "../../lib/tariffs";
 import { DISCOS } from "../../lib/discos";
 import TariffTable from "../TariffTable";
-import Verify from "../Verify";
 
 export const metadata = buildMeta({
   title: "Pakistan Electricity Tariff 2026 — Domestic Slab Rates, Fixed Charges & Adjustments",
@@ -33,6 +32,14 @@ const FAQS = [
   [
     "Why is there a rebate on my bill this month?",
     "S.R.O. 953(I)/2026 applies a quarterly tariff adjustment of minus Rs 1.9857 per unit across the June, July and August 2026 billing months. It is a temporary adjustment on top of the slab rate, not a change to the rate itself, and it expires after August. Lifeline, prepaid and incremental-consumption-package consumers are excluded.",
+  ],
+  [
+    "Can I be a protected consumer if my sanctioned load is 5 kW?",
+    "No. Protected status is confined to Non-ToU residential consumers, and a sanctioned load of 5 kW or above requires Time-of-Use metering and A-1(b) billing. Such a household is disqualified regardless of how few units it uses. The definition is in S.R.O. 1165(I)/2022, PART-II, A-1 Residential.",
+  ],
+  [
+    "How many months do I need to stay under 200 units?",
+    "Six. The notified definition is a Non-ToU residential consumer using 200 kWh or less per month consistently for the past 6 months — a rolling look-back over the six immediately preceding months. The gazette's word is 'consistently' rather than 'consecutive', though in practice it works the same way.",
   ],
   [
     "Are these rates the same for LESCO, MEPCO, PESCO and the rest?",
@@ -182,21 +189,76 @@ export default function TariffPage() {
             which adjustment applied to each will mislead you.
           </p>
 
-          <h2>Protected consumer status</h2>
+          <h2>Who counts as protected, lifeline or unprotected</h2>
           <p>
-            The threshold is <strong>{PROTECTED.unitThreshold} units</strong> a month. NEPRA&apos;s{" "}
-            <a href={PROTECTED.sourceUrl} target="_blank" rel="noopener noreferrer">
-              Consumer Service Manual (Revised 2025)
+            These are not informal labels — each is defined in the notified Schedule of Tariff, at{" "}
+            <a href={CATEGORY_SOURCE.url} target="_blank" rel="noopener noreferrer">
+              {CATEGORY_SOURCE.sro}
             </a>{" "}
-            also sets out what happens when a reading covers more than a calendar month:{" "}
-            {PROTECTED.carryForwardRule}
+            of 25 July 2022, {CATEGORY_SOURCE.page}. The same text is still in force at page 69 of{" "}
+            <a href={CATEGORY_SOURCE.stillInForce.url} target="_blank" rel="noopener noreferrer">
+              {CATEGORY_SOURCE.stillInForce.sro}
+            </a>{" "}
+            of 18 July 2025.
+          </p>
+
+          <h3>Protected</h3>
+          <blockquote className="tariff-quote">&ldquo;{PROTECTED.definition}&rdquo;</blockquote>
+          <p>
+            Two conditions, and most explanations only mention the first. The consumption test is{" "}
+            <strong>≤ {PROTECTED.unitThreshold} kWh a month, consistently for the past{" "}
+            {PROTECTED.qualifyingMonths} months</strong> — a rolling look-back over the six
+            immediately preceding months, each of which has to be at or below the threshold. Note
+            the gazette&apos;s word is &ldquo;consistently&rdquo;, not &ldquo;consecutive&rdquo;;
+            the practical effect is the same, but it is worth quoting what the notification
+            actually says.
+          </p>
+
+          <h3>The condition almost nobody mentions: Non-ToU only</h3>
+          <p>
+            The definition is confined to <strong>Non-ToU</strong> residential consumers. Under
+            clauses 3 and 4 of the same A-1 section, any consumer with a sanctioned load of{" "}
+            <strong>{PROTECTED.touThresholdKw} kW or above</strong> must be given Time-of-Use
+            metering and billed on A-1(b).
           </p>
           <p>
-            What we will <em>not</em> tell you is how many consecutive months at or below the
-            threshold are required to hold the status. That figure is widely repeated online as six
-            months, but we could not confirm it from the Consumer Service Manual, the 11 February
-            2026 determination, S.R.O. 279 or S.R.O. 1286(I)/2025 — so we do not state it.{" "}
-            <Verify text={PROTECTED.qualifyingNote} />
+            Put those together and the consequence is concrete:{" "}
+            <strong>
+              a household with a sanctioned load of {PROTECTED.touThresholdKw} kW or more can never
+              be a protected consumer, however little electricity it uses
+            </strong>
+            . Fifty units a month makes no difference. If you have been wondering why your usage is
+            low but your bill is on the unprotected schedule, your sanctioned load is the first
+            thing to check — it is printed on the bill, in kW, near the tariff code.
+          </p>
+
+          <h3>Lifeline</h3>
+          <blockquote className="tariff-quote">&ldquo;{LIFELINE.definition}&rdquo;</blockquote>
+          <p>
+            Lifeline is stricter than people assume, and again on two axes. The connection must be{" "}
+            <strong>single-phase with a sanctioned load up to {LIFELINE.maxSanctionedLoadKw} kW</strong>,
+            and the consumption test looks back <strong>twelve months</strong> rather than six: the
+            maximum of the last twelve months&apos; and the current month&apos;s consumption must be{" "}
+            ≤ {LIFELINE.unitCeiling} units. The two rates for ≤ 50 and ≤ 100 units sit inside that
+            category.
+          </p>
+
+          <h3>Unprotected</h3>
+          <p>{UNPROTECTED_NOTE} That is the default, and it is where the great majority of domestic consumers sit.</p>
+
+          <h3>What happens if you go over</h3>
+          <p>
+            Where a billing cycle runs beyond a calendar month, the units are pro-rated:{" "}
+            {PROTECTED.carryForwardRule} Lifeline consumers get the same treatment at the 50 and 100
+            unit thresholds (CSM Revised 2025, clause 6.1.1.1(a)).
+          </p>
+          <p>
+            On regaining the status after exceeding the threshold, we will say only what the
+            documents support. <strong>No notification imposes a lock-out or penalty period.</strong>{" "}
+            What follows from a rolling {PROTECTED.qualifyingMonths}-month test is simply that the
+            six months behind you must all be at or below the threshold again before you meet the
+            definition — that is an implication of the test, not a separate published rule, and you
+            will see it stated as one all over the internet.
           </p>
 
           <h2>Which Schedule of Tariff applies to your company</h2>

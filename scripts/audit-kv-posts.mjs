@@ -60,10 +60,13 @@ const strip = (html) =>
 
 const words = (t) => strip(t).split(/\s+/).filter(Boolean).length;
 
+// Urdu uses U+06D4 as its full stop. Splitting on ASCII punctuation alone turns
+// a 750-word Urdu post into ~5 "sentences", which then makes any shared line of
+// site chrome look like 80% duplication. Include it.
 const sentences = (t) =>
   new Set(
     strip(t)
-      .split(/(?<=[.!?])\s+/)
+      .split(/(?<=[.!?\u06D4])\s+/)
       .map((s) => s.trim().toLowerCase())
       .filter((s) => s.split(/\s+/).length >= 6)
   );
@@ -85,12 +88,19 @@ const TELESCOPIC = [
   /slab\s+by\s+slab/i,
   /applies\s+to\s+the\s+upper\s+portion/i,
 ];
+// The six-month qualifying period IS correct — S.R.O. 1165(I)/2022, PART-II,
+// A-1 Residential. What is not acceptable is asserting it with no citation, or
+// presenting "consecutive" as the gazette's word when it says "consistently".
+// So this now flags an UNCITED claim, not the claim itself.
 const SIX_MONTHS = [
   /six\s+consecutive\s+(billing\s+)?(months|cycles)/i,
   /6\s+consecutive\s+(billing\s+)?(months|cycles)/i,
   /(past|last)\s+six\s+(billing\s+)?months/i,
   /چھ\s*ماہ/,
 ];
+const CITES_DEFINITION = /1165\s*\(I\)|1165\(I\)|S\.?R\.?O\.?\s*1165/i;
+// Also flag the unsupported lock-out claim, which no notification states.
+const LOCKOUT = [/fresh\s+run\s+of\s+six/i, /must\s+build\s+a\s+fresh\s+run/i, /locked?\s+out\s+for\s+six/i];
 const HAZECO_BAD = [/january\s+2023/i, /jan\s+2023/i, /in\s+2023.{0,40}carved\s+out/i];
 
 // Rate figures that are current. A post quoting a domestic per-unit rate that is
@@ -136,7 +146,10 @@ for (const p of posts) {
   const tel = hit(body, TELESCOPIC);
   if (tel.length) flags.push(["SLAB MODEL", `describes billing as telescopic (${tel.length} match) — WRONG for unprotected consumers`]);
   const six = hit(body, SIX_MONTHS);
-  if (six.length) flags.push(["SIX MONTHS", "asserts a six-consecutive-month protected rule — unverified, must not be asserted"]);
+  if (six.length && !CITES_DEFINITION.test(strip(body)))
+    flags.push(["SIX MONTHS UNCITED", "states the six-month period without citing S.R.O. 1165(I)/2022 — the period is correct, the missing citation is not"]);
+  if (hit(body, LOCKOUT).length)
+    flags.push(["LOCK-OUT CLAIM", "asserts a fresh-run/lock-out period to regain protected status — no notification states one; present it as an implication of the rolling test"]);
   const haz = hit(body, HAZECO_BAD);
   if (haz.length) flags.push(["HAZECO DATE", "says January 2023 — correct: incorporated 31 Oct 2023, licence 23 May 2025, operations 1 Jul 2025"]);
   if (!p.author && !AUTHORS[DEFAULT_AUTHOR]) flags.push(["BYLINE", "no author and no default resolvable"]);

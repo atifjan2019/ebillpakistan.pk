@@ -1,6 +1,5 @@
 import { SITE_URL, buildMeta } from "../../lib/seo";
 import { SAMPLE_HEADER, SAMPLE_LINES, SAMPLE_MATH, SAMPLE_NOTICE } from "../../lib/sampleBill";
-import Verify from "../Verify";
 
 export const metadata = buildMeta({
   title: "Electricity Bill Explained Line by Line — Annotated Sample Bill",
@@ -163,11 +162,23 @@ export default function SampleBillExplained() {
           <h2>Protected and unprotected: the line worth watching</h2>
           <p>
             Domestic consumers sit in one of two categories, and the difference between them is
-            large. <strong>Protected</strong> consumers keep their monthly consumption at or below a
-            defined threshold for a defined run of consecutive months and are charged materially
-            lower per-unit rates and lower fixed charges. <strong>Unprotected</strong> consumers pay
-            the standard schedule. The current threshold and qualifying period are set by NEPRA:{" "}
-            <Verify text="{{VERIFY: current protected-consumer unit threshold and number of consecutive months required, per the latest NEPRA determination}}" />.
+            large. A <strong>protected</strong> consumer is defined as a <strong>Non-ToU</strong>{" "}
+            residential consumer using <strong>200 kWh or less per month, consistently for the past
+            six months</strong> (
+            <a href="https://nepra.org.pk/tariff/Tariff/Notifications/2022/July/S.R.O%201165%20(I)-2022%20dated%2025-07-2022.pdf" target="_blank" rel="noopener noreferrer">
+              S.R.O. 1165(I)/2022
+            </a>
+            , PART-II, A-1 Residential). <strong>Unprotected</strong> consumers pay the standard
+            schedule.
+          </p>
+          <p>
+            The &ldquo;Non-ToU&rdquo; condition is the part almost every explanation leaves out, and
+            it disqualifies people outright. A sanctioned load of <strong>5 kW or above</strong>{" "}
+            requires Time-of-Use metering and A-1(b) billing, so such a household{" "}
+            <strong>can never be protected at any level of consumption</strong> — fifty units a
+            month would not help. The sanctioned load is printed in the bill header, in kW; on the
+            sample above it is 2 kW, so this consumer at least clears that test. Full definitions,
+            including lifeline, are on our <a href="/electricity-tariff">tariff page</a>.
           </p>
           <p>
             The practical consequence is that a single hot month can be expensive twice over: once
@@ -175,7 +186,8 @@ export default function SampleBillExplained() {
             with it. If your bill shows you as protected and your usage is creeping towards the
             threshold, that is the month to be careful — not the month after, when the status has
             already gone. Your status is printed on the bill; on the sample above it reads
-            UNPROTECTED.
+            UNPROTECTED — and with a 2 kW sanctioned load, this consumer is at least eligible on the
+            Non-ToU test.
           </p>
 
           <h2>The slab system, in one paragraph</h2>

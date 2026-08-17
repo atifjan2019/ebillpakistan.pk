@@ -4,7 +4,6 @@
 // which happens only when the parsed bill actually contained the inputs. A
 // missing field means a hidden module, never an invented number.
 import { fmtMoney, fmtUnits } from "../../lib/billData";
-import Verify from "../Verify";
 
 const Card = ({ title, tone = "", children }) => (
   <section className={`an-card ${tone ? `an-card--${tone}` : ""}`}>
@@ -69,39 +68,63 @@ export default function BillAnalysis({
             title="Protected consumer status"
             tone={protectedInfo.atRisk ? "warn" : protectedInfo.declared ? "good" : ""}
           >
-            {protectedInfo.declared === true && (
-              <p>
-                Your tariff code says you are a <b>protected</b> consumer, which means a
-                materially lower rate per unit.
-              </p>
-            )}
-            {protectedInfo.declared === false && (
-              <p>
-                Your tariff code says you are an <b>unprotected</b> consumer, so the standard
-                domestic schedule applies.
-              </p>
-            )}
-            {protectedInfo.declared === null && protectedInfo.units !== null && (
-              <p>
-                This bill does not state a protected/unprotected code we can read. On this
-                month&apos;s <b>{fmtUnits(protectedInfo.units)}</b> alone you are{" "}
-                {protectedInfo.overThreshold ? "above" : "at or below"} the{" "}
-                {protectedInfo.threshold}-unit threshold — though status is assessed over a run of
-                billing cycles rather than a single month.
-              </p>
-            )}
-            {protectedInfo.atRisk && (
-              <p className="an-alert">
-                You are only <b>{protectedInfo.marginToThreshold} units</b> below the{" "}
-                {protectedInfo.threshold}-unit threshold. Going over it can cost you protected
-                status, and the lower rate that comes with it, from the next billing cycle.
-              </p>
-            )}
-            {protectedInfo.carryForwardRule && (
-              <p className="an-note">{protectedInfo.carryForwardRule}</p>
+            {protectedInfo.touExcluded ? (
+              <>
+                <p>
+                  This connection <b>cannot be a protected consumer</b>, whatever it uses. Protected
+                  status is confined to Non-ToU residential consumers, and this bill shows{" "}
+                  {protectedInfo.touReason}
+                  {protectedInfo.loadKw !== null && protectedInfo.touReason?.includes("load") ? (
+                    <> — at {protectedInfo.touThresholdKw} kW and above, Time-of-Use metering and
+                    A-1(b) billing are required.</>
+                  ) : "."}
+                </p>
+                <p className="an-note">
+                  This is the single most-missed rule in the tariff: a household can sit well under
+                  200 units every month and still never qualify, purely because of its sanctioned
+                  load.
+                </p>
+              </>
+            ) : (
+              <>
+                {protectedInfo.declared === true && (
+                  <p>
+                    Your tariff code says you are a <b>protected</b> consumer, which means a
+                    materially lower rate per unit.
+                  </p>
+                )}
+                {protectedInfo.declared === false && (
+                  <p>
+                    Your tariff code says you are an <b>unprotected</b> consumer, so the standard
+                    domestic schedule applies.
+                  </p>
+                )}
+                {protectedInfo.declared === null && protectedInfo.units !== null && (
+                  <p>
+                    This bill does not state a protected/unprotected code we can read. On this
+                    month&apos;s <b>{fmtUnits(protectedInfo.units)}</b> alone you are{" "}
+                    {protectedInfo.overThreshold ? "above" : "at or below"} the{" "}
+                    {protectedInfo.threshold}-unit threshold — but eligibility is assessed over{" "}
+                    {protectedInfo.qualifyingMonths} months, not one.
+                  </p>
+                )}
+                {protectedInfo.atRisk && (
+                  <p className="an-alert">
+                    You are only <b>{protectedInfo.marginToThreshold} units</b> below the{" "}
+                    {protectedInfo.threshold}-unit threshold. Going over it breaks the run of
+                    qualifying months behind you.
+                  </p>
+                )}
+              </>
             )}
             <p className="an-note">
-              <Verify text={protectedInfo.qualifyingNote || ""} />
+              A protected consumer is defined as a Non-ToU residential consumer using{" "}
+              {protectedInfo.threshold} kWh or less per month consistently for the past{" "}
+              {protectedInfo.qualifyingMonths} months —{" "}
+              <a href={protectedInfo.sourceUrl} target="_blank" rel="noopener noreferrer">
+                {protectedInfo.source}
+              </a>
+              . <a href="/electricity-tariff">Full definition and what it means</a>.
             </p>
           </Card>
         )}
