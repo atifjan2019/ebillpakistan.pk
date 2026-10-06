@@ -7,6 +7,7 @@ import { BUSINESS } from "../lib/contact";
 import Nav from "./Nav";
 import CookieConsent, { CookieSettingsLink } from "./CookieConsent";
 import AdSense from "./AdSense";
+import Analytics from "./Analytics";
 
 const body = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
 const display = Plus_Jakarta_Sans({
@@ -150,10 +151,11 @@ export default function RootLayout({ children }) {
           </div>
         </footer>
 
-        {/* Consent gate + the advertising loader it controls. AdSense renders no
-            DOM and injects nothing until the visitor opts in. */}
+        {/* Consent gate + the loaders it controls. AdSense and Analytics render
+            no DOM and inject nothing until the visitor opts in to each. */}
         <CookieConsent />
         <AdSense />
+        <Analytics />
       </body>
     </html>
   );

@@ -130,10 +130,10 @@ export default function Privacy() {
 
       <h2>6. Analytics</h2>
       <p>
-        We may use privacy-respecting analytics to understand aggregate traffic — which pages are
-        read, roughly where visitors come from, and whether the lookup succeeded. Any analytics that
-        relies on non-essential cookies is loaded only after you consent, on the same basis as
-        advertising, and can be refused in the same banner. Aggregate lookup statistics used to run
+        We use Google Analytics to understand aggregate traffic — which pages are read, roughly
+        where visitors come from, and whether the lookup succeeded. It relies on cookies, so it is
+        loaded only after you consent to analytics cookies, on the same basis as advertising, and
+        can be refused in the same banner. It is configured not to share data for advertising. Aggregate lookup statistics used to run
         the service (counts by company, by city and by day) are derived from server logs, are not
         tied to your identity, and are described in section 2.
       </p>
