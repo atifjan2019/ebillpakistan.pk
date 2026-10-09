@@ -549,7 +549,13 @@ function AgentPanel({ agent, runLog, draftCount }) {
         </div>
       )}
       {agent.state?.status === "failed" && (
-        <div className="adm-banner adm-banner-err">Last run failed: {agent.state.error} The research is saved; run again to finish the article without paying for the research twice.</div>
+        <div className="adm-banner adm-banner-err">
+          Last run failed: {agent.state.error}
+          {/workspace/i.test(agent.state.error || "") && (
+            <> Fix: create the API key inside a workspace in the Anthropic console, or add <code>ANTHROPIC_WORKSPACE_ID</code> to the Vercel environment variables.</>
+          )}
+          {agent.state.brief ? " The research is saved; run again to finish the article without paying for the research twice." : ""}
+        </div>
       )}
       <div className="adm-form-actions">
         <form action={runAgent}>
