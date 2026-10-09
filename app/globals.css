@@ -269,6 +269,34 @@ img { max-width: 100%; }
 .prose a, .legal-note a { color: var(--brand); font-weight: 600; }
 .prose a.btn-primary { color: #fff; } /* keep the email button text white over its green fill */
 .prose strong { color: var(--ink); }
+/* Everything the content agent's Markdown can produce, styled to match the
+   hand-written guides: sub-headings, numbered steps, comparison tables,
+   quotes, inline code and the Sources list. */
+.prose h3 { font-size: 17px; margin: 22px 0 6px; color: var(--ink); }
+.prose h4 { font-size: 15.5px; margin: 18px 0 4px; color: var(--ink); }
+.prose ol { padding-left: 24px; margin: 8px 0 14px; }
+.prose ol li::marker { font-weight: 700; color: var(--brand); }
+.prose li > p { margin: 0; }
+.prose li a { word-break: break-word; }
+.table-wrap { overflow-x: auto; margin: 14px 0 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); -webkit-overflow-scrolling: touch; }
+.prose table { width: 100%; border-collapse: collapse; font-size: 14.5px; line-height: 1.5; }
+.prose th { background: var(--brand-50); color: var(--ink); font-weight: 700; text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.prose td { padding: 10px 14px; border-top: 1px solid var(--line); color: var(--body); vertical-align: top; }
+.prose tbody tr:first-child td { border-top: 0; }
+.prose tbody tr:nth-child(even) td { background: #fafcfb; }
+.prose td:first-child { font-weight: 600; color: var(--ink); }
+.prose blockquote { margin: 14px 0; padding: 12px 16px; border-left: 3px solid var(--brand); background: var(--brand-50); border-radius: 0 10px 10px 0; }
+.prose blockquote p { margin: 0; }
+.prose code { font-size: 90%; background: #eef4ef; padding: 1px 6px; border-radius: 5px; }
+.prose hr { border: 0; border-top: 1px solid var(--line); margin: 26px 0; }
+.prose img { max-width: 100%; height: auto; border-radius: 12px; }
+/* A reading measure for blog posts: the legal pages can run wide, an article
+   should not. */
+.post-inner { max-width: 820px; }
+.post-inner .prose p, .post-inner .prose li { font-size: 16px; line-height: 1.8; }
+.post-inner .prose h2 { font-size: 22px; margin: 34px 0 10px; }
+.post-inner .prose h2:first-child { margin-top: 0; }
+.post-inner .prose p:first-child { font-size: 17px; }
 
 /* DISCO helpline definition list */
 .contact-dl { margin: 8px 0 0; }

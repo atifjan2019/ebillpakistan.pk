@@ -19,7 +19,8 @@ export const dynamic = "force-static";
 // Legacy `<!-- sponsored -->` sentinels left in older posts are matched and
 // dropped so they render nothing.
 function renderBody(html) {
-  const src = html;
+  // Tables scroll sideways on a phone instead of breaking the layout.
+  const src = html.replace(/<table>/g, '<div class="table-wrap"><table>').replace(/<\/table>/g, "</table></div>");
 
   const parts = [];
   const re = /<!--\s*(?:tariff:(\w+)|billimage:(\w+)|sponsored(?::\S+)?)\s*-->/g;
@@ -118,7 +119,7 @@ export default async function ArticlePage({ params }) {
       {faqLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
 
-      <div className="container legal-inner">
+      <div className="container legal-inner post-inner">
         <nav aria-label="Breadcrumb" className="crumb">
           <a href="/">Home</a> <span>/</span> <a href="/blog">Blog</a> <span>/</span> <span aria-current="page">{a.title}</span>
         </nav>
