@@ -47,14 +47,16 @@ export default function EditorialPolicy() {
             Every guide on eBill Pakistan carries a visible byline linking to the author&apos;s
             page. The site is written and edited by{" "}
             <a href={`/author/${editor.slug}`}>{editor.name}</a>, {editor.role.toLowerCase()}.
-            There are no anonymous posts, no syndicated filler and no AI-generated articles
-            published without a named human reviewing every factual claim in them.
+            There are no anonymous posts and no syndicated filler. Every guide is published under
+            the editor&apos;s name and the editor is accountable for it.
           </p>
           <p>
-            Some guides begin as a draft prepared with AI research tools, which search NEPRA, the
-            distribution companies and the national press and list every page they relied on at
-            the foot of the article. The editor reads each draft, checks its figures against those
-            sources, and decides whether it is published. A draft that cannot be verified is not.
+            Some guides are researched and drafted with AI tools. Those tools search NEPRA, the
+            distribution companies and the national press, are instructed to use only figures they
+            found in those sources, and list every page they relied on in a Sources section at the
+            foot of the article. The editor reviews published guides against those sources and
+            corrects or removes anything that does not hold up; if you spot an error first, the
+            corrections section below says how to tell us, and we fix it on the page.
           </p>
 
           <h2>Where our numbers come from</h2>

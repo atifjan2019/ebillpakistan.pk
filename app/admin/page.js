@@ -534,7 +534,7 @@ function AgentPanel({ agent, runLog, draftCount }) {
       <p className="adm-agent-blurb">
         Once a day it researches one topic the site does not cover yet, using live web search over NEPRA, the DISCOs and the
         national press, then writes a sourced guide. {agent.autoPublish
-          ? "Posts go live as soon as they are written."
+          ? "Each post is published to the blog as soon as it is written; it appears in the list below and can be edited or deleted there like any other post."
           : "Each draft sits below until you publish it, so nothing goes live without a person reading it."}
       </p>
       {!agent.configured && (
