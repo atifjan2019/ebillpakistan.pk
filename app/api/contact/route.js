@@ -7,11 +7,12 @@
 //   4. strict server-side validation of every field
 //
 // Delivery: the message is ALWAYS written to the Redis message list first, so it
-// cannot be lost, and is additionally emailed if an outbound provider is
-// configured. If neither path succeeds we return 503 and say so — we never
+// cannot be lost (the admin Messages tab shows it), and is emailed through the
+// SMTP settings on the admin Settings tab when they are filled in. If neither path succeeds we return 503 and say so — we never
 // return "sent" for a message that went nowhere.
 import { getIp, rateLimitContact, saveContactMessage } from "../../../lib/store";
 import { CONTACT_SUBJECTS } from "../../../lib/contact";
+import { sendMail } from "../../../lib/mailer";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,26 +24,28 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const bad = (status, error, field) =>
   Response.json({ ok: false, error, ...(field ? { field } : {}) }, { status });
 
-// TODO (deployment): outbound email is OPTIONAL and currently unconfigured.
-// To receive messages by email as well as in the dashboard store, set BOTH:
-//   RESEND_API_KEY  — an API key from https://resend.com
-//   CONTACT_TO      — the inbox to notify, e.g. support@ebillpakistan.pk
-//   CONTACT_FROM    — a verified sender on your domain, e.g. forms@ebillpakistan.pk
-// Until they are set, messages are still captured (Redis list ebp:contact:messages)
-// and nothing is silently dropped.
+// Delivery by email. The SMTP settings on the admin Settings tab are tried
+// first (the same Gmail connection the content agent uses), with the reader's
+// address as Reply-To so a reply goes straight back to them. Resend is kept as
+// an alternative for a deployment that sets RESEND_API_KEY, CONTACT_TO and
+// CONTACT_FROM instead. Returns true only when a provider accepted the message.
 async function sendEmail({ name, email, subject, message }) {
+  const smtp = await sendMail({
+    subject: `[eBill Pakistan] ${subject}: ${name}`,
+    text: `From: ${name} <${email}>\nSubject: ${subject}\n\n${message}`,
+    html: `<p><strong>From:</strong> ${esc(name)} &lt;${esc(email)}&gt;<br><strong>Subject:</strong> ${esc(subject)}</p><pre style="white-space:pre-wrap;font:inherit">${esc(message)}</pre><p style="color:#88998f;font-size:13px">Reply to this email to answer them. Sent from the contact form on ebillpakistan.pk.</p>`,
+    replyTo: email,
+  });
+  if (smtp.ok) return true;
+
   const key = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_TO;
   const from = process.env.CONTACT_FROM;
   if (!key || !to || !from) return false;
-
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${key}`,
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         from,
         to: [to],
@@ -57,6 +60,8 @@ async function sendEmail({ name, email, subject, message }) {
     return false;
   }
 }
+
+const esc = (v) => String(v ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
 export async function POST(request) {
   let body;

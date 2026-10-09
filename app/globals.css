@@ -1076,3 +1076,9 @@ a.byline-name:hover { color: var(--brand); }
 .adm-checks { display: flex; flex-wrap: wrap; gap: 10px 22px; }
 .adm-form label.adm-check, .adm-check { display: inline-flex; flex-direction: row; align-items: center; gap: 8px; font-size: 14px; color: var(--ink); min-height: 32px; width: auto; }
 .adm-check input[type="checkbox"] { width: 18px; height: 18px; min-height: 0; accent-color: var(--brand); margin: 0; }
+.adm-messages { display: grid; gap: 12px; }
+.adm-message { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; background: #fff; }
+.adm-message header { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 14px; margin-bottom: 8px; }
+.adm-message header b { color: var(--ink); }
+.adm-message header a { color: var(--brand-700); font-weight: 600; }
+.adm-message p { white-space: pre-wrap; font-size: 14.5px; line-height: 1.6; color: var(--body); margin: 0 0 10px; }

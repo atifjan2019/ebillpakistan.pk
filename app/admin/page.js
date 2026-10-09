@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { DISCOS } from "../../lib/discos";
-import { getStats } from "../../lib/store";
+import { getStats, getContactMessages } from "../../lib/store";
 import { getArticle } from "../../lib/articles";
 import { getAllPosts, deletePost, getPost, savePost } from "../../lib/posts";
 import { buildPost, slugify } from "../../lib/publishPost";
@@ -219,7 +219,7 @@ async function runAgent() {
   redirect(`/admin?tab=posts&msg=${encodeURIComponent("Writing a post now. Research and writing take two to five minutes; refresh this page to see it appear under drafts.")}`);
 }
 
-const TABS = ["overview", "companies", "cities", "days", "recent", "posts", "settings"];
+const TABS = ["overview", "companies", "cities", "days", "recent", "posts", "messages", "settings"];
 
 export default async function AdminPage({ searchParams }) {
   const sp = await searchParams;
@@ -231,8 +231,8 @@ export default async function AdminPage({ searchParams }) {
   // The posts page doesn't need analytics, and vice versa.
   const editSlug = tab === "posts" ? String(sp?.edit || "") : "";
   const draftSlug = tab === "posts" ? String(sp?.draft || "") : "";
-  const [stats, posts, editingPost, editingDraft, drafts, agent, runLog, settings] = await Promise.all([
-    tab === "posts" || tab === "settings" ? null : getStats(),
+  const [stats, posts, editingPost, editingDraft, drafts, agent, runLog, settings, messages] = await Promise.all([
+    tab === "posts" || tab === "settings" || tab === "messages" ? null : getStats(),
     tab === "posts" ? getAllPosts() : null,
     editSlug ? getPost(editSlug) : null,
     draftSlug ? getDraft(draftSlug) : null,
@@ -240,9 +240,10 @@ export default async function AdminPage({ searchParams }) {
     tab === "posts" ? agentStatus() : null,
     tab === "posts" ? getRunLog(12) : [],
     tab === "settings" ? getSettings(SMTP_KEYS) : null,
+    tab === "messages" ? getContactMessages(100) : null,
   ]);
   const editing = editingDraft ? { ...editingDraft, fromDraft: editingDraft.slug } : editingPost;
-  return <Dashboard tab={tab} stats={stats} posts={posts} page={page} msg={sp?.msg} err={sp?.err} editing={editing} drafts={drafts} agent={agent} runLog={runLog} settings={settings} />;
+  return <Dashboard tab={tab} stats={stats} posts={posts} page={page} msg={sp?.msg} err={sp?.err} editing={editing} drafts={drafts} agent={agent} runLog={runLog} settings={settings} messages={messages} />;
 }
 
 /* ---------------- login ---------------- */
@@ -284,6 +285,7 @@ const ICONS = {
   days: <Ic><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M8 3v4M16 3v4M4 11h16" /></Ic>,
   recent: <Ic><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></Ic>,
   posts: <Ic><path d="M14 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7z" /><path d="M14 3v4h4M9.5 12h5M9.5 16h5" /></Ic>,
+  messages: <Ic><path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" /><path d="M3.5 6.5 12 13l8.5-6.5" /></Ic>,
   settings: <Ic><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" /></Ic>,
   external: <Ic><path d="M14 5h5v5M19 5l-8 8" /><path d="M19 14v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5" /></Ic>,
 };
@@ -295,6 +297,7 @@ const NAV = [
   ["days", "Last 14 days"],
   ["recent", "Recent checks"],
   ["posts", "Blog posts"],
+  ["messages", "Messages"],
   ["settings", "Settings"],
 ];
 
@@ -305,7 +308,8 @@ const TAB_TITLES = {
   days: ["Last 14 days", "Daily bill-check volume"],
   recent: ["Recent checks", "The latest individual bill lookups"],
   posts: ["Blog posts", "Everything published on /blog"],
-  settings: ["Settings", "Email notifications for the content agent"],
+  messages: ["Messages", "Everything sent through the contact form, newest first"],
+  settings: ["Settings", "Email for contact form messages and content agent alerts"],
 };
 
 /* ---------------- dashboard ---------------- */
@@ -334,7 +338,7 @@ function Bars({ rows, total, limit = 8 }) {
   );
 }
 
-function Dashboard({ tab, stats, posts, page, msg, err, editing, drafts, agent, runLog, settings }) {
+function Dashboard({ tab, stats, posts, page, msg, err, editing, drafts, agent, runLog, settings, messages }) {
   const configured = stats ? stats.configured : true;
   const [title, subtitle] = TAB_TITLES[tab];
 
@@ -402,6 +406,7 @@ function Dashboard({ tab, stats, posts, page, msg, err, editing, drafts, agent, 
             )}
             {tab === "posts" && <PostsTab posts={posts} page={page} msg={msg} err={err} editing={editing} drafts={drafts} agent={agent} runLog={runLog} />}
             {tab === "settings" && <SettingsTab settings={settings} msg={msg} err={err} />}
+            {tab === "messages" && <MessagesTab messages={messages || []} />}
           </div>
         </div>
       </div>
@@ -756,6 +761,32 @@ function PostsTab({ posts, page, msg, err, editing, drafts = [], agent, runLog =
   );
 }
 
+function MessagesTab({ messages }) {
+  return (
+    <div className="adm-panel">
+      <h2>Contact form messages <span className="adm-count">{messages.length}</span></h2>
+      {!messages.length ? (
+        <p className="adm-empty">No messages yet. Every submission is stored here even when email is not set up.</p>
+      ) : (
+        <div className="adm-messages">
+          {messages.map((m, i) => (
+            <article key={i} className="adm-message">
+              <header>
+                <b>{m.name}</b>
+                <a href={`mailto:${m.email}`}>{m.email}</a>
+                <span className="adm-chip">{m.subject}</span>
+                <span className="adm-static-note">{fmtWhen(new Date(m.t).toISOString())}</span>
+              </header>
+              <p>{m.message}</p>
+              <a className="adm-edit" href={`mailto:${m.email}?subject=${encodeURIComponent(`Re: ${m.subject} (eBill Pakistan)`)}`}>Reply</a>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 const SOURCE_LABEL = { saved: "saved here", env: "from the server environment", default: "default", none: "not set" };
 
 function SettingsTab({ settings, msg, err }) {
@@ -774,7 +805,7 @@ function SettingsTab({ settings, msg, err }) {
           <span className={configured ? "adm-chip adm-chip-api" : "adm-chip"}>{configured ? "Set up" : "Not set up"}</span>
         </h2>
         <p className="adm-agent-blurb">
-          The content agent emails you when a post goes live and when a run fails. For Gmail, leave the server and
+          Contact form messages and content agent alerts are sent through this connection. For Gmail, leave the server and
           port as they are, put your Gmail address as the username, and use an app password, not your normal
           password: Google Account, Security, 2-Step Verification, App passwords.
         </p>
@@ -826,6 +857,7 @@ function SettingsTab({ settings, msg, err }) {
               Email me when a run fails
             </label>
           </div>
+          <p className="adm-static-note">Contact form messages are always emailed when SMTP is set up, and always kept under Messages.</p>
 
           <div className="adm-form-actions">
             <button type="submit" className="btn btn-primary">Save settings</button>
