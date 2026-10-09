@@ -50,6 +50,12 @@ export default function EditorialPolicy() {
             There are no anonymous posts, no syndicated filler and no AI-generated articles
             published without a named human reviewing every factual claim in them.
           </p>
+          <p>
+            Some guides begin as a draft prepared with AI research tools, which search NEPRA, the
+            distribution companies and the national press and list every page they relied on at
+            the foot of the article. The editor reads each draft, checks its figures against those
+            sources, and decides whether it is published. A draft that cannot be verified is not.
+          </p>
 
           <h2>Where our numbers come from</h2>
           <p>We use a strict source hierarchy, and we name the source on the page:</p>

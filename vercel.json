@@ -1,8 +1,26 @@
 {
-  "regions": ["sin1"],
+  "regions": [
+    "sin1"
+  ],
   "functions": {
-    "app/api/bill/route.js": { "maxDuration": 30 },
-    "app/api/bill-json/route.js": { "maxDuration": 30 },
-    "app/api/asset/route.js": { "maxDuration": 15 }
-  }
+    "app/api/bill/route.js": {
+      "maxDuration": 30
+    },
+    "app/api/bill-json/route.js": {
+      "maxDuration": 30
+    },
+    "app/api/asset/route.js": {
+      "maxDuration": 15
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/daily-post?stage=research",
+      "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/daily-post?stage=write",
+      "schedule": "0 5 * * *"
+    }
+  ]
 }

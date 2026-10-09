@@ -2,15 +2,21 @@ import crypto from "crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { DISCOS } from "../../lib/discos";
 import { getStats } from "../../lib/store";
 import { getArticle } from "../../lib/articles";
 import { getAllPosts, deletePost, getPost, savePost } from "../../lib/posts";
 import { buildPost, slugify } from "../../lib/publishPost";
 import { AUTHORS, DEFAULT_AUTHOR } from "../../lib/authors";
+import { getDrafts, getDraft, deleteDraft, getRunLog } from "../../lib/drafts";
+import { agentStatus, runContentAgent } from "../../lib/contentAgent";
 import RecentChecks from "./RecentChecks";
 
 export const dynamic = "force-dynamic";
+// "Write a post now" runs the content agent in the background of this route,
+// so it needs the same time budget as the cron.
+export const maxDuration = 300;
 
 export const metadata = {
   title: "Admin | eBill Pakistan",
@@ -117,11 +123,58 @@ async function publish(formData) {
     redirect(`/admin?tab=posts&err=${encodeURIComponent("Could not write to the post store. Check the KV credentials and try again.")}`);
   }
 
+  // A draft published from the edit form leaves the review queue.
+  const fromDraft = get("fromDraft");
+  if (fromDraft) await deleteDraft(fromDraft);
+
   revalidatePath("/blog");
   revalidatePath(`/blog/${post.slug}`);
   revalidatePath(`/author/${post.author}`);
   revalidatePath("/sitemap.xml");
   redirect(`/admin?tab=posts&msg=${encodeURIComponent(`${existing ? "Replaced" : "Published"} /blog/${post.slug}`)}`);
+}
+
+// Publish a draft from the review queue as it stands.
+async function publishDraft(formData) {
+  "use server";
+  if (!(await isAuthed())) redirect("/admin");
+  const slug = String(formData.get("slug") || "");
+  const draft = slug ? await getDraft(slug) : null;
+  if (!draft) redirect(`/admin?tab=posts&err=${encodeURIComponent("That draft no longer exists.")}`);
+  if (getArticle(draft.slug) || (await getPost(draft.slug))) {
+    redirect(`/admin?tab=posts&err=${encodeURIComponent(`A post with slug "${draft.slug}" already exists. Open the draft, change its slug, then publish.`)}`);
+  }
+  // Only the post fields go to the store; the research brief stays behind.
+  const { brief, sources, topic, cost, words, model, trigger, generatedAt, ...post } = draft;
+  const today = new Date().toISOString().slice(0, 10);
+  try {
+    await savePost({ ...post, publishedDate: today, lastUpdated: today, agent: { generatedAt, model, topic, words, cost, sources } });
+    await deleteDraft(slug);
+  } catch {
+    redirect(`/admin?tab=posts&err=${encodeURIComponent("Could not write to the post store. Check the KV credentials and try again.")}`);
+  }
+  revalidatePath("/blog");
+  revalidatePath(`/blog/${post.slug}`);
+  revalidatePath(`/author/${post.author}`);
+  revalidatePath("/sitemap.xml");
+  redirect(`/admin?tab=posts&msg=${encodeURIComponent(`Published /blog/${post.slug}`)}`);
+}
+
+async function discardDraft(formData) {
+  "use server";
+  if (!(await isAuthed())) redirect("/admin");
+  const slug = String(formData.get("slug") || "");
+  if (slug) await deleteDraft(slug);
+  redirect(`/admin?tab=posts&msg=${encodeURIComponent("Draft discarded.")}`);
+}
+
+// Start a content run now. It carries on after this response is sent (up to
+// maxDuration), so the page comes back at once; the log shows the result.
+async function runAgent() {
+  "use server";
+  if (!(await isAuthed())) redirect("/admin");
+  after(() => runContentAgent({ trigger: "manual", force: true }));
+  redirect(`/admin?tab=posts&msg=${encodeURIComponent("Writing a post now. Research and writing take two to five minutes; refresh this page to see it appear under drafts.")}`);
 }
 
 const TABS = ["overview", "companies", "cities", "days", "recent", "posts"];
@@ -135,12 +188,18 @@ export default async function AdminPage({ searchParams }) {
   const page = Math.max(1, parseInt(sp?.page, 10) || 1);
   // The posts page doesn't need analytics, and vice versa.
   const editSlug = tab === "posts" ? String(sp?.edit || "") : "";
-  const [stats, posts, editing] = await Promise.all([
+  const draftSlug = tab === "posts" ? String(sp?.draft || "") : "";
+  const [stats, posts, editingPost, editingDraft, drafts, agent, runLog] = await Promise.all([
     tab === "posts" ? null : getStats(),
     tab === "posts" ? getAllPosts() : null,
     editSlug ? getPost(editSlug) : null,
+    draftSlug ? getDraft(draftSlug) : null,
+    tab === "posts" ? getDrafts() : [],
+    tab === "posts" ? agentStatus() : null,
+    tab === "posts" ? getRunLog(12) : [],
   ]);
-  return <Dashboard tab={tab} stats={stats} posts={posts} page={page} msg={sp?.msg} err={sp?.err} editing={editing} />;
+  const editing = editingDraft ? { ...editingDraft, fromDraft: editingDraft.slug } : editingPost;
+  return <Dashboard tab={tab} stats={stats} posts={posts} page={page} msg={sp?.msg} err={sp?.err} editing={editing} drafts={drafts} agent={agent} runLog={runLog} />;
 }
 
 /* ---------------- login ---------------- */
@@ -229,7 +288,7 @@ function Bars({ rows, total, limit = 8 }) {
   );
 }
 
-function Dashboard({ tab, stats, posts, page, msg, err, editing }) {
+function Dashboard({ tab, stats, posts, page, msg, err, editing, drafts, agent, runLog }) {
   const configured = stats ? stats.configured : true;
   const [title, subtitle] = TAB_TITLES[tab];
 
@@ -295,7 +354,7 @@ function Dashboard({ tab, stats, posts, page, msg, err, editing }) {
                 <RecentChecks events={stats.recent || []} />
               </div>
             )}
-            {tab === "posts" && <PostsTab posts={posts} page={page} msg={msg} err={err} editing={editing} />}
+            {tab === "posts" && <PostsTab posts={posts} page={page} msg={msg} err={err} editing={editing} drafts={drafts} agent={agent} runLog={runLog} />}
           </div>
         </div>
       </div>
@@ -371,13 +430,14 @@ function PostForm({ editing }) {
   return (
     <details className="adm-panel adm-newpost" open={!!e}>
       <summary>
-        <b>{e ? `Edit: ${e.slug}` : "New post"}</b>
-        <span>{e ? "editing an existing post" : "write a post and publish it straight to the blog"}</span>
+        <b>{e ? (e.fromDraft ? `Review draft: ${e.slug}` : `Edit: ${e.slug}`) : "New post"}</b>
+        <span>{e ? (e.fromDraft ? "check it, change anything, then publish" : "editing an existing post") : "write a post and publish it straight to the blog"}</span>
       </summary>
 
       <form action={publish} className="adm-form">
-        {e && <input type="hidden" name="overwrite" value="yes" />}
+        {e && !e.fromDraft && <input type="hidden" name="overwrite" value="yes" />}
         {e && <input type="hidden" name="contentFormat" value={fmt} />}
+        {e?.fromDraft && <input type="hidden" name="fromDraft" value={e.fromDraft} />}
 
         <label>
           <span>Title <em>required</em></span>
@@ -385,9 +445,9 @@ function PostForm({ editing }) {
         </label>
 
         <label>
-          <span>Slug <em>{e ? "changing this creates a new post" : "leave blank to generate from the title"}</em></span>
+          <span>Slug <em>{e && !e.fromDraft ? "changing this creates a new post" : "leave blank to generate from the title"}</em></span>
           <input name="slug" defaultValue={e?.slug || ""} pattern="[a-z0-9]+(-[a-z0-9]+)*" maxLength={100}
-            placeholder="lowercase-with-hyphens" readOnly={!!e} />
+            placeholder="lowercase-with-hyphens" readOnly={!!e && !e.fromDraft} />
         </label>
 
         <label>
@@ -444,7 +504,7 @@ function PostForm({ editing }) {
         </label>
 
         <div className="adm-form-actions">
-          <button type="submit" className="btn btn-primary">{e ? "Save changes" : "Publish post"}</button>
+          <button type="submit" className="btn btn-primary">{e && !e.fromDraft ? "Save changes" : "Publish post"}</button>
           {e && <a className="btn btn-ghost" href="/admin?tab=posts">Cancel</a>}
           <span className="adm-form-note">
             Publishes to the live blog immediately and revalidates /blog, the post, the author page and the sitemap.
@@ -455,7 +515,116 @@ function PostForm({ editing }) {
   );
 }
 
-function PostsTab({ posts, page, msg, err, editing }) {
+const fmtWhen = (iso) =>
+  iso ? new Date(iso).toLocaleString("en-GB", { timeZone: "Asia/Karachi", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "—";
+
+function AgentPanel({ agent, runLog, draftCount }) {
+  const live = agent.state?.status === "running" && Date.now() - Date.parse(agent.state.startedAt) < 6 * 60 * 1000;
+  const pill = !agent.configured
+    ? ["adm-chip", "Not set up"]
+    : live
+      ? ["adm-chip adm-chip-live", `Running: ${agent.state.stage === "write" ? "writing" : "researching"}`]
+      : ["adm-chip adm-chip-api", "Ready"];
+  return (
+    <div className="adm-panel">
+      <h2>
+        Content agent <span className={pill[0]}>{pill[1]}</span>
+        <span className="adm-more">{agent.model} · {agent.autoPublish ? "publishes automatically" : "drafts wait for your approval"}</span>
+      </h2>
+      <p className="adm-agent-blurb">
+        Once a day it researches one topic the site does not cover yet, using live web search over NEPRA, the DISCOs and the
+        national press, then writes a sourced guide. {agent.autoPublish
+          ? "Posts go live as soon as they are written."
+          : "Each draft sits below until you publish it, so nothing goes live without a person reading it."}
+      </p>
+      {!agent.configured && (
+        <div className="adm-note">
+          <strong>Add the API key:</strong> set <code>ANTHROPIC_API_KEY</code> in the Vercel project environment variables and redeploy.
+          The daily run also needs <code>CRON_SECRET</code> set, or Vercel's cron is refused.
+        </div>
+      )}
+      {agent.configured && !agent.cronSecret && (
+        <div className="adm-note">
+          <strong>Daily run is off:</strong> set <code>CRON_SECRET</code> in Vercel so the scheduled run is accepted. Manual runs work without it.
+        </div>
+      )}
+      {agent.state?.status === "failed" && (
+        <div className="adm-banner adm-banner-err">Last run failed: {agent.state.error} The research is saved; run again to finish the article without paying for the research twice.</div>
+      )}
+      <div className="adm-form-actions">
+        <form action={runAgent}>
+          <button type="submit" className="btn btn-primary" disabled={!agent.configured || live}>
+            {live ? "Running" : "Write a post now"}
+          </button>
+        </form>
+        <span className="adm-form-note">
+          {draftCount ? `${draftCount} draft${draftCount === 1 ? "" : "s"} waiting below. ` : ""}
+          Takes three to five minutes and costs about one US dollar a post.
+        </span>
+      </div>
+      {runLog.length > 0 && (
+        <div className="adm-table-wrap" style={{ marginTop: 14 }}>
+          <table className="adm-table">
+            <thead><tr><th>When (PKT)</th><th>Result</th><th>Post</th><th>Words</th><th>Cost</th></tr></thead>
+            <tbody>
+              {runLog.map((r, i) => (
+                <tr key={i}>
+                  <td>{fmtWhen(r.at)} <span className="adm-static-note">{r.trigger}</span></td>
+                  <td>
+                    <span className={r.status === "failed" ? "adm-chip adm-chip-err" : r.status === "skipped" || r.status === "researched" ? "adm-chip" : "adm-chip adm-chip-api"}>{r.status}</span>
+                    {r.error && <div className="adm-run-err">{r.error}</div>}
+                  </td>
+                  <td>{r.slug ? <code>{r.slug}</code> : r.topic ? <span className="adm-static-note">{r.topic.slice(0, 80)}</span> : "—"}</td>
+                  <td>{r.words || "—"}</td>
+                  <td>{r.cost ? `$${r.cost.usd}` : "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DraftsPanel({ drafts }) {
+  if (!drafts.length) return null;
+  return (
+    <div className="adm-panel">
+      <h2>Drafts waiting for review <span className="adm-count">{drafts.length}</span></h2>
+      {drafts.map((d) => (
+        <details key={d.slug} className="adm-draft">
+          <summary>
+            <b>{d.title}</b>
+            <span>{d.words} words · {d.sources?.length || 0} sources · written {fmtWhen(d.generatedAt)}{d.cost ? ` · $${d.cost.usd}` : ""}</span>
+          </summary>
+          <p className="adm-draft-meta"><strong>Slug:</strong> <code>{d.slug}</code> &nbsp; <strong>Meta description:</strong> {d.metaDescription}</p>
+          <p className="adm-draft-meta"><strong>Why this topic:</strong> {(d.brief?.match(/WHY NOW \/ WHY THIS:\s*([\s\S]*?)\n[A-Z ]+:/) || [])[1]?.trim() || d.topic}</p>
+          <div className="adm-draft-body prose" dangerouslySetInnerHTML={{ __html: d.content }} />
+          {d.faqs?.length > 0 && (
+            <div className="adm-draft-faqs">
+              <strong>FAQs</strong>
+              <ul>{d.faqs.map(([q, a], i) => <li key={i}><b>{q}</b> {a}</li>)}</ul>
+            </div>
+          )}
+          <div className="adm-form-actions">
+            <form action={publishDraft}>
+              <input type="hidden" name="slug" value={d.slug} />
+              <button type="submit" className="btn btn-primary">Publish as is</button>
+            </form>
+            <a className="btn btn-ghost" href={`/admin?tab=posts&draft=${encodeURIComponent(d.slug)}#edit`}>Edit before publishing</a>
+            <form action={discardDraft}>
+              <input type="hidden" name="slug" value={d.slug} />
+              <button type="submit" className="adm-unpub" title="Deletes the draft. It is not recoverable.">Discard</button>
+            </form>
+          </div>
+        </details>
+      ))}
+    </div>
+  );
+}
+
+function PostsTab({ posts, page, msg, err, editing, drafts = [], agent, runLog = [] }) {
   // Newest first; 10 per page, navigated via ?tab=posts&page=N (server-rendered).
   const sorted = [...posts].sort((a, b) =>
     String(b.publishedDate).localeCompare(String(a.publishedDate)));
@@ -469,7 +638,10 @@ function PostsTab({ posts, page, msg, err, editing }) {
       {msg && <div className="adm-banner adm-banner-ok">{msg}</div>}
       {err && <div className="adm-banner adm-banner-err">{err}</div>}
 
-      <PostForm editing={editing} />
+      {agent && <AgentPanel agent={agent} runLog={runLog} draftCount={drafts.length} />}
+      <DraftsPanel drafts={drafts} />
+
+      <div id="edit"><PostForm editing={editing} /></div>
 
       <div className="adm-panel">
         <h2>
