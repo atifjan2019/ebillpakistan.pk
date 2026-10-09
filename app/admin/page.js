@@ -11,6 +11,8 @@ import { buildPost, slugify } from "../../lib/publishPost";
 import { AUTHORS, DEFAULT_AUTHOR } from "../../lib/authors";
 import { getDrafts, getDraft, deleteDraft, getRunLog } from "../../lib/drafts";
 import { agentStatus, runContentAgent } from "../../lib/contentAgent";
+import { SMTP_KEYS, SECRET_KEYS, getSettings, saveSettings, maskSecret } from "../../lib/siteSettings";
+import { mailConfig, sendMail } from "../../lib/mailer";
 import RecentChecks from "./RecentChecks";
 
 export const dynamic = "force-dynamic";
@@ -168,6 +170,46 @@ async function discardDraft(formData) {
   redirect(`/admin?tab=posts&msg=${encodeURIComponent("Draft discarded.")}`);
 }
 
+// Save the SMTP and notification settings. Blank secret fields keep the saved
+// value; the "clear" box removes it.
+async function saveSmtp(formData) {
+  "use server";
+  if (!(await isAuthed())) redirect("/admin");
+  const values = {};
+  for (const k of SMTP_KEYS) {
+    const v = String(formData.get(k) || "").trim();
+    if (SECRET_KEYS.has(k)) {
+      if (formData.get(`${k}__clear`) === "yes") values[k] = "";
+      else if (v) values[k] = v;
+      continue;
+    }
+    if (k.startsWith("NOTIFY_ON_")) values[k] = formData.get(k) ? "yes" : "no";
+    else values[k] = v;
+  }
+  if (values.SMTP_PORT && !/^\d{2,5}$/.test(values.SMTP_PORT)) {
+    redirect(`/admin?tab=settings&err=${encodeURIComponent("The port must be a number, usually 465 or 587.")}`);
+  }
+  try {
+    await saveSettings(values);
+  } catch {
+    redirect(`/admin?tab=settings&err=${encodeURIComponent("Could not save. Check the KV credentials and try again.")}`);
+  }
+  redirect(`/admin?tab=settings&msg=${encodeURIComponent("Settings saved.")}`);
+}
+
+async function sendTestMail() {
+  "use server";
+  if (!(await isAuthed())) redirect("/admin");
+  const cfg = await mailConfig();
+  const r = await sendMail({
+    subject: "Test from eBill Pakistan admin",
+    text: `This is a test message from the eBill Pakistan admin. SMTP is working.\n\nServer: ${cfg.host}:${cfg.port}\nFrom: ${cfg.from}\nTo: ${cfg.to}`,
+    html: `<p>This is a test message from the eBill Pakistan admin. SMTP is working.</p><p style="color:#88998f;font-size:13px">Server ${cfg.host}:${cfg.port}, from ${cfg.from}, to ${cfg.to}</p>`,
+  }, cfg);
+  if (r.ok) redirect(`/admin?tab=settings&msg=${encodeURIComponent(`Test email sent to ${cfg.to}. Check the inbox (and spam).`)}`);
+  redirect(`/admin?tab=settings&err=${encodeURIComponent(`Could not send: ${r.error}`)}`);
+}
+
 // Start a content run now. It carries on after this response is sent (up to
 // maxDuration), so the page comes back at once; the log shows the result.
 async function runAgent() {
@@ -177,7 +219,7 @@ async function runAgent() {
   redirect(`/admin?tab=posts&msg=${encodeURIComponent("Writing a post now. Research and writing take two to five minutes; refresh this page to see it appear under drafts.")}`);
 }
 
-const TABS = ["overview", "companies", "cities", "days", "recent", "posts"];
+const TABS = ["overview", "companies", "cities", "days", "recent", "posts", "settings"];
 
 export default async function AdminPage({ searchParams }) {
   const sp = await searchParams;
@@ -189,17 +231,18 @@ export default async function AdminPage({ searchParams }) {
   // The posts page doesn't need analytics, and vice versa.
   const editSlug = tab === "posts" ? String(sp?.edit || "") : "";
   const draftSlug = tab === "posts" ? String(sp?.draft || "") : "";
-  const [stats, posts, editingPost, editingDraft, drafts, agent, runLog] = await Promise.all([
-    tab === "posts" ? null : getStats(),
+  const [stats, posts, editingPost, editingDraft, drafts, agent, runLog, settings] = await Promise.all([
+    tab === "posts" || tab === "settings" ? null : getStats(),
     tab === "posts" ? getAllPosts() : null,
     editSlug ? getPost(editSlug) : null,
     draftSlug ? getDraft(draftSlug) : null,
     tab === "posts" ? getDrafts() : [],
     tab === "posts" ? agentStatus() : null,
     tab === "posts" ? getRunLog(12) : [],
+    tab === "settings" ? getSettings(SMTP_KEYS) : null,
   ]);
   const editing = editingDraft ? { ...editingDraft, fromDraft: editingDraft.slug } : editingPost;
-  return <Dashboard tab={tab} stats={stats} posts={posts} page={page} msg={sp?.msg} err={sp?.err} editing={editing} drafts={drafts} agent={agent} runLog={runLog} />;
+  return <Dashboard tab={tab} stats={stats} posts={posts} page={page} msg={sp?.msg} err={sp?.err} editing={editing} drafts={drafts} agent={agent} runLog={runLog} settings={settings} />;
 }
 
 /* ---------------- login ---------------- */
@@ -241,6 +284,7 @@ const ICONS = {
   days: <Ic><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M8 3v4M16 3v4M4 11h16" /></Ic>,
   recent: <Ic><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></Ic>,
   posts: <Ic><path d="M14 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7z" /><path d="M14 3v4h4M9.5 12h5M9.5 16h5" /></Ic>,
+  settings: <Ic><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" /></Ic>,
   external: <Ic><path d="M14 5h5v5M19 5l-8 8" /><path d="M19 14v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5" /></Ic>,
 };
 
@@ -251,6 +295,7 @@ const NAV = [
   ["days", "Last 14 days"],
   ["recent", "Recent checks"],
   ["posts", "Blog posts"],
+  ["settings", "Settings"],
 ];
 
 const TAB_TITLES = {
@@ -260,6 +305,7 @@ const TAB_TITLES = {
   days: ["Last 14 days", "Daily bill-check volume"],
   recent: ["Recent checks", "The latest individual bill lookups"],
   posts: ["Blog posts", "Everything published on /blog"],
+  settings: ["Settings", "Email notifications for the content agent"],
 };
 
 /* ---------------- dashboard ---------------- */
@@ -288,7 +334,7 @@ function Bars({ rows, total, limit = 8 }) {
   );
 }
 
-function Dashboard({ tab, stats, posts, page, msg, err, editing, drafts, agent, runLog }) {
+function Dashboard({ tab, stats, posts, page, msg, err, editing, drafts, agent, runLog, settings }) {
   const configured = stats ? stats.configured : true;
   const [title, subtitle] = TAB_TITLES[tab];
 
@@ -355,6 +401,7 @@ function Dashboard({ tab, stats, posts, page, msg, err, editing, drafts, agent, 
               </div>
             )}
             {tab === "posts" && <PostsTab posts={posts} page={page} msg={msg} err={err} editing={editing} drafts={drafts} agent={agent} runLog={runLog} />}
+            {tab === "settings" && <SettingsTab settings={settings} msg={msg} err={err} />}
           </div>
         </div>
       </div>
@@ -704,6 +751,92 @@ function PostsTab({ posts, page, msg, err, editing, drafts = [], agent, runLog =
               : <span className="btn btn-ghost adm-btn-off">Next →</span>}
           </div>
         )}
+      </div>
+    </>
+  );
+}
+
+const SOURCE_LABEL = { saved: "saved here", env: "from the server environment", default: "default", none: "not set" };
+
+function SettingsTab({ settings, msg, err }) {
+  const v = (k) => settings[k]?.value || "";
+  const src = (k) => SOURCE_LABEL[settings[k]?.source || "none"];
+  const configured = !!(v("SMTP_HOST") && v("SMTP_USER") && v("SMTP_PASS"));
+  const hasPass = !!v("SMTP_PASS");
+  return (
+    <>
+      {msg && <div className="adm-banner adm-banner-ok">{msg}</div>}
+      {err && <div className="adm-banner adm-banner-err">{err}</div>}
+
+      <div className="adm-panel">
+        <h2>
+          Email notifications{" "}
+          <span className={configured ? "adm-chip adm-chip-api" : "adm-chip"}>{configured ? "Set up" : "Not set up"}</span>
+        </h2>
+        <p className="adm-agent-blurb">
+          The content agent emails you when a post goes live and when a run fails. For Gmail, leave the server and
+          port as they are, put your Gmail address as the username, and use an app password, not your normal
+          password: Google Account, Security, 2-Step Verification, App passwords.
+        </p>
+
+        <form action={saveSmtp} className="adm-form">
+          <div className="adm-form-row">
+            <label>
+              <span>SMTP server <em>{src("SMTP_HOST")}</em></span>
+              <input name="SMTP_HOST" defaultValue={v("SMTP_HOST")} placeholder="smtp.gmail.com" autoComplete="off" />
+            </label>
+            <label>
+              <span>Port <em>465 for SSL, 587 for STARTTLS</em></span>
+              <input name="SMTP_PORT" defaultValue={v("SMTP_PORT")} placeholder="465" inputMode="numeric" autoComplete="off" />
+            </label>
+            <label>
+              <span>Username <em>your Gmail address</em></span>
+              <input name="SMTP_USER" defaultValue={v("SMTP_USER")} placeholder="you@gmail.com" autoComplete="off" />
+            </label>
+          </div>
+
+          <label>
+            <span>App password <em>{hasPass ? `saved as ${maskSecret(v("SMTP_PASS"))} (${src("SMTP_PASS")}); leave blank to keep it` : "16 characters from Google, spaces are fine"}</em></span>
+            <input name="SMTP_PASS" type="password" placeholder={hasPass ? "Leave blank to keep the saved password" : "abcd efgh ijkl mnop"} autoComplete="new-password" />
+          </label>
+          {hasPass && settings.SMTP_PASS.source === "saved" && (
+            <label className="adm-check">
+              <input type="checkbox" name="SMTP_PASS__clear" value="yes" /> Remove the saved password
+            </label>
+          )}
+
+          <div className="adm-form-row">
+            <label>
+              <span>Send from <em>optional, defaults to the username</em></span>
+              <input name="SMTP_FROM" defaultValue={v("SMTP_FROM")} placeholder="you@gmail.com" autoComplete="off" />
+            </label>
+            <label>
+              <span>Send alerts to <em>defaults to the username</em></span>
+              <input name="NOTIFY_TO" defaultValue={v("NOTIFY_TO")} placeholder="you@gmail.com" autoComplete="off" />
+            </label>
+          </div>
+
+          <div className="adm-checks">
+            <label className="adm-check">
+              <input type="checkbox" name="NOTIFY_ON_PUBLISH" defaultChecked={/^(1|true|yes|on)$/i.test(v("NOTIFY_ON_PUBLISH"))} />
+              Email me when a post is published
+            </label>
+            <label className="adm-check">
+              <input type="checkbox" name="NOTIFY_ON_FAILURE" defaultChecked={/^(1|true|yes|on)$/i.test(v("NOTIFY_ON_FAILURE"))} />
+              Email me when a run fails
+            </label>
+          </div>
+
+          <div className="adm-form-actions">
+            <button type="submit" className="btn btn-primary">Save settings</button>
+            <span className="adm-form-note">Saved values take effect at once. A blank field goes back to the server environment, if that has a value.</span>
+          </div>
+        </form>
+
+        <form action={sendTestMail} className="adm-form-actions" style={{ marginTop: 14 }}>
+          <button type="submit" className="btn btn-ghost" disabled={!configured}>Send a test email</button>
+          <span className="adm-form-note">Uses the saved settings. Save first if you have changed anything.</span>
+        </form>
       </div>
     </>
   );
