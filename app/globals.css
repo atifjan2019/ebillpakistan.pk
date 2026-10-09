@@ -1074,5 +1074,5 @@ a.byline-name:hover { color: var(--brand); }
 .adm-draft-faqs li { margin-bottom: 6px; line-height: 1.5; }
 .adm-draft .adm-form-actions { margin-top: 14px; }
 .adm-checks { display: flex; flex-wrap: wrap; gap: 10px 22px; }
-.adm-check { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--ink); min-height: 32px; flex-direction: row; }
+.adm-form label.adm-check, .adm-check { display: inline-flex; flex-direction: row; align-items: center; gap: 8px; font-size: 14px; color: var(--ink); min-height: 32px; width: auto; }
 .adm-check input[type="checkbox"] { width: 18px; height: 18px; min-height: 0; accent-color: var(--brand); margin: 0; }
