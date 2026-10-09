@@ -13,8 +13,14 @@ import ComplaintChannels from "../ComplaintChannels";
 import ContentSection from "../ContentSection";
 import TariffTable from "../TariffTable";
 import Districts from "../Districts";
+import ThisMonthBox from "../ThisMonthBox";
+import { adjustmentPerUnit } from "../../lib/adjustments";
+import { getAdjustmentOverrides } from "../../lib/adjustmentOverrides";
 
 export const dynamicParams = false;
+// Rebuilt hourly so this month's adjustments (which the admin can enter on the
+// Settings tab) and new guides appear without a deploy.
+export const revalidate = 3600;
 
 export function generateStaticParams() {
   return Object.keys(DISCOS).map((code) => ({ slug: slugFor(code) }));
@@ -53,6 +59,8 @@ export default async function CompanyPage({ params }) {
   const year = new Date().getFullYear();
   const others = Object.keys(DISCOS).filter((x) => x !== code);
   const guides = guidesFor(code);
+  const adj = adjustmentPerUnit(undefined, await getAdjustmentOverrides());
+  const contactNumber = safe(complaints?.whatsapp) || safe(complaints?.uan) || null;
 
   // FAQPage schema is built from this company's REAL questions. stripVerify is a
   // belt-and-braces guard: structured data has no container to omit, so a marker
@@ -140,6 +148,40 @@ export default async function CompanyPage({ params }) {
             <a href="/sample-bill-explained">annotated sample bill</a> explains every line.
           </p>
 
+          <div className="glance" aria-label={`${abbr} at a glance`}>
+            {contactNumber && (
+              <div className="glance-item">
+                <span className="glance-k">{abbr} complaints</span>
+                <span className="glance-v"><a href={`tel:${contactNumber.replace(/[^\d+]/g, "")}`}>{contactNumber}</a></span>
+                <span className="glance-n">{complaints.whatsapp ? "Complaint cell" : "Toll-free UAN"}; or 118 nationwide</span>
+              </div>
+            )}
+            {!contactNumber && (
+              <div className="glance-item">
+                <span className="glance-k">Complaints</span>
+                <span className="glance-v"><a href="tel:118">118</a></span>
+                <span className="glance-n">National helpline, every DISCO</span>
+              </div>
+            )}
+            <div className="glance-item">
+              <span className="glance-k">Reference number</span>
+              <span className="glance-v">14 digits</span>
+              <span className="glance-n">Top-left of the bill. <a href="/blog/how-to-find-reference-number-on-electricity-bill">Where to find it</a></span>
+            </div>
+            <div className="glance-item">
+              <span className="glance-k">Rates</span>
+              <span className="glance-v"><a href="/electricity-tariff">NEPRA tariff</a></span>
+              <span className="glance-n">Same slabs for every DISCO{code === "ajk" ? " except AJK" : ""}</span>
+            </div>
+            <div className="glance-item">
+              <span className="glance-k">Official site</span>
+              <span className="glance-v"><a href={c.website} target="_blank" rel="noopener noreferrer">{c.website.replace(/^https?:\/\/(www\.)?/, "")}</a></span>
+              <span className="glance-n">Duplicate bills, notices, schedules</span>
+            </div>
+          </div>
+
+          {code !== "ajk" && <ThisMonthBox adj={adj} abbr={abbr} />}
+
           <Districts abbr={abbr} cities={c.cities} region={c.region} color={color} />
 
           {SECTIONS.map(({ key, heading }) => (
@@ -161,6 +203,17 @@ export default async function CompanyPage({ params }) {
           <TariffTable data={tariff} heading={`${abbr} domestic tariff bands`} compact />
 
           <ComplaintChannels abbr={abbr} city={city} website={c.website} data={complaints} />
+
+          <h2>Work out your {abbr} bill before it arrives</h2>
+          <p>
+            The same NEPRA rates apply on every {abbr} connection, so a few numbers are enough to estimate a bill or
+            check whether a slab crossing explains a jump.
+          </p>
+          <div className="tool-links">
+            <a className="tool-link" href="/bill-calculator"><b>Bill calculator</b><span>Units in, estimated bill out, with this month&apos;s adjustments.</span></a>
+            <a className="tool-link" href="/protected-consumer-checker"><b>Protected consumer checker</b><span>Six months of units tell you whether you qualify, and when.</span></a>
+            <a className="tool-link" href="/this-month"><b>This month&apos;s adjustments</b><span>The fuel and quarterly charges in force, and past months.</span></a>
+          </div>
 
           {faqs.length > 0 && (
             <>

@@ -30,8 +30,8 @@ const FAQS = [
     "A fixed charge is billed per kilowatt of sanctioned load per month and applies to protected and unprotected consumers. A minimum monthly charge — Rs 75 single-phase, Rs 150 three-phase — applies only where a fixed charge does not, which in practice means lifeline consumers. Where fixed charges apply, no minimum charge is added even if you consume nothing.",
   ],
   [
-    "Why is there a rebate on my bill this month?",
-    "S.R.O. 953(I)/2026 applies a quarterly tariff adjustment of minus Rs 1.9857 per unit across the June, July and August 2026 billing months. It is a temporary adjustment on top of the slab rate, not a change to the rate itself, and it expires after August. Lifeline, prepaid and incremental-consumption-package consumers are excluded.",
+    "What is the quarterly adjustment line on my bill?",
+    "A temporary per-unit charge or rebate that NEPRA notifies every quarter to correct costs other than fuel, applied for three billing months and then replaced. June to August 2026 bills carried a rebate of Rs 1.9857 per unit; September to November 2026 bills carry a charge of Re 0.5194 per unit. It sits on top of the slab rate and is not a change to the rate itself. Lifeline, prepaid and incremental-consumption-package consumers are excluded. Our monthly tracker shows the figure in force now.",
   ],
   [
     "Can I be a protected consumer if my sanctioned load is 5 kW?",
@@ -184,9 +184,13 @@ export default function TariffPage() {
             ))}
           </ul>
           <p>
-            Both exclude {ADJUSTMENT_EXCLUDES.join(", ")}. Because they expire, a bill from September
-            2026 will not carry the June-to-August rebate — so comparing two months without checking
-            which adjustment applied to each will mislead you.
+            All of them exclude {ADJUSTMENT_EXCLUDES.join(", ")}. Because they expire, a bill from
+            September 2026 does not carry the June-to-August rebate, so comparing two months without
+            checking which adjustment applied to each will mislead you. The monthly fuel cost
+            adjustment works the same way and changes every month; see{" "}
+            <a href="/this-month">this month&apos;s electricity bill adjustments</a> for the figures
+            in force now, or put your units into the{" "}
+            <a href="/bill-calculator">bill calculator</a>.
           </p>
 
           <h2>Who counts as protected, lifeline or unprotected</h2>

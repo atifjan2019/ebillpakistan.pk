@@ -14,6 +14,7 @@ const UPDATED = {
   info: "2026-08-16",   // about, contact, sample bill, editorial policy, authors
   legal: "2026-08-16",  // privacy (rewritten for advertising disclosure)
   terms: "2026-01-10",  // terms, disclaimer (unchanged)
+  tools: "2026-10-09",  // calculators and the monthly adjustments tracker
 };
 
 export default async function sitemap() {
@@ -41,6 +42,13 @@ export default async function sitemap() {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    { url: `${BASE}/this-month`, lastModified: UPDATED.tools, changeFrequency: "weekly", priority: 0.8 },
+    ...["bill-calculator", "protected-consumer-checker", "mdi-calculator", "solar-calculator", "tools"].map((p) => ({
+      url: `${BASE}/${p}`,
+      lastModified: UPDATED.tools,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    })),
     ...["about", "contact", "editorial-policy"].map((p) => ({
       url: `${BASE}/${p}`,
       lastModified: UPDATED.info,

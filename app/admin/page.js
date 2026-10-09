@@ -13,6 +13,8 @@ import { getDrafts, getDraft, deleteDraft, getRunLog } from "../../lib/drafts";
 import { agentStatus, runContentAgent } from "../../lib/contentAgent";
 import { SMTP_KEYS, SECRET_KEYS, getSettings, saveSettings, maskSecret } from "../../lib/siteSettings";
 import { mailConfig, sendMail } from "../../lib/mailer";
+import { ADJ_KEYS } from "../../lib/adjustmentOverrides";
+import { MONTHLY_FCA, qtaHistory } from "../../lib/adjustments";
 import RecentChecks from "./RecentChecks";
 
 export const dynamic = "force-dynamic";
@@ -197,6 +199,27 @@ async function saveSmtp(formData) {
   redirect(`/admin?tab=settings&msg=${encodeURIComponent("Settings saved.")}`);
 }
 
+// This month's FCA and the current QTA, entered when NEPRA announces them.
+async function saveAdjustments(formData) {
+  "use server";
+  if (!(await isAuthed())) redirect("/admin");
+  const values = {};
+  for (const k of ADJ_KEYS) values[k] = String(formData.get(k) || "").trim();
+  const bad = (m) => redirect(`/admin?tab=settings&err=${encodeURIComponent(m)}`);
+  if (values.FCA_RATE && !/^[-+]?\d*\.?\d+$/.test(values.FCA_RATE)) bad("The FCA rate must be a number such as 1.1086 or -0.5.");
+  if (values.FCA_RATE && !/^\d{4}-\d{2}$/.test(values.FCA_BILLING_MONTH)) bad("The FCA billing month must look like 2026-11.");
+  if (values.QTA_RATE && !/^[-+]?\d*\.?\d+$/.test(values.QTA_RATE)) bad("The QTA rate must be a number such as 0.5194.");
+  if (values.QTA_RATE && !(/^\d{4}-\d{2}-\d{2}$/.test(values.QTA_FROM) && /^\d{4}-\d{2}-\d{2}$/.test(values.QTA_TO))) bad("The QTA dates must look like 2026-12-01.");
+  try {
+    await saveSettings(values);
+  } catch {
+    bad("Could not save. Check the KV credentials and try again.");
+  }
+  for (const path of ["/this-month", "/bill-calculator", "/"]) revalidatePath(path);
+  for (const code of Object.keys(DISCOS)) revalidatePath(`/${code}-bill-check`);
+  redirect(`/admin?tab=settings&msg=${encodeURIComponent("Adjustments saved. The company pages, tracker and calculator now show them.")}`);
+}
+
 async function sendTestMail() {
   "use server";
   if (!(await isAuthed())) redirect("/admin");
@@ -239,7 +262,7 @@ export default async function AdminPage({ searchParams }) {
     tab === "posts" ? getDrafts() : [],
     tab === "posts" ? agentStatus() : null,
     tab === "posts" ? getRunLog(12) : [],
-    tab === "settings" ? getSettings(SMTP_KEYS) : null,
+    tab === "settings" ? getSettings([...SMTP_KEYS, ...ADJ_KEYS]) : null,
     tab === "messages" ? getContactMessages(100) : null,
   ]);
   const editing = editingDraft ? { ...editingDraft, fromDraft: editingDraft.slug } : editingPost;
@@ -309,7 +332,7 @@ const TAB_TITLES = {
   recent: ["Recent checks", "The latest individual bill lookups"],
   posts: ["Blog posts", "Everything published on /blog"],
   messages: ["Messages", "Everything sent through the contact form, newest first"],
-  settings: ["Settings", "Email for contact form messages and content agent alerts"],
+  settings: ["Settings", "Email alerts, and this month's bill adjustments"],
 };
 
 /* ---------------- dashboard ---------------- */
@@ -868,6 +891,40 @@ function SettingsTab({ settings, msg, err }) {
         <form action={sendTestMail} className="adm-form-actions" style={{ marginTop: 14 }}>
           <button type="submit" className="btn btn-ghost" disabled={!configured}>Send a test email</button>
           <span className="adm-form-note">Uses the saved settings. Save first if you have changed anything.</span>
+        </form>
+      </div>
+
+      <div className="adm-panel">
+        <h2>This month&apos;s bill adjustments</h2>
+        <p className="adm-agent-blurb">
+          When NEPRA announces a new fuel cost adjustment or quarterly adjustment, enter it here and every company page, the
+          tracker and the calculator show it within the hour. Leave a field blank to use the figures in the code.
+          Latest in the code: FCA {MONTHLY_FCA[0].perUnit > 0 ? "+" : ""}{MONTHLY_FCA[0].perUnit} per unit on {MONTHLY_FCA[0].billingMonth} bills;
+          QTA {qtaHistory()[0].perUnit > 0 ? "+" : ""}{qtaHistory()[0].perUnit} per unit for {qtaHistory()[0].monthsLabel}.
+        </p>
+        <form action={saveAdjustments} className="adm-form">
+          <div className="adm-form-row">
+            <label><span>FCA per unit <em>e.g. 1.1086, or -0.5 for a refund</em></span><input name="FCA_RATE" defaultValue={v("FCA_RATE")} inputMode="decimal" autoComplete="off" /></label>
+            <label><span>Billing month <em>YYYY-MM, the bills it appears on</em></span><input name="FCA_BILLING_MONTH" defaultValue={v("FCA_BILLING_MONTH")} placeholder="2026-11" autoComplete="off" /></label>
+            <label><span>Units of <em>YYYY-MM, usually two months earlier</em></span><input name="FCA_CONSUMPTION_MONTH" defaultValue={v("FCA_CONSUMPTION_MONTH")} placeholder="2026-09" autoComplete="off" /></label>
+          </div>
+          <div className="adm-form-row">
+            <label><span>FCA source link</span><input name="FCA_SOURCE_URL" defaultValue={v("FCA_SOURCE_URL")} placeholder="https://www.dawn.com/news/..." autoComplete="off" /></label>
+            <label><span>FCA source title</span><input name="FCA_SOURCE_TITLE" defaultValue={v("FCA_SOURCE_TITLE")} placeholder="Dawn, 8 November 2026" autoComplete="off" /></label>
+          </div>
+          <div className="adm-form-row">
+            <label><span>QTA per unit <em>e.g. 0.5194</em></span><input name="QTA_RATE" defaultValue={v("QTA_RATE")} inputMode="decimal" autoComplete="off" /></label>
+            <label><span>Applies from <em>YYYY-MM-DD</em></span><input name="QTA_FROM" defaultValue={v("QTA_FROM")} placeholder="2026-12-01" autoComplete="off" /></label>
+            <label><span>Applies to <em>YYYY-MM-DD</em></span><input name="QTA_TO" defaultValue={v("QTA_TO")} placeholder="2027-02-28" autoComplete="off" /></label>
+          </div>
+          <div className="adm-form-row">
+            <label><span>QTA source link</span><input name="QTA_SOURCE_URL" defaultValue={v("QTA_SOURCE_URL")} autoComplete="off" /></label>
+            <label><span>QTA source title</span><input name="QTA_SOURCE_TITLE" defaultValue={v("QTA_SOURCE_TITLE")} placeholder="NEPRA notification of ..." autoComplete="off" /></label>
+          </div>
+          <div className="adm-form-actions">
+            <button type="submit" className="btn btn-primary">Save adjustments</button>
+            <span className="adm-form-note">Only a figure NEPRA has actually notified. The source link is shown to readers.</span>
+          </div>
         </form>
       </div>
     </>

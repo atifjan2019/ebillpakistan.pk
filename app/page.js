@@ -217,6 +217,23 @@ export default async function Home({ searchParams }) {
         </div>
       </section>
 
+      {/* tools */}
+      <section className="home-tools" id="tools">
+        <div className="container">
+          <div className="section-head">
+            <span className="kicker">Tools</span>
+            <h2>Work the bill out before it arrives</h2>
+            <p>Built on NEPRA&apos;s notified rates and this month&apos;s adjustments, with every assumption on screen.</p>
+          </div>
+          <div className="tool-links tool-links--grid">
+            <a className="tool-link" href="/bill-calculator"><b>Bill calculator</b><span>Units in, estimated bill out, and the saving from a lower slab.</span></a>
+            <a className="tool-link" href="/protected-consumer-checker"><b>Protected consumer checker</b><span>Six months of units tell you whether you qualify, and when.</span></a>
+            <a className="tool-link" href="/this-month"><b>This month&apos;s adjustments</b><span>The fuel and quarterly charges on this month&apos;s bills.</span></a>
+            <a className="tool-link" href="/solar-calculator"><b>Solar savings calculator</b><span>What a rooftop system does to the bill under net billing.</span></a>
+          </div>
+        </div>
+      </section>
+
       {/* how it works */}
       <section className="section" id="how" style={{ background: "#fff", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)" }}>
         <div className="container">

@@ -113,6 +113,11 @@ export default function RootLayout({ children }) {
                 <li><a href="/contact">Contact</a></li>
                 <li><a href="/sample-bill-explained">Sample bill explained</a></li>
                 <li><a href="/electricity-tariff">Electricity tariff 2026</a></li>
+                <li><a href="/this-month">This month&apos;s adjustments</a></li>
+                <li><a href="/bill-calculator">Bill calculator</a></li>
+                <li><a href="/protected-consumer-checker">Protected consumer checker</a></li>
+                <li><a href="/mdi-calculator">MDI calculator</a></li>
+                <li><a href="/solar-calculator">Solar savings calculator</a></li>
                 <li><a href="/#companies">All companies</a></li>
                 <li><a href="/#faq">FAQ</a></li>
               </ul>

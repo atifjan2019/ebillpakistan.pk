@@ -4,10 +4,10 @@ import { useState } from "react";
 
 const LINKS = [
   ["/#companies", "Companies"],
-  ["/#how", "How it works"],
-  ["/#faq", "FAQ"],
+  ["/tools", "Tools"],
+  ["/this-month", "This month"],
+  ["/electricity-tariff", "Tariff"],
   ["/blog", "Blog"],
-  ["/about", "About"],
   ["/contact", "Contact"],
 ];
 
