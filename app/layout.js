@@ -63,6 +63,11 @@ function Bolt() {
   );
 }
 
+// English guide slug -> Urdu twin slug, and Urdu guides with no English twin,
+// for the header's language switch.
+const LANG_PAIRS = Object.fromEntries(ARTICLES.filter((a) => a.translationOf).map((a) => [a.translationOf, a.slug]));
+const URDU_ONLY = ARTICLES.filter((a) => a.lang === "ur" && !a.translationOf).map((a) => a.slug);
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${body.variable} ${display.variable} ${urdu.variable}`}>
@@ -75,7 +80,7 @@ export default function RootLayout({ children }) {
             <a className="logo" href="/" aria-label="eBill Pakistan home">
               <img src="/images/logo.png" alt="eBill Pakistan" className="logo-img" />
             </a>
-            <Nav />
+            <Nav pairs={LANG_PAIRS} urduOnly={URDU_ONLY} />
           </div>
         </header>
 

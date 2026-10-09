@@ -66,7 +66,13 @@ img { max-width: 100%; }
 .logo-img { height: 48px; width: auto; display: block; } /* desktop logo */
 .logo-chip { display: inline-flex; background: #fff; padding: 8px 14px; border-radius: 12px; box-shadow: 0 8px 20px -10px rgba(0, 0, 0, .45); }
 .logo-chip .logo-img { height: 34px; }
-.nav-links { display: flex; align-items: center; gap: 30px; font-weight: 600; font-size: 15px; color: var(--body); }
+.nav-links { display: flex; align-items: center; gap: 30px; font-weight: 600; font-size: 15px; color: var(--body); margin-left: auto; }
+.nav-inner { gap: 26px; }
+.nav-right { display: flex; align-items: center; gap: 14px; }
+.nav-lang { display: inline-flex; align-items: center; gap: 6px; min-height: 38px; padding: 0 13px; border: 1px solid color-mix(in srgb, var(--brand) 35%, var(--line)); border-radius: 999px; background: var(--brand-50); color: var(--brand-700); font-weight: 700; font-size: 14px; white-space: nowrap; }
+.nav-lang:hover { background: #fff; border-color: var(--brand); }
+.nav-lang svg { width: 16px; height: 16px; flex: none; }
+.nav-lang[lang="ur"] { font-family: var(--font-urdu), serif; font-size: 15px; line-height: 1; padding-bottom: 2px; }
 .nav-links a:hover { color: var(--brand); }
 
 /* hamburger button (hidden on desktop) */
