@@ -1152,3 +1152,26 @@ a.byline-name:hover { color: var(--brand); }
 .tool-links--grid .tool-link { padding: 20px 22px; }
 .tool-links--grid .tool-link b { font-size: 17px; }
 .home-tools { padding: 58px 0; background: #fff; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+
+/* ---- returning visitor quick check ---- */
+.quick-check { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 14px; max-width: 760px; margin: 14px auto 0; padding: 12px 16px; border: 1px solid var(--line); border-radius: 14px; background: #fff; box-shadow: var(--shadow-sm); }
+.quick-check-text { font-size: 14.5px; color: var(--body); }
+.quick-check-btn { height: 40px; padding: 0 16px; font-size: 14px; }
+.quick-check-forget { background: none; border: 0; color: var(--muted); font-size: 13px; text-decoration: underline; cursor: pointer; padding: 6px; }
+
+/* ---- add to home screen ---- */
+.install-bar { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 150; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 14px 16px; background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow-lg); max-width: 720px; margin: 0 auto; }
+.install-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 260px; }
+.install-text b { font-family: var(--font-display); font-size: 15px; color: var(--ink); }
+.install-text span { font-size: 13.5px; color: var(--muted); line-height: 1.45; }
+.install-actions { display: flex; align-items: center; gap: 10px; }
+.install-actions .btn { height: 40px; padding: 0 18px; font-size: 14px; }
+.install-dismiss { background: none; border: 0; color: var(--muted); font-size: 14px; cursor: pointer; padding: 8px; }
+
+/* ---- related links on posts ---- */
+.post-related { margin: 30px 0 0; display: grid; gap: 22px; }
+.post-related h2 { font-size: 18px; margin: 0 0 10px; }
+.post-related-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.post-related-chip { display: inline-flex; align-items: center; gap: 5px; padding: 9px 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); font-size: 14px; color: var(--body); box-shadow: var(--shadow-sm); }
+.post-related-chip b { color: var(--ink); }
+.post-related-chip:hover { border-color: var(--brand); color: var(--brand-700); }

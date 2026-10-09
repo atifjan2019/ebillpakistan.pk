@@ -1,6 +1,7 @@
 import Image from "next/image";
 import RefInput from "./RefInput";
 import CheckBillLoader from "./CheckBillLoader";
+import QuickCheck from "./QuickCheck";
 import { DISCOS, hasLogo, discoLogo } from "../lib/discos";
 import { SITE_URL, HOME_URL, OG_IMAGE, TWITTER_SITE, SOCIAL } from "../lib/seo";
 import { BUSINESS } from "../lib/contact";
@@ -182,6 +183,7 @@ export default async function Home({ searchParams }) {
             </p>
             <CheckBillLoader />
           </form>
+          <QuickCheck />
 
           <div className="trust">
             <span className="pill">{I.free} 100% Free</span>

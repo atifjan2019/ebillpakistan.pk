@@ -6,6 +6,7 @@ import { TARIFF_BY_KEY } from "../../../lib/tariffs";
 import TariffTable from "../../TariffTable";
 import BillImage from "../../BillImage";
 import { Byline } from "../../Byline";
+import { companyLinksFor, toolLinksFor } from "../../../lib/related";
 
 // dynamicParams + force-static: slugs published via /api/posts after the build
 // are rendered on first request and cached (the API revalidates their path).
@@ -71,6 +72,8 @@ export default async function ArticlePage({ params }) {
 
   const author = authorFor(a);
   const pageUrl = `${SITE_URL}/blog/${a.slug}`;
+  const companies = companyLinksFor(a);
+  const tools = toolLinksFor(a);
   const articleLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -143,6 +146,31 @@ export default async function ArticlePage({ params }) {
           </div>
         )}
 
+        {(companies.length > 0 || tools.length > 0) && (
+          <div className="post-related">
+            {companies.length > 0 && (
+              <div>
+                <h2>Company pages mentioned</h2>
+                <div className="post-related-row">
+                  {companies.map((c) => (
+                    <a key={c.code} className="post-related-chip" href={c.href}><b>{c.abbr}</b> bill check, {c.city}</a>
+                  ))}
+                </div>
+              </div>
+            )}
+            {tools.length > 0 && (
+              <div>
+                <h2>Work it out for your own bill</h2>
+                <div className="tool-links">
+                  {tools.map(([href, title, text]) => (
+                    <a key={href} className="tool-link" href={href}><b>{title}</b><span>{text}</span></a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="blog-cta">
           <p>Ready to check your electricity bill? It takes about ten seconds, free and with no sign-up.</p>
           <a className="btn btn-primary" href="/">Check your bill now</a>
@@ -152,12 +180,12 @@ export default async function ArticlePage({ params }) {
           <div className="post-foot-author">
             <p>
               Written by <a href={`/author/${author.slug}`} rel="author">{author.name}</a>,{" "}
-              {author.role.toLowerCase()}.
+              {author.role}.
             </p>
             <p>
               Figures on this page are sourced and reviewed under our{" "}
               <a href="/editorial-policy">editorial policy</a>. Spotted a mistake?{" "}
-              <a href="/contact">Tell us</a> and we&apos;ll fix it.
+              <a href="/contact">Tell us</a>{" "}and we&apos;ll fix it.
             </p>
           </div>
           <p className="legal-note"><a href="/blog">← Back to all guides</a></p>

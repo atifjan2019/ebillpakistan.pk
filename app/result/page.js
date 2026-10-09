@@ -14,6 +14,7 @@ import BillAnalysis from "./BillAnalysis";
 import BillActions from "./BillActions";
 import BillFallback from "./BillFallback";
 import BillFrame from "./BillFrame";
+import RememberLookup from "../RememberLookup";
 
 // Resolve the page the user submitted from (homepage vs a DISCO page) from the
 // Referer. Internal redirects (referer = /result) are skipped so each user
@@ -124,6 +125,7 @@ export default async function Result({ searchParams }) {
 
         {bill ? (
           <>
+            <RememberLookup disco={disco} reference={ref} discoName={info[0]} />
             <BillView bill={bill} discoName={info[0]} region={info[1]} breakdown={breakdown} />
             <BillActions bill={bill} discoName={info[0]} lines={breakdown} />
 

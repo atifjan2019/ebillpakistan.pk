@@ -6,6 +6,8 @@ import { DISCOS, hasLogo, discoLogo } from "../../lib/discos";
 import { COMPANIES, slugFor, codeFromSlug } from "../../lib/companies";
 import { complaintsFor, contentFor, faqsFor, seoFor, SECTIONS, CONTENT_UPDATED } from "../../lib/discoContent";
 import { guidesFor } from "../../lib/articles";
+import { getAllPosts } from "../../lib/posts";
+import { postsForDisco } from "../../lib/related";
 import { tariffFor } from "../../lib/tariffs";
 import { safe, stripVerify } from "../../lib/verify";
 import { SITE_URL, HOME_URL, buildMeta } from "../../lib/seo";
@@ -58,7 +60,9 @@ export default async function CompanyPage({ params }) {
   const tariff = tariffFor(code);
   const year = new Date().getFullYear();
   const others = Object.keys(DISCOS).filter((x) => x !== code);
-  const guides = guidesFor(code);
+  const curated = guidesFor(code);
+  const mentioned = postsForDisco(code, await getAllPosts()).filter((p) => !curated.some((g) => g.slug === p.slug));
+  const guides = [...curated, ...mentioned].slice(0, 8);
   const adj = adjustmentPerUnit(undefined, await getAdjustmentOverrides());
   const contactNumber = safe(complaints?.whatsapp) || safe(complaints?.uan) || null;
 

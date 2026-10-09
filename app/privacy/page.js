@@ -69,6 +69,12 @@ export default function Privacy() {
         service from abuse. These are essential, cannot be switched off from within the site, and
         are not used to profile you or to target advertising.
       </p>
+      <p>
+        If you check a bill, this site also keeps the company and reference number of your most
+        recent check in your own browser&apos;s storage, so the homepage can offer a one-tap
+        &ldquo;check it again&rdquo;. That record never leaves your device and is not sent to us;
+        the Forget button on the homepage removes it, as does clearing your browser data.
+      </p>
 
       <h2>5. Advertising, and third-party cookies</h2>
       <p>

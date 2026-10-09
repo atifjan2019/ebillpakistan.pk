@@ -8,6 +8,7 @@ import Nav from "./Nav";
 import CookieConsent, { CookieSettingsLink } from "./CookieConsent";
 import AdSense from "./AdSense";
 import Analytics from "./Analytics";
+import InstallPrompt from "./InstallPrompt";
 
 const body = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
 const display = Plus_Jakarta_Sans({
@@ -16,6 +17,8 @@ const display = Plus_Jakarta_Sans({
   variable: "--font-display",
   display: "swap",
 });
+
+export const viewport = { themeColor: "#16a03d" };
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -26,10 +29,12 @@ export const metadata = {
   // Favicon: points to the site logo so /favicon.ico 404s stop appearing in
   // crawl stats. For a proper .ico file, place one at public/favicon.ico.
   icons: {
-    icon: "/images/logo.png",
-    shortcut: "/images/logo.png",
-    apple: "/images/logo.png",
+    icon: [{ url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }],
+    shortcut: "/icons/icon-192.png",
+    apple: "/icons/apple-touch-icon.png",
   },
+  manifest: "/manifest.webmanifest",
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "eBill" },
   openGraph: {
     type: "website",
     siteName: "eBill Pakistan",
@@ -161,6 +166,7 @@ export default function RootLayout({ children }) {
         <CookieConsent />
         <AdSense />
         <Analytics />
+        <InstallPrompt />
       </body>
     </html>
   );
