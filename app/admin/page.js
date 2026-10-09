@@ -15,6 +15,7 @@ import { SMTP_KEYS, SECRET_KEYS, getSettings, saveSettings, maskSecret } from ".
 import { mailConfig, sendMail } from "../../lib/mailer";
 import { ADJ_KEYS } from "../../lib/adjustmentOverrides";
 import { MONTHLY_FCA, qtaHistory } from "../../lib/adjustments";
+import { reminderStats } from "../../lib/push";
 import RecentChecks from "./RecentChecks";
 
 export const dynamic = "force-dynamic";
@@ -265,8 +266,9 @@ export default async function AdminPage({ searchParams }) {
     tab === "settings" ? getSettings([...SMTP_KEYS, ...ADJ_KEYS]) : null,
     tab === "messages" ? getContactMessages(100) : null,
   ]);
+  const reminders = tab === "settings" ? await reminderStats() : null;
   const editing = editingDraft ? { ...editingDraft, fromDraft: editingDraft.slug } : editingPost;
-  return <Dashboard tab={tab} stats={stats} posts={posts} page={page} msg={sp?.msg} err={sp?.err} editing={editing} drafts={drafts} agent={agent} runLog={runLog} settings={settings} messages={messages} />;
+  return <Dashboard tab={tab} stats={stats} posts={posts} page={page} msg={sp?.msg} err={sp?.err} editing={editing} drafts={drafts} agent={agent} runLog={runLog} settings={settings} messages={messages} reminders={reminders} />;
 }
 
 /* ---------------- login ---------------- */
@@ -361,7 +363,7 @@ function Bars({ rows, total, limit = 8 }) {
   );
 }
 
-function Dashboard({ tab, stats, posts, page, msg, err, editing, drafts, agent, runLog, settings, messages }) {
+function Dashboard({ tab, stats, posts, page, msg, err, editing, drafts, agent, runLog, settings, messages, reminders }) {
   const configured = stats ? stats.configured : true;
   const [title, subtitle] = TAB_TITLES[tab];
 
@@ -428,7 +430,7 @@ function Dashboard({ tab, stats, posts, page, msg, err, editing, drafts, agent, 
               </div>
             )}
             {tab === "posts" && <PostsTab posts={posts} page={page} msg={msg} err={err} editing={editing} drafts={drafts} agent={agent} runLog={runLog} />}
-            {tab === "settings" && <SettingsTab settings={settings} msg={msg} err={err} />}
+            {tab === "settings" && <SettingsTab settings={settings} msg={msg} err={err} reminders={reminders} />}
             {tab === "messages" && <MessagesTab messages={messages || []} />}
           </div>
         </div>
@@ -812,7 +814,7 @@ function MessagesTab({ messages }) {
 
 const SOURCE_LABEL = { saved: "saved here", env: "from the server environment", default: "default", none: "not set" };
 
-function SettingsTab({ settings, msg, err }) {
+function SettingsTab({ settings, msg, err, reminders }) {
   const v = (k) => settings[k]?.value || "";
   const src = (k) => SOURCE_LABEL[settings[k]?.source || "none"];
   const configured = !!(v("SMTP_HOST") && v("SMTP_USER") && v("SMTP_PASS"));
@@ -892,6 +894,17 @@ function SettingsTab({ settings, msg, err }) {
           <button type="submit" className="btn btn-ghost" disabled={!configured}>Send a test email</button>
           <span className="adm-form-note">Uses the saved settings. Save first if you have changed anything.</span>
         </form>
+      </div>
+
+      <div className="adm-panel">
+        <h2>Bill due-date reminders <span className="adm-count">{reminders?.count ?? 0}</span></h2>
+        <p className="adm-agent-blurb">
+          Visitors can ask for a phone notification three days before a bill is due and on the day. They go out with the
+          09:00 daily run. {reminders?.count ?? 0} device{reminders?.count === 1 ? " has" : "s have"} a reminder set.
+          {reminders?.last
+            ? ` Last run ${reminders.last.day}: ${reminders.last.sent} sent, ${reminders.last.failed} failed, ${reminders.last.removed} expired.`
+            : " No run recorded yet."}
+        </p>
       </div>
 
       <div className="adm-panel">

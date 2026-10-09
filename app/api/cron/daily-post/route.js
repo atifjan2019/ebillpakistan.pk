@@ -7,8 +7,10 @@
 // brief, ?stage=write at 05:00 UTC turns it into the post. Each stage then
 // fits comfortably inside one invocation. Without ?stage both run in one go.
 // Pass ?force=1 to write another post even if today's already exists.
+// The research call also sends the day's bill due-date reminders (lib/push.js).
 import crypto from "node:crypto";
 import { runContentAgent } from "../../../../lib/contentAgent";
+import { sendDueReminders } from "../../../../lib/push";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -32,7 +34,18 @@ export async function GET(req) {
   const params = new URL(req.url).searchParams;
   const force = params.get("force") === "1";
   const stage = ["research", "write"].includes(params.get("stage")) ? params.get("stage") : "all";
+  // The morning call (09:00 in Pakistan) also sends the day's due-date
+  // reminders. They go first and are quick, so a slow research run cannot
+  // delay or lose them.
+  let reminders = null;
+  if (stage !== "write") {
+    try {
+      reminders = await sendDueReminders();
+    } catch (err) {
+      reminders = { error: err.message };
+    }
+  }
   const result = await runContentAgent({ trigger: "cron", stage, force });
   const ok = ["drafted", "published", "researched", "skipped"].includes(result.status);
-  return Response.json({ ok, ...result }, { status: ok ? 200 : 500 });
+  return Response.json({ ok, ...result, reminders }, { status: ok ? 200 : 500 });
 }

@@ -75,6 +75,14 @@ export default function Privacy() {
         &ldquo;check it again&rdquo;. That record never leaves your device and is not sent to us;
         the Forget button on the homepage removes it, as does clearing your browser data.
       </p>
+      <p>
+        If you switch on a due-date reminder, we store what is needed to send the notification and
+        nothing more: the anonymous address your browser gives us for notifications, the company,
+        the bill&apos;s due date, and the last four digits of the reference number, which only label
+        the notification. We do not store the full reference number, your name, an email address or
+        a phone number. Pressing Turn off deletes the record, and it is deleted automatically after
+        the reminder for the following bill.
+      </p>
 
       <h2>5. Advertising, and third-party cookies</h2>
       <p>

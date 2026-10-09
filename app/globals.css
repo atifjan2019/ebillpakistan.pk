@@ -1284,3 +1284,11 @@ a.byline-name:hover { color: var(--brand); }
 .cl-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .cl-actions .btn { height: 42px; padding: 0 16px; font-size: 14px; }
 .result-next { margin-top: 22px; }
+
+/* ---- due-date reminder ---- */
+.reminder { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 14px; padding: 14px 16px; border: 1px solid color-mix(in srgb, var(--brand) 28%, var(--line)); border-radius: 14px; background: var(--brand-50); }
+.reminder-text { flex: 1 1 280px; margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--body); }
+.reminder-text b { color: var(--ink); }
+.reminder-btn { height: 42px; padding: 0 16px; font-size: 14px; }
+.reminder-off { background: none; border: 0; color: var(--muted); font-size: 13.5px; text-decoration: underline; cursor: pointer; padding: 6px; }
+.reminder-err { font-size: 13px; color: #9b1c1c; }
