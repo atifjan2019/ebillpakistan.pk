@@ -217,6 +217,9 @@ export default async function CompanyPage({ params }) {
             <a className="tool-link" href="/bill-calculator"><b>Bill calculator</b><span>Units in, estimated bill out, with this month&apos;s adjustments.</span></a>
             <a className="tool-link" href="/protected-consumer-checker"><b>Protected consumer checker</b><span>Six months of units tell you whether you qualify, and when.</span></a>
             <a className="tool-link" href="/this-month"><b>This month&apos;s adjustments</b><span>The fuel and quarterly charges in force, and past months.</span></a>
+            <a className="tool-link" href="/load-shedding"><b>Is the power on?</b><span>Your feeder&apos;s live status and {abbr}&apos;s schedule page.</span></a>
+            <a className="tool-link" href="/complaint-letter"><b>Complaint letter</b><span>A ready letter to your {abbr} SDO for a wrong bill, in English or Urdu.</span></a>
+            <a className="tool-link" href="/appliance-calculator"><b>Appliance calculator</b><span>Which appliance is running up the bill.</span></a>
           </div>
 
           {faqs.length > 0 && (

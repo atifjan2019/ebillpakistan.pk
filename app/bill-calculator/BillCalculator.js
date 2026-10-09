@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CATEGORIES, estimateBill } from "../../lib/billMath";
 import { DOMESTIC_SLAB_BOUNDS, PROTECTED } from "../../lib/tariffs";
 
@@ -12,6 +12,12 @@ export default function BillCalculator({ fcaPerUnit, qtaPerUnit, month }) {
   const [load, setLoad] = useState("2");
   const [phase, setPhase] = useState("single");
   const [includeAdj, setIncludeAdj] = useState(true);
+
+  // Other tools link here with ?units=NNN so the figure carries over.
+  useEffect(() => {
+    const u = new URLSearchParams(window.location.search).get("units");
+    if (u && /^\d{1,5}$/.test(u)) setUnits(u);
+  }, []);
 
   const result = useMemo(
     () =>

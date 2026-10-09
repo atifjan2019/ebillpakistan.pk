@@ -15,6 +15,7 @@ import BillActions from "./BillActions";
 import BillFallback from "./BillFallback";
 import BillFrame from "./BillFrame";
 import RememberLookup from "../RememberLookup";
+import UsageChart from "./UsageChart";
 
 // Resolve the page the user submitted from (homepage vs a DISCO page) from the
 // Referer. Internal redirects (referer = /result) are skipped so each user
@@ -129,6 +130,8 @@ export default async function Result({ searchParams }) {
             <BillView bill={bill} discoName={info[0]} region={info[1]} breakdown={breakdown} />
             <BillActions bill={bill} discoName={info[0]} lines={breakdown} />
 
+            <UsageChart bill={bill} />
+
             <BillAnalysis
               slab={slab}
               mom={monthOverMonth(bill)}
@@ -141,6 +144,12 @@ export default async function Result({ searchParams }) {
               anomaly={anomalyCheck(bill)}
               discoAbbr={info[0]}
             />
+
+            <div className="tool-links result-next">
+              <a className="tool-link" href={`https://ccms.pitc.com.pk/FeederDetails?reference=${encodeURIComponent(ref)}`} target="_blank" rel="noopener noreferrer"><b>Is the power on?</b><span>Your feeder&apos;s live status on the official PITC portal.</span></a>
+              <a className="tool-link" href="/complaint-letter"><b>Think this bill is wrong?</b><span>Write a complaint letter to your SDO in a minute.</span></a>
+              <a className="tool-link" href={bill.unitsConsumed != null ? `/bill-calculator?units=${bill.unitsConsumed}` : "/bill-calculator"}><b>Check the arithmetic</b><span>What these units should cost at NEPRA&apos;s rates.</span></a>
+            </div>
 
             <details className="orig-bill">
               <summary>View the original bill on the official PITC portal</summary>

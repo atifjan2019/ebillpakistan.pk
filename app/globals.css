@@ -72,7 +72,9 @@ img { max-width: 100%; }
 .nav-lang { display: inline-flex; align-items: center; gap: 6px; min-height: 38px; padding: 0 13px; border: 1px solid color-mix(in srgb, var(--brand) 35%, var(--line)); border-radius: 999px; background: var(--brand-50); color: var(--brand-700); font-weight: 700; font-size: 14px; white-space: nowrap; }
 .nav-lang:hover { background: #fff; border-color: var(--brand); }
 .nav-lang svg { width: 16px; height: 16px; flex: none; }
-.nav-lang[lang="ur"] { font-family: var(--font-urdu), serif; font-size: 15px; line-height: 1; padding-bottom: 2px; }
+/* The one-word Urdu labels on English pages use the device's own Arabic-script
+   font, so an English page never has to fetch the Nastaliq file for them. */
+.nav-lang[lang="ur"], .lang-switch a[lang="ur"], p.lang-switch[lang="ur"] a, .cl-lang button[lang="ur"] { font-family: system-ui, -apple-system, "Segoe UI", "Noto Naskh Arabic", "Geeza Pro", Tahoma, sans-serif; font-size: 15px; }
 .nav-links a:hover { color: var(--brand); }
 
 /* hamburger button (hidden on desktop) */
@@ -1206,3 +1208,79 @@ a.byline-name:hover { color: var(--brand); }
 .legal-inner .lang-switch a { display: inline-block; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); text-decoration: none; }
 .legal-inner .lang-switch a:hover { border-color: var(--brand); }
 .blog-card h2[dir="rtl"], .blog-card p[dir="rtl"] { text-align: right; font-family: var(--font-urdu), serif; line-height: 1.9; }
+
+/* ---- appliance calculator ---- */
+.tool--wide { grid-template-columns: 1.25fr 1fr; }
+@media (max-width: 900px) { .tool--wide { grid-template-columns: 1fr; } .tool--wide .tool-result { position: static; } }
+.appl-head, .appl-row { display: grid; grid-template-columns: 1fr 64px 76px 76px; gap: 8px; align-items: center; }
+.appl-head { font-size: 11.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .3px; padding: 0 2px; }
+.appl-head span:not(:first-child) { text-align: center; }
+.appl-row { padding: 6px 0; border-top: 1px solid var(--line); }
+.appl-name { font-size: 14.5px; font-weight: 600; color: var(--ink); line-height: 1.35; }
+.appl-name small { display: block; font-weight: 400; font-size: 12px; color: var(--muted); }
+.appl-row input { width: 100%; height: 42px; text-align: center; border: 1.5px solid var(--line); border-radius: 10px; font-size: 15px; color: var(--ink); background: #fbfcfe; }
+.appl-row input:focus { outline: none; border-color: var(--brand); background: #fff; box-shadow: 0 0 0 3px rgba(22, 160, 61, .12); }
+.appl-more { align-self: flex-start; background: none; border: 0; padding: 6px 0; color: var(--brand-700); font-weight: 700; font-size: 14px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.appl-bar { display: block; height: 6px; margin-top: 5px; border-radius: 999px; background: var(--brand-50); overflow: hidden; }
+.appl-bar span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--brand), var(--accent)); }
+.tool-actions { margin: 14px 0 0; }
+.tool-actions .btn { width: 100%; justify-content: center; }
+.tool-tip a { color: var(--brand-700); font-weight: 600; }
+
+/* ---- usage chart on the bill result ---- */
+.usage { margin-top: 30px; padding: 20px; border: 1px solid var(--line); border-radius: var(--r); background: var(--card); box-shadow: var(--shadow-sm); }
+.usage-head h2 { font-size: clamp(19px, 4vw, 23px); margin: 0 0 4px; }
+.usage-head p { margin: 0 0 12px; color: var(--muted); font-size: 14.5px; }
+.usage-chart { overflow-x: auto; }
+.usage-chart svg { display: block; width: 100%; min-width: 520px; height: auto; }
+.usage-bar { fill: color-mix(in srgb, var(--brand) 55%, #fff); }
+.usage-bar--over { fill: #f0a13a; }
+.usage-bar--now { fill: var(--brand); }
+.usage-bar--now.usage-bar--over { fill: #d9480f; }
+.usage-val { font-size: 12px; font-weight: 700; fill: var(--ink); }
+.usage-month { font-size: 11.5px; fill: var(--muted); }
+.usage-limit { stroke: #d9480f; stroke-width: 1.5; stroke-dasharray: 5 5; }
+.usage-limit-label { font-size: 11.5px; font-weight: 700; fill: #d9480f; }
+.usage-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 14px; }
+.usage-stats > div { display: flex; flex-direction: column; gap: 2px; padding: 11px 13px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.usage-stats span { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .3px; }
+.usage-stats b { font-family: var(--font-display); font-size: 16px; color: var(--ink); }
+.usage-stats small { font-size: 12.5px; color: var(--muted); }
+.usage-stats a, .usage-foot a { color: var(--brand-700); font-weight: 600; }
+.usage-foot { margin: 14px 0 0; font-size: 14px; color: var(--body); }
+/* Start the scroll at the newest month on a phone: an rtl scroller opens at its
+   right edge, and the chart inside is set back to ltr. */
+.usage-chart { direction: rtl; }
+.usage-chart svg { direction: ltr; }
+.usage-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 10px 0 0; font-size: 12.5px; color: var(--muted); }
+.usage-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.usage-key { display: inline-block; width: 14px; height: 10px; border-radius: 3px; }
+.usage-key--line { height: 0; border-top: 2px dashed #d9480f; border-radius: 0; }
+.usage-key--over { background: #f0a13a; }
+.usage-key--now { background: var(--brand); }
+
+/* ---- load shedding, tariff code, complaint letter ---- */
+.ls-form { margin: 18px 0 8px; max-width: none; }
+.tc-examples { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13.5px; color: var(--muted); }
+.tc-examples button { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink); cursor: pointer; }
+.tc-examples button:hover { border-color: var(--brand); color: var(--brand-700); }
+.tc-name { font-size: 24px; }
+.tc-note { font-size: 13.5px; color: var(--muted); font-weight: 400; }
+.tool-lines td b { color: var(--ink); }
+.tc-links { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; }
+.tc-links .btn { height: 40px; padding: 0 14px; font-size: 14px; }
+.tc-subs { margin: 6px 0 0; padding-left: 18px; }
+.tc-subs li { font-size: 13.5px; margin: 3px 0; line-height: 1.5; }
+.cl-lang { display: inline-flex; align-self: flex-start; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: #fff; }
+.cl-lang button { border: 0; background: none; padding: 8px 18px; border-radius: 999px; font: inherit; font-weight: 700; font-size: 14px; color: var(--body); cursor: pointer; }
+.cl-lang button.on { background: var(--brand); color: #fff; }
+.cl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cl-wide { grid-column: 1 / -1; }
+@media (max-width: 520px) { .cl-grid { grid-template-columns: 1fr; } }
+.tool-form textarea { width: 100%; padding: 12px 16px; border: 1.5px solid var(--line); border-radius: var(--r-sm); font: inherit; font-size: 15.5px; color: var(--ink); background: #fbfcfe; resize: vertical; }
+.tool-form textarea:focus { outline: none; border-color: var(--brand); background: #fff; box-shadow: 0 0 0 4px rgba(22, 160, 61, .12); }
+.cl-letter { white-space: pre-wrap; font-size: 14.5px; line-height: 1.75; color: var(--ink); padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: #fffdf7; max-height: 560px; overflow: auto; }
+.cl-letter[lang="ur"] { font-family: var(--font-urdu), serif; line-height: 2.2; font-size: 15.5px; }
+.cl-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.cl-actions .btn { height: 42px; padding: 0 16px; font-size: 14px; }
+.result-next { margin-top: 22px; }

@@ -44,7 +44,7 @@ export default async function sitemap() {
       priority: 0.7,
     },
     { url: `${BASE}/this-month`, lastModified: UPDATED.tools, changeFrequency: "weekly", priority: 0.8 },
-    ...["bill-calculator", "protected-consumer-checker", "mdi-calculator", "solar-calculator", "tools"].map((p) => ({
+    ...["bill-calculator", "appliance-calculator", "protected-consumer-checker", "mdi-calculator", "solar-calculator", "complaint-letter", "tariff-code", "load-shedding", "tools"].map((p) => ({
       url: `${BASE}/${p}`,
       lastModified: UPDATED.tools,
       changeFrequency: "monthly",

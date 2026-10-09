@@ -11,7 +11,10 @@ import Analytics from "./Analytics";
 import InstallPrompt from "./InstallPrompt";
 
 const body = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
-const urdu = Noto_Nastaliq_Urdu({ subsets: ["arabic"], weight: ["400", "700"], variable: "--font-urdu", display: "swap" });
+// Not preloaded: the file is about 240 KB and only Urdu pages use it. Without a
+// preload the browser fetches it only when Urdu text set in this family is on
+// the page, so English pages never download it.
+const urdu = Noto_Nastaliq_Urdu({ subsets: ["arabic"], weight: ["400", "700"], variable: "--font-urdu", display: "swap", preload: false });
 const display = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["600", "700", "800"],
@@ -126,9 +129,13 @@ export default function RootLayout({ children }) {
                 <li><a href="/electricity-tariff">Electricity tariff 2026</a></li>
                 <li><a href="/this-month">This month&apos;s adjustments</a></li>
                 <li><a href="/bill-calculator">Bill calculator</a></li>
+                <li><a href="/appliance-calculator">Appliance calculator</a></li>
                 <li><a href="/protected-consumer-checker">Protected consumer checker</a></li>
                 <li><a href="/mdi-calculator">MDI calculator</a></li>
                 <li><a href="/solar-calculator">Solar savings calculator</a></li>
+                <li><a href="/complaint-letter">Complaint letter</a></li>
+                <li><a href="/tariff-code">Tariff code decoder</a></li>
+                <li><a href="/load-shedding">Load shedding</a></li>
                 <li><a href="/#companies">All companies</a></li>
                 <li><a href="/#faq">FAQ</a></li>
               </ul>

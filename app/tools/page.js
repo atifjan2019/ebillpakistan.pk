@@ -1,18 +1,22 @@
 import { SITE_URL, buildMeta } from "../../lib/seo";
 
 export const metadata = buildMeta({
-  title: "Electricity Bill Tools: Calculator, Protected Checker, MDI, Solar",
+  title: "Electricity Bill Tools: Calculators, Complaint Letter, Load Shedding",
   description:
-    "Free calculators for Pakistani electricity bills: estimate a bill from units, check protected consumer status, work out MDI fixed charges, and estimate solar savings under net billing.",
+    "Free tools for Pakistani electricity bills: bill and appliance calculators, protected consumer checker, complaint letter, tariff code decoder, load-shedding status, MDI and solar calculators.",
   path: "/tools",
   imageAlt: "Electricity bill tools",
 });
 
 export const TOOLS = [
   ["/bill-calculator", "Bill calculator", "Units in, estimated bill out at NEPRA's rates with this month's adjustments, and the saving from a lower slab."],
+  ["/appliance-calculator", "Appliance calculator", "Add up your fans, AC, fridge and pump to see the units a month, the slab, and which one to cut."],
   ["/protected-consumer-checker", "Protected consumer checker", "Six months of units tell you whether you qualify for the protected rate, your headroom, and when a lost status returns."],
   ["/mdi-calculator", "MDI and fixed charge calculator", "For Time-of-Use connections of 5 kW and above: how the fixed charge comes from your MDI, and what lowering it saves."],
   ["/solar-calculator", "Solar savings calculator", "What a rooftop system does to the bill: slab drop, export credit at the net-billing rate, and payback."],
+  ["/complaint-letter", "Complaint letter", "A ready-to-send letter for a wrong reading, an excessive bill or a detection charge, in English or Urdu, and the route up to NEPRA."],
+  ["/tariff-code", "Tariff code decoder", "Type the code printed on your bill and see which category and rate table it puts you on."],
+  ["/load-shedding", "Load shedding and feeder status", "Whether your feeder is on right now, and where each company publishes its schedule."],
   ["/this-month", "This month's adjustments", "The fuel and quarterly adjustments on this month's bills, what they add, who is exempt, and every past month."],
   ["/", "Bill lookup", "Your current bill from the reference number, for every DISCO, in about ten seconds."],
 ];
