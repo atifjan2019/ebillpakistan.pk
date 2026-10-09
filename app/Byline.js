@@ -28,26 +28,38 @@ export function AuthorAvatar({ author, size = 40 }) {
   );
 }
 
-// Full byline for an article page: avatar, linked name, role, and both dates.
-export function Byline({ author, publishedDate, lastUpdated }) {
+// Full byline for an article page: one block with the avatar on the left and
+// two lines beside it (who wrote it; when, and how long it takes to read).
+export function Byline({ author, publishedDate, lastUpdated, words }) {
   const updated = lastUpdated && lastUpdated !== publishedDate ? lastUpdated : null;
+  const minutes = words ? Math.max(1, Math.round(words / 220)) : null;
   return (
     <div className="byline">
-      <a className="byline-who" href={`/author/${author.slug}`} rel="author">
-        <AuthorAvatar author={author} size={44} />
-        <span>
-          <span className="byline-name">{author.name}</span>
-          <span className="byline-role">{author.role}</span>
-        </span>
+      <a className="byline-who" href={`/author/${author.slug}`} rel="author" aria-label={`About ${author.name}`}>
+        <AuthorAvatar author={author} size={48} />
       </a>
-      <p className="byline-dates">
-        Published <time dateTime={publishedDate}>{formatDate(publishedDate)}</time>
-        {updated && (
-          <>
-            {" · "}Last updated <time dateTime={updated}>{formatDate(updated)}</time>
-          </>
-        )}
-      </p>
+      <div className="byline-text">
+        <p className="byline-line">
+          <a className="byline-name" href={`/author/${author.slug}`} rel="author">{author.name}</a>
+          <span className="byline-sep">·</span>
+          <span className="byline-role">{author.role}</span>
+        </p>
+        <p className="byline-dates">
+          <time dateTime={publishedDate}>{formatDate(publishedDate)}</time>
+          {updated && (
+            <>
+              <span className="byline-sep">·</span>
+              Updated <time dateTime={updated}>{formatDate(updated)}</time>
+            </>
+          )}
+          {minutes && (
+            <>
+              <span className="byline-sep">·</span>
+              {minutes} min read
+            </>
+          )}
+        </p>
+      </div>
     </div>
   );
 }

@@ -41,6 +41,9 @@ function renderBody(html) {
   return parts;
 }
 
+// Reading time comes from the rendered HTML with the tags stripped.
+const wordCount = (html) => String(html || "").replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length;
+
 export async function generateStaticParams() {
   return (await getAllPosts()).map((a) => ({ slug: a.slug }));
 }
@@ -124,7 +127,7 @@ export default async function ArticlePage({ params }) {
           <a href="/">Home</a> <span>/</span> <a href="/blog">Blog</a> <span>/</span> <span aria-current="page">{a.title}</span>
         </nav>
         <h1 lang={a.lang} dir={a.dir}>{a.h1}</h1>
-        <Byline author={author} publishedDate={a.publishedDate} lastUpdated={a.lastUpdated} />
+        <Byline author={author} publishedDate={a.publishedDate} lastUpdated={a.lastUpdated} words={wordCount(a.content)} />
 
         <article className="prose" lang={a.lang} dir={a.dir}>{renderBody(a.content)}</article>
 
