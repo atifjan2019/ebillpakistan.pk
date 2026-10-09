@@ -37,7 +37,9 @@ const breadcrumbLd = {
 };
 
 export default async function BlogIndex() {
-  const posts = await getAllPosts();
+  // Newest first, so the daily post always leads the page.
+  const posts = (await getAllPosts()).sort((a, b) =>
+    String(b.publishedDate).localeCompare(String(a.publishedDate)));
   return (
     <section className="legal-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionLd) }} />
