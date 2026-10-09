@@ -1175,3 +1175,28 @@ a.byline-name:hover { color: var(--brand); }
 .post-related-chip { display: inline-flex; align-items: center; gap: 5px; padding: 9px 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); font-size: 14px; color: var(--body); box-shadow: var(--shadow-sm); }
 .post-related-chip b { color: var(--ink); }
 .post-related-chip:hover { border-color: var(--brand); color: var(--brand-700); }
+
+/* ---- Urdu ---- */
+[lang="ur"], [lang="ur"] p, [lang="ur"] li, [lang="ur"] summary, [lang="ur"] .a, [lang="ur"] h1, [lang="ur"] h2, [lang="ur"] h3, [lang="ur"] label, [lang="ur"] .sub, [lang="ur"] .eyebrow, [lang="ur"] .tool-link b, [lang="ur"] .tool-link span, [lang="ur"] .step p, [lang="ur"] .blog-card p { font-family: var(--font-urdu), "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq", serif; }
+[lang="ur"] p, [lang="ur"] li, [lang="ur"] .a, [lang="ur"] .sub, [lang="ur"] .step p, [lang="ur"] .blog-card p { line-height: 2.1; }
+[lang="ur"] h1 { line-height: 1.7; letter-spacing: 0; }
+[lang="ur"] h2, [lang="ur"] h3 { line-height: 1.8; }
+.urdu .hero h1 { font-size: clamp(28px, 4.6vw, 44px); }
+.urdu .search-grid .field label { letter-spacing: 0; text-transform: none; font-size: 15px; }
+.urdu .disco-card .name, .urdu .disco-card .city { font-family: var(--font-display); }
+.urdu .section-head .kicker { letter-spacing: 0; }
+.urdu .faq summary::after { content: "+"; }
+.lang-switch { margin: 12px 0 0; text-align: center; font-size: 14.5px; }
+.lang-switch a { color: var(--brand-700); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.legal-inner .lang-switch { text-align: start; margin: 0 0 6px; }
+.prose[dir="rtl"] h2, .prose[dir="rtl"] h3 { text-align: right; }
+.prose[dir="rtl"] table th { text-align: right; }
+.prose[dir="rtl"] blockquote { border-left: 0; border-right: 3px solid var(--brand); border-radius: 10px 0 0 10px; }
+.prose[dir="rtl"] code, .prose[dir="rtl"] a[href^="http"] { direction: ltr; unicode-bidi: embed; }
+.urdu .control.sel::after { right: auto; left: 16px; }
+.urdu .control select { padding: 0 16px 0 36px; }
+.urdu .search-foot { flex-direction: row-reverse; }
+.legal-inner .lang-switch { direction: ltr; text-align: left; font-size: 15px; margin: 0 0 8px; }
+.legal-inner .lang-switch a { display: inline-block; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); text-decoration: none; }
+.legal-inner .lang-switch a:hover { border-color: var(--brand); }
+.blog-card h2[dir="rtl"], .blog-card p[dir="rtl"] { text-align: right; font-family: var(--font-urdu), serif; line-height: 1.9; }

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getAllPosts, getPost } from "../../../lib/posts";
+import { translationFor } from "../../../lib/articles";
 import { authorFor } from "../../../lib/authors";
 import { SITE_URL, OG_IMAGE, buildMeta } from "../../../lib/seo";
 import { TARIFF_BY_KEY } from "../../../lib/tariffs";
@@ -62,6 +63,13 @@ export async function generateMetadata({ params }) {
     imageAlt: a.title,
   });
   meta.openGraph.publishedTime = a.publishedDate;
+  const twin = translationFor(a.slug);
+  if (twin) {
+    const en = a.lang === "ur" ? twin : a;
+    const ur = a.lang === "ur" ? a : twin;
+    meta.alternates.languages = { en: `/blog/${en.slug}`, ur: `/blog/${ur.slug}`, "x-default": `/blog/${en.slug}` };
+    meta.openGraph.locale = a.lang === "ur" ? "ur_PK" : "en_PK";
+  }
   return meta;
 }
 
@@ -74,6 +82,7 @@ export default async function ArticlePage({ params }) {
   const pageUrl = `${SITE_URL}/blog/${a.slug}`;
   const companies = companyLinksFor(a);
   const tools = toolLinksFor(a);
+  const twin = translationFor(a.slug);
   const articleLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -129,6 +138,11 @@ export default async function ArticlePage({ params }) {
         <nav aria-label="Breadcrumb" className="crumb">
           <a href="/">Home</a> <span>/</span> <a href="/blog">Blog</a> <span>/</span> <span aria-current="page">{a.title}</span>
         </nav>
+        {twin && (
+          <p className="lang-switch" lang={twin.lang || "en"} dir={twin.dir || "ltr"}>
+            <a href={`/blog/${twin.slug}`}>{a.lang === "ur" ? "Read this guide in English" : "یہ گائیڈ اردو میں پڑھیں"}</a>
+          </p>
+        )}
         <h1 lang={a.lang} dir={a.dir}>{a.h1}</h1>
         <Byline author={author} publishedDate={a.publishedDate} lastUpdated={a.lastUpdated} words={wordCount(a.content)} />
 

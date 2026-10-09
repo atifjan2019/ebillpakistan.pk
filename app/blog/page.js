@@ -60,14 +60,14 @@ export default async function BlogIndex() {
             // links (the guide and its author), which cannot legally nest inside
             // a single anchor.
             <article key={a.slug} className="blog-card">
-              <h2><a href={`/blog/${a.slug}`}>{a.title}</a></h2>
+              <h2 lang={a.lang} dir={a.dir}><a href={`/blog/${a.slug}`}>{a.title}</a></h2>
               <BylineCompact
                 author={authorFor(a)}
                 publishedDate={a.publishedDate}
                 lastUpdated={a.lastUpdated}
                 linked
               />
-              <p>{a.metaDescription}</p>
+              <p lang={a.lang} dir={a.dir}>{a.metaDescription}</p>
               <a className="blog-more" href={`/blog/${a.slug}`}>Read guide →</a>
             </article>
           ))}

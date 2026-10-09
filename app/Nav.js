@@ -9,6 +9,7 @@ const LINKS = [
   ["/electricity-tariff", "Tariff"],
   ["/blog", "Blog"],
   ["/contact", "Contact"],
+  ["/ur", "اردو"],
 ];
 
 export default function Nav() {

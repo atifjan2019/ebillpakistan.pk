@@ -21,6 +21,7 @@ export default async function sitemap() {
   const posts = await getAllPosts();
   return [
     { url: HOME_URL, lastModified: UPDATED.core, changeFrequency: "weekly", priority: 1 },
+    { url: `${BASE}/ur`, lastModified: UPDATED.tools, changeFrequency: "weekly", priority: 0.9 },
     ...Object.keys(DISCOS).map((code) => ({
       url: `${BASE}/${slugFor(code)}`,
       lastModified: UPDATED.core,

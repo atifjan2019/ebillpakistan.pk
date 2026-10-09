@@ -137,6 +137,9 @@ export default async function Home({ searchParams }) {
     <>
       {/* Canonical + og:url with trailing slash (Metadata API would strip it). */}
       <link rel="canonical" href={HOME_URL} />
+      <link rel="alternate" hrefLang="en" href={HOME_URL} />
+      <link rel="alternate" hrefLang="ur" href={`${SITE_URL}/ur`} />
+      <link rel="alternate" hrefLang="x-default" href={HOME_URL} />
       <meta property="og:url" content={HOME_URL} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
@@ -184,6 +187,7 @@ export default async function Home({ searchParams }) {
             <CheckBillLoader />
           </form>
           <QuickCheck />
+          <p className="lang-switch"><a href="/ur" lang="ur">یہ صفحہ اردو میں دیکھیں</a></p>
 
           <div className="trust">
             <span className="pill">{I.free} 100% Free</span>

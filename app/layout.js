@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans, Noto_Nastaliq_Urdu } from "next/font/google";
 import { DISCOS } from "../lib/discos";
 import { OG_IMAGE, OG_IMAGE_ALT, SITE_URL, TWITTER_SITE, SOCIAL } from "../lib/seo";
 import { ARTICLES } from "../lib/articles";
@@ -11,6 +11,7 @@ import Analytics from "./Analytics";
 import InstallPrompt from "./InstallPrompt";
 
 const body = Inter({ subsets: ["latin"], variable: "--font-body", display: "swap" });
+const urdu = Noto_Nastaliq_Urdu({ subsets: ["arabic"], weight: ["400", "700"], variable: "--font-urdu", display: "swap" });
 const display = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["600", "700", "800"],
@@ -64,7 +65,7 @@ function Bolt() {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${body.variable} ${display.variable}`}>
+    <html lang="en" className={`${body.variable} ${display.variable} ${urdu.variable}`}>
       {/* suppressHydrationWarning: some browser extensions (e.g. ColorZilla adds
           cz-shortcut-listen) inject attributes on <body> before React hydrates,
           which otherwise triggers a benign hydration-mismatch warning. */}
