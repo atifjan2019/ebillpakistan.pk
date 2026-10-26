@@ -4,20 +4,11 @@ import { DISCOS, isValidRef } from "../../lib/discos";
 import { getIp, logBillCheck, rateLimitBill } from "../../lib/store";
 import { fetchBillJson } from "../../lib/pitc";
 import { normaliseBill } from "../../lib/billData";
-import { adjustmentsOn, categoryFor } from "../../lib/tariffs";
-import {
-  anomalyCheck, chargeBreakdown, effectiveRate, largestSurcharge,
-  monthOverMonth, protectedStatus, slabPosition, slabSaving,
-} from "../../lib/billAnalysis";
-import BillView from "./BillView";
-import BillAnalysis from "./BillAnalysis";
-import BillActions from "./BillActions";
+import { adjustmentsOn } from "../../lib/tariffs";
+import BillPanel from "./BillPanel";
+import BillResult from "./BillResult";
 import BillFallback from "./BillFallback";
 import BillFrame from "./BillFrame";
-import RememberLookup from "../RememberLookup";
-import UsageChart from "./UsageChart";
-import ReminderButton from "./ReminderButton";
-import { parseBillDate, todayPkIso, daysBetween } from "../../lib/dates";
 
 // Resolve the page the user submitted from (homepage vs a DISCO page) from the
 // Referer. Internal redirects (referer = /result) are skipped so each user
@@ -71,11 +62,18 @@ export default async function Result({ searchParams }) {
   // BillReady.js showed every visitor. Same limiter the API routes use.
   const rl = await rateLimitBill(ip);
 
+  // PITC blocks datacenter egress (every Vercel region gets its "Web Page
+  // Blocked" 500), so on Vercel without PITC_PROXY the server does not even try:
+  // the visitor's browser fetches the bill instead (BillResult.js), and reports
+  // the outcome to /api/bill-log.
+  const serverCanFetch = !process.env.VERCEL || !!process.env.PITC_PROXY;
+  const browserPath = rl.success && !serverCanFetch;
+
   let bill = null;
   let reason = "upstream";
   if (!rl.success) {
     reason = "ratelimited";
-  } else {
+  } else if (serverCanFetch) {
     try {
       const raw = await fetchBillJson(ref);
       bill = normaliseBill(raw);
@@ -85,7 +83,7 @@ export default async function Result({ searchParams }) {
     }
   }
 
-  if (page) {
+  if (page && !browserPath) {
     await logBillCheck({
       disco, ref, page,
       outcome: bill ? "view" : reason,
@@ -100,18 +98,7 @@ export default async function Result({ searchParams }) {
   // bill.pitc.com.pk, which needs PITC_PROXY (PITC blocks datacenter egress).
   const htmlPathAvailable = !process.env.VERCEL || !!process.env.PITC_PROXY;
 
-  // Analysis, computed once and shared by the view and the PDF.
-  const slab = bill ? slabPosition(bill.unitsConsumed) : null;
-  const breakdown = bill ? chargeBreakdown(bill) : null;
-  const protectedInfo = bill ? protectedStatus(bill) : null;
-  // The tariff code on the bill wins; units are only a fallback.
-  const billCategory = protectedInfo?.declared === true
-    ? "protected"
-    : bill ? categoryFor(bill.unitsConsumed) : null;
-
-  // A reminder is only offered when the due date reads cleanly and has not passed.
-  const parsedDue = bill ? parseBillDate(bill.dueDate) : null;
-  const dueIso = parsedDue && daysBetween(todayPkIso(), parsedDue) >= 0 ? parsedDue : null;
+  const adjustments = adjustmentsOn(new Date().toISOString());
 
   return (
     <section className="result-wrap">
@@ -131,44 +118,9 @@ export default async function Result({ searchParams }) {
         </div>
 
         {bill ? (
-          <>
-            <RememberLookup disco={disco} reference={ref} discoName={info[0]} />
-            <BillView bill={bill} discoName={info[0]} region={info[1]} breakdown={breakdown} />
-            <BillActions bill={bill} discoName={info[0]} lines={breakdown} />
-            {dueIso && <ReminderButton disco={disco} discoName={info[0]} dueIso={dueIso} last4={ref.slice(-4)} />}
-
-            <UsageChart bill={bill} />
-
-            <BillAnalysis
-              slab={slab}
-              mom={monthOverMonth(bill)}
-              breakdown={breakdown}
-              largest={largestSurcharge(breakdown)}
-              protectedInfo={protectedInfo}
-              saving={slabSaving(bill, slab, billCategory)}
-              adjustments={adjustmentsOn(new Date().toISOString())}
-              effective={effectiveRate(bill)}
-              anomaly={anomalyCheck(bill)}
-              discoAbbr={info[0]}
-            />
-
-            <div className="tool-links result-next">
-              <a className="tool-link" href={`https://ccms.pitc.com.pk/FeederDetails?reference=${encodeURIComponent(ref)}`} target="_blank" rel="noopener noreferrer"><b>Is the power on?</b><span>Your feeder&apos;s live status on the official PITC portal.</span></a>
-              <a className="tool-link" href="/complaint-letter"><b>Think this bill is wrong?</b><span>Write a complaint letter to your SDO in a minute.</span></a>
-              <a className="tool-link" href={bill.unitsConsumed != null ? `/bill-calculator?units=${bill.unitsConsumed}` : "/bill-calculator"}><b>Check the arithmetic</b><span>What these units should cost at NEPRA&apos;s rates.</span></a>
-            </div>
-
-            <details className="orig-bill">
-              <summary>View the original bill on the official PITC portal</summary>
-              <p>
-                The figures above are the ones the official system issued for this reference. If you
-                need the original printed layout — for a bank counter that wants it — open it here.
-              </p>
-              <form action={pitcUrl} method="POST" target="_blank" rel="noopener noreferrer" encType="text/plain">
-                <button type="submit" className="btn btn-ghost">Open the official bill →</button>
-              </form>
-            </details>
-          </>
+          <BillPanel bill={bill} disco={disco} info={info} reference={ref} pitcUrl={pitcUrl} adjustments={adjustments} />
+        ) : browserPath ? (
+          <BillResult disco={disco} info={info} reference={ref} pitcUrl={pitcUrl} adjustments={adjustments} page={page} />
         ) : htmlPathAvailable && reason === "upstream" ? (
           // Server can reach bill.pitc.com.pk: fall back to the rendered bill.
           <BillFrame src={`/api/bill?disco=${encodeURIComponent(disco)}&reference=${encodeURIComponent(ref)}`} disco={disco} reference={ref} />

@@ -1292,3 +1292,6 @@ a.byline-name:hover { color: var(--brand); }
 .reminder-btn { height: 42px; padding: 0 16px; font-size: 14px; }
 .reminder-off { background: none; border: 0; color: var(--muted); font-size: 13.5px; text-decoration: underline; cursor: pointer; padding: 6px; }
 .reminder-err { font-size: 13px; color: #9b1c1c; }
+
+.result-loading { text-align: center; }
+.result-loading p { margin: 0 0 6px; }

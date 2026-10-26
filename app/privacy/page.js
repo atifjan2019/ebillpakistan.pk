@@ -28,8 +28,9 @@ export default function Privacy() {
       <ul>
         <li>
           <strong>The number you enter.</strong> Your 14-digit reference number (or account/consumer
-          ID) is sent to our server and passed to the upstream billing system operated by the Power
-          Information Technology Company (PITC) in order to retrieve your bill. It is not saved to a
+          ID) is sent by your browser to the upstream billing system operated by the Power
+          Information Technology Company (PITC) in order to retrieve your bill, and, if that
+          request fails, to our server, which asks PITC on your behalf. It is not saved to a
           database after your request completes.
         </li>
         <li>
