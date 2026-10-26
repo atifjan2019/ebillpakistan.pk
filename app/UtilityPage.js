@@ -10,7 +10,7 @@ export default function UtilityPage({ code }) {
   const u = UTILITIES[code];
   const year = new Date().getFullYear();
   const fields = u.fields || [
-    { key: "number", label: u.id.label, pattern: `[0-9]{${u.id.digits}}`, placeholder: `${u.id.digits} digits` },
+    { key: "number", label: u.id.label, pattern: `[0-9]{${u.id.min},${u.id.max}}`, placeholder: u.id.min === u.id.max ? `${u.id.min} digits` : `${u.id.min} or ${u.id.max} digits` },
   ];
   const others = UTILITY_CODES.filter((c) => c !== code);
   const kindWord = u.kind === "gas" ? "gas" : "landline and broadband";
