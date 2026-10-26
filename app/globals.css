@@ -1295,3 +1295,7 @@ a.byline-name:hover { color: var(--brand); }
 
 .result-loading { text-align: center; }
 .result-loading p { margin: 0 0 6px; }
+
+/* Gas and PTCL hand-off card */
+.handoff .btn[disabled] { opacity: .55; cursor: not-allowed; }
+.handoff .search-foot { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }

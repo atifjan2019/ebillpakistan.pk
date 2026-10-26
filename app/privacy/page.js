@@ -30,7 +30,10 @@ export default function Privacy() {
           <strong>The number you enter.</strong> Your 14-digit reference number (or account/consumer
           ID) is sent by your browser to the upstream billing system operated by the Power
           Information Technology Company (PITC) in order to retrieve your bill, and, if that
-          request fails, to our server, which asks PITC on your behalf. It is not saved to a
+          request fails, to our server, which asks PITC on your behalf.
+          Gas (SNGPL, SSGC) and PTCL numbers entered on their pages are different: they are kept
+          only in your browser and copied to your clipboard for the company&apos;s own portal, and are
+          never sent to our server at all. It is not saved to a
           database after your request completes.
         </li>
         <li>

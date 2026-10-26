@@ -1,5 +1,6 @@
 import { DISCOS } from "../lib/discos";
 import { slugFor } from "../lib/companies";
+import { UTILITY_CODES, utilitySlug } from "../lib/utilities";
 import { SITE_URL, HOME_URL } from "../lib/seo";
 import { getAllPosts } from "../lib/posts";
 import { AUTHOR_SLUGS } from "../lib/authors";
@@ -15,6 +16,7 @@ const UPDATED = {
   legal: "2026-08-16",  // privacy (rewritten for advertising disclosure)
   terms: "2026-01-10",  // terms, disclaimer (unchanged)
   tools: "2026-10-09",  // calculators and the monthly adjustments tracker
+  utilities: "2026-10-26", // SNGPL, SSGC and PTCL pages
 };
 
 export default async function sitemap() {
@@ -26,6 +28,12 @@ export default async function sitemap() {
       url: `${BASE}/${slugFor(code)}`,
       lastModified: UPDATED.core,
       changeFrequency: "weekly",
+      priority: 0.8,
+    })),
+    ...UTILITY_CODES.map((code) => ({
+      url: `${BASE}/${utilitySlug(code)}`,
+      lastModified: UPDATED.utilities,
+      changeFrequency: "monthly",
       priority: 0.8,
     })),
     // /sample-bill-explained is the indexable counterpart to the noindexed
