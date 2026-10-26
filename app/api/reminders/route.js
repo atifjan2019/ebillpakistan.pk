@@ -6,6 +6,7 @@
 // Only the push subscription, company, due date and the last four digits of
 // the reference are accepted and stored; see lib/push.js.
 import { DISCOS } from "../../../lib/discos";
+import { UTILITIES } from "../../../lib/utilities";
 import { getIp, rateLimitBill } from "../../../lib/store";
 import { vapidKeys, saveReminder, removeReminder } from "../../../lib/push";
 import { todayPkIso, daysBetween } from "../../../lib/dates";
@@ -48,7 +49,7 @@ export async function POST(request) {
   }
   const { subscription, disco, dueDate, last4 } = body || {};
   if (!validSubscription(subscription)) return bad(400, "Invalid subscription.");
-  if (!DISCOS[disco]) return bad(400, "Unknown company.");
+  if (!DISCOS[disco] && !UTILITIES[disco]) return bad(400, "Unknown company.");
   if (typeof dueDate !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(dueDate)) return bad(400, "Invalid due date.");
   const days = daysBetween(todayPkIso(), dueDate);
   if (!(days >= -40 && days <= 60)) return bad(400, "That due date is too far away to remind about.");

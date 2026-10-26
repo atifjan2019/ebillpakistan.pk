@@ -4,7 +4,7 @@ import { UTILITIES, UTILITY_CODES, utilitySlug } from "../lib/utilities";
 import { DISCOS } from "../lib/discos";
 import { SITE_URL, HOME_URL } from "../lib/seo";
 import PortalHandoff from "./PortalHandoff";
-import EbillLink from "./EbillLink";
+import PtclEbill from "./PtclEbill";
 
 export default function UtilityPage({ code }) {
   const u = UTILITIES[code];
@@ -51,8 +51,8 @@ export default function UtilityPage({ code }) {
           <p className="search-foot" style={{ marginTop: 10 }}>{u.id.hint}</p>
           {code === "ptcl" && (
             <>
-              <p className="search-foot" style={{ marginTop: 18 }}><b>Got the SMS?</b> PTCL texts and emails a one-off e-bill link for every invoice. It opens straight away, with no picture code.</p>
-              <EbillLink />
+              <p className="search-foot" style={{ marginTop: 18 }}><b>Got the SMS?</b> PTCL texts and emails a one-off e-bill link for every invoice. Paste it and the bill shows right here, with no picture code.</p>
+              <PtclEbill />
             </>
           )}
         </div>
