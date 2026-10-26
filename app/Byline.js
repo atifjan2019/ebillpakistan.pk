@@ -35,7 +35,7 @@ export function Byline({ author, publishedDate, lastUpdated, words }) {
   const minutes = words ? Math.max(1, Math.round(words / 220)) : null;
   return (
     <div className="byline">
-      <a className="byline-who" href={`/author/${author.slug}`} rel="author" aria-label={`About ${author.name}`}>
+      <a className="byline-who" href={`/author/${author.slug}`} rel="author" aria-hidden="true" tabIndex={-1}>
         <AuthorAvatar author={author} size={48} />
       </a>
       <div className="byline-text">

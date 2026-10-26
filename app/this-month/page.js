@@ -14,7 +14,7 @@ const month = monthLabel(currentMonthPk());
 
 export const metadata = buildMeta({
   title: `Electricity Bill ${month}: FCA and QTA Rates Explained`,
-  description: `The fuel cost adjustment and quarterly adjustment on ${month} electricity bills in Pakistan, who is exempt, what they add on 100 to 500 units, and every past month's figure.`,
+  description: `The fuel cost and quarterly adjustments on ${month} electricity bills in Pakistan, who is exempt, what they add on 100 to 500 units, and past months.`,
   path: "/this-month",
   imageAlt: `Electricity bill adjustments for ${month}`,
 });

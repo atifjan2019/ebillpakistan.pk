@@ -111,7 +111,7 @@ export default function RootLayout({ children }) {
             </div>
 
             <div className="footer-col footer-companies">
-              <h4>Check your bill</h4>
+              <p className="footer-head">Check your bill</p>
               <ul className="cols-2">
                 {Object.entries(DISCOS).map(([code, [abbr]]) => (
                   <li key={code}><a href={`/${code}-bill-check`}>{abbr} Bill</a></li>
@@ -120,7 +120,7 @@ export default function RootLayout({ children }) {
             </div>
 
             <div className="footer-col">
-              <h4>Site</h4>
+              <p className="footer-head">Site</p>
               <ul>
                 <li><a href="/">Home</a></li>
                 <li><a href="/about">About</a></li>
@@ -142,7 +142,7 @@ export default function RootLayout({ children }) {
             </div>
 
             <div className="footer-col">
-              <h4>Guides</h4>
+              <p className="footer-head">Guides</p>
               <ul>
                 {ARTICLES.slice(0, 4).map((a) => (
                   <li key={a.slug}><a href={`/blog/${a.slug}`}>{a.navLabel}</a></li>
@@ -152,7 +152,7 @@ export default function RootLayout({ children }) {
             </div>
 
             <div className="footer-col">
-              <h4>Legal &amp; trust</h4>
+              <p className="footer-head">Legal &amp; trust</p>
               <ul>
                 <li><a href="/editorial-policy">Editorial policy</a></li>
                 <li><a href="/privacy">Privacy policy</a></li>

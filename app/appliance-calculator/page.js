@@ -8,7 +8,7 @@ export const revalidate = 3600;
 export const metadata = buildMeta({
   title: "Appliance Electricity Calculator Pakistan: Units per Month",
   description:
-    "Add up your fans, AC, fridge, iron and pump to see the units they use a month, which slab that puts you in, what it costs at NEPRA's rates, and which appliance is the one to cut.",
+    "Add up your fans, AC, fridge, iron and pump to see the units they use a month, the slab that puts you in, the cost at NEPRA's rates, and which one to cut.",
   path: "/appliance-calculator",
   imageAlt: "Appliance electricity use calculator for Pakistan",
 });

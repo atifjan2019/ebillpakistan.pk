@@ -20,8 +20,8 @@ export async function generateMetadata({ params }) {
   const a = getAuthor(slug);
   if (!a) return {};
   return buildMeta({
-    title: `${a.name} — ${a.role} | eBill Pakistan`,
-    description: `Guides on Pakistani electricity billing written and edited by ${a.name}, ${a.role.toLowerCase()}. Tariffs, bill line items, DISCO complaints and subsidy scams.`,
+    title: `${a.name}, ${a.role} | eBill Pakistan`,
+    description: `Guides on Pakistani electricity billing written and edited by ${a.name}, ${a.role.toLowerCase()}: tariffs, bill line items, DISCO complaints and scams.`,
     path: `/author/${a.slug}`,
     type: "profile",
     imageAlt: `${a.name} — eBill Pakistan`,

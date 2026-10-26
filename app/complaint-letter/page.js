@@ -6,9 +6,9 @@ import { safe } from "../../lib/verify";
 import ComplaintLetter from "./ComplaintLetter";
 
 export const metadata = buildMeta({
-  title: "Electricity Bill Complaint Letter: Free Generator, English and Urdu",
+  title: "Electricity Bill Complaint Letter Generator: English or Urdu",
   description:
-    "Write a complaint letter to your SDO for a wrong reading, an excessive or estimated bill, a faulty meter or a detection charge, in English or Urdu, then follow the official route up to NEPRA.",
+    "Write a complaint letter to your SDO for a wrong reading, excessive bill, faulty meter or detection charge, in English or Urdu, then escalate to NEPRA.",
   path: "/complaint-letter",
   imageAlt: "Electricity bill complaint letter generator",
 });

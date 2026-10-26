@@ -1,9 +1,9 @@
 import { SITE_URL, buildMeta } from "../../lib/seo";
 
 export const metadata = buildMeta({
-  title: "Electricity Bill Tools: Calculators, Complaint Letter, Load Shedding",
+  title: "Electricity Bill Tools: Calculators, Complaint Letter, More",
   description:
-    "Free tools for Pakistani electricity bills: bill and appliance calculators, protected consumer checker, complaint letter, tariff code decoder, load-shedding status, MDI and solar calculators.",
+    "Free tools for Pakistani electricity bills: bill and appliance calculators, protected consumer checker, complaint letter, tariff decoder and load-shedding.",
   path: "/tools",
   imageAlt: "Electricity bill tools",
 });

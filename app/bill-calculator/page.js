@@ -9,7 +9,7 @@ export const revalidate = 3600;
 export const metadata = buildMeta({
   title: "Electricity Bill Calculator Pakistan 2026: Units to Rupees",
   description:
-    "Enter your units and see the estimated bill at NEPRA's notified rates, with this month's fuel and quarterly adjustments, the fixed charge, and how much a lower slab would save. Works for every DISCO.",
+    "Enter your units and see the estimated bill at NEPRA's rates with this month's fuel and quarterly adjustments, the fixed charge, and what a lower slab saves.",
   path: "/bill-calculator",
   imageAlt: "Electricity bill calculator for Pakistan",
 });

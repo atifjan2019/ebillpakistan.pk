@@ -11,9 +11,9 @@ import { contentFor, complaintsFor } from "../../lib/discoContent";
 import { safe } from "../../lib/verify";
 
 export const metadata = buildMeta({
-  title: "Load Shedding Schedule Pakistan: Check Your Feeder's Live Status",
+  title: "Load Shedding Schedule Pakistan: Is Your Feeder On?",
   description:
-    "See whether your feeder is on or off right now with your bill's reference number, find each DISCO's official load-shedding schedule page, and learn how to report an unscheduled outage.",
+    "See whether your feeder is on right now with your bill's reference number, find each DISCO's official load-shedding schedule, and report an outage.",
   path: "/load-shedding",
   imageAlt: "Load shedding schedule and feeder status for Pakistan",
 });

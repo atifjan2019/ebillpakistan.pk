@@ -11,6 +11,7 @@ export const metadata = buildMeta({
 export default function Terms() {
   return (
     <LegalShell
+      path="/terms"
       title="Terms of Use"
       updated="30 May 2026"
       intro="These terms govern your use of ebillpakistan.pk (“eBill Pakistan”, “we”, “us”). By using the site, you agree to them. If you don't agree, please don't use the service."

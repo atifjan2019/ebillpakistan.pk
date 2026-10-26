@@ -12,7 +12,7 @@ const EXPORT_RATE_DEFAULT = 11;
 export const metadata = buildMeta({
   title: "Solar Savings Calculator Pakistan: Net Billing Payback",
   description:
-    "Estimate what a solar system saves on a Pakistani electricity bill: units generated, slab drop, export credit under net billing, and payback years. Every assumption is yours to change.",
+    "Estimate what solar saves on a Pakistani electricity bill: units generated, slab drop, export credit under net billing and payback years, your assumptions.",
   path: "/solar-calculator",
   imageAlt: "Solar savings calculator for Pakistan",
 });

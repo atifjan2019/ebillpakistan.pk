@@ -4,9 +4,9 @@ import { TARIFF_FAMILIES } from "../../lib/tariffCodes";
 import TariffDecoder from "./TariffDecoder";
 
 export const metadata = buildMeta({
-  title: "Tariff Code on Your Electricity Bill: What A-1, A-2, B-2 Mean",
+  title: "Tariff Code on Your Bill: What A-1, A-2 and B-2 Mean",
   description:
-    "Type the tariff code printed on your electricity bill and see what it means: residential, commercial, industrial, agricultural and the rest, with every NEPRA category and sub-code explained.",
+    "Type the tariff code printed on your electricity bill and see what it means: residential, commercial, industrial and agricultural, with every NEPRA sub-code.",
   path: "/tariff-code",
   imageAlt: "Electricity bill tariff code decoder",
 });

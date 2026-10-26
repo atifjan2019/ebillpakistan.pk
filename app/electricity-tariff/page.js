@@ -7,9 +7,9 @@ import { DISCOS } from "../../lib/discos";
 import TariffTable from "../TariffTable";
 
 export const metadata = buildMeta({
-  title: "Pakistan Electricity Tariff 2026 — Domestic Slab Rates, Fixed Charges & Adjustments",
+  title: "Pakistan Electricity Tariff 2026: Slab Rates, Fixed Charges",
   description:
-    "The domestic electricity tariff notified in S.R.O. 279(I)/2026: per-unit rates for lifeline, protected and unprotected consumers, fixed charges, and why bills are not calculated slab by slab.",
+    "The domestic tariff in S.R.O. 279(I)/2026: per-unit rates for lifeline, protected and unprotected consumers, fixed charges, and why bills aren't slab by slab.",
   path: "/electricity-tariff",
   imageAlt: "Pakistan domestic electricity tariff 2026",
 });

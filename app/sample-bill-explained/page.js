@@ -2,9 +2,9 @@ import { SITE_URL, buildMeta } from "../../lib/seo";
 import { SAMPLE_HEADER, SAMPLE_LINES, SAMPLE_MATH, SAMPLE_NOTICE } from "../../lib/sampleBill";
 
 export const metadata = buildMeta({
-  title: "Electricity Bill Explained Line by Line — Annotated Sample Bill",
+  title: "Electricity Bill Explained Line by Line: Annotated Sample",
   description:
-    "An annotated sample Pakistani electricity bill: what the reference number, units, FPA, quarterly adjustment, GST, TV fee, meter rent, arrears and late payment surcharge each mean.",
+    "An annotated sample Pakistani electricity bill: what the reference number, units, FPA, quarterly adjustment, GST, TV fee, meter rent and arrears mean.",
   path: "/sample-bill-explained",
   imageAlt: "Annotated sample electricity bill — eBill Pakistan",
 });

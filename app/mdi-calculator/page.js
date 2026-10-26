@@ -7,9 +7,9 @@ import MdiCalculator from "./MdiCalculator";
 export const revalidate = 3600;
 
 export const metadata = buildMeta({
-  title: "MDI Calculator: Fixed Charges on a Time-of-Use Electricity Bill",
+  title: "MDI Calculator: Fixed Charges on a Time-of-Use Bill",
   description:
-    "Work out the fixed charge and total on a domestic Time-of-Use bill from your sanctioned load, MDI, peak and off-peak units, at NEPRA's notified rates, and see what lowering your peak demand saves.",
+    "Work out the fixed charge and total on a Time-of-Use bill from your sanctioned load, MDI and peak units at NEPRA's rates, and what a lower peak demand saves.",
   path: "/mdi-calculator",
   imageAlt: "MDI and fixed charge calculator",
 });

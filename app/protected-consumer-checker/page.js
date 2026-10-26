@@ -3,9 +3,9 @@ import { PROTECTED, CATEGORY_SOURCE, A1_BELOW_5KW } from "../../lib/tariffs";
 import ProtectedChecker from "./ProtectedChecker";
 
 export const metadata = buildMeta({
-  title: "Protected Consumer Checker: Do You Qualify for the 200-Unit Rate?",
+  title: "Protected Consumer Checker: Do You Get the 200-Unit Rate?",
   description:
-    "Enter your last six months of units and find out whether you are a protected electricity consumer in Pakistan, how much headroom you have, and how many months until you qualify again.",
+    "Enter your last six months of units to see whether you are a protected electricity consumer, how much headroom you have, and when you qualify again.",
   path: "/protected-consumer-checker",
   imageAlt: "Protected consumer checker",
 });

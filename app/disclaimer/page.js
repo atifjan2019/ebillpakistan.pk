@@ -11,6 +11,7 @@ export const metadata = buildMeta({
 export default function Disclaimer() {
   return (
     <LegalShell
+      path="/disclaimer"
       title="Disclaimer"
       updated="30 May 2026"
       intro="Please read this disclaimer carefully before using eBill Pakistan (ebillpakistan.pk)."

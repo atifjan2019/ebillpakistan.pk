@@ -4,13 +4,14 @@ import { buildMeta } from "../../lib/seo";
 export const metadata = buildMeta({
   title: "Privacy Policy | eBill Pakistan",
   description:
-    "How eBill Pakistan handles your information when you check your electricity bill online, and how advertising cookies — including Google's — work on this site.",
+    "How eBill Pakistan handles your information when you check a bill online, and how advertising cookies, including Google's, work on this site.",
   path: "/privacy",
 });
 
 export default function Privacy() {
   return (
     <LegalShell
+      path="/privacy"
       title="Privacy Policy"
       updated="16 August 2026"
       intro="eBill Pakistan (“we”, “us”, “our”) runs the website www.ebillpakistan.pk, a free tool that lets you view your electricity bill online. This policy explains what information we handle, what cookies are set, how advertising on this site works, and what choices you have. We have kept it in plain English."
