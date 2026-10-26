@@ -1299,3 +1299,20 @@ a.byline-name:hover { color: var(--brand); }
 /* Gas and PTCL hand-off card */
 .handoff .btn[disabled] { opacity: .55; cursor: not-allowed; }
 .handoff .search-foot { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+
+/* "More checks" menu in the nav */
+.nav-more { position: relative; }
+.nav-more-btn { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; color: inherit; cursor: pointer; min-height: 44px; display: inline-flex; align-items: center; gap: 4px; }
+.nav-more-btn:hover, .nav-more.open .nav-more-btn { color: var(--brand); }
+.nav-more-panel { display: none; position: absolute; top: calc(100% - 4px); left: 50%; transform: translateX(-50%); min-width: 520px; background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 16px 40px rgba(16, 36, 24, .14); padding: 14px 16px; grid-template-columns: repeat(3, 1fr); gap: 10px 22px; z-index: 60; }
+.nav-more.open .nav-more-panel { display: grid; }
+.nav-more-group { display: flex; flex-direction: column; }
+.nav-more-kind { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin: 6px 0 2px; }
+.nav-more-panel a { display: block; padding: 7px 0; font-weight: 600; font-size: 14px; color: var(--ink); white-space: nowrap; }
+.nav-more-panel a:hover { color: var(--brand); }
+@media (max-width: 760px) {
+  .nav-more { width: 100%; }
+  .nav-more-btn { width: 100%; justify-content: space-between; padding: 13px 4px; font-size: 16px; border-bottom: 1px solid var(--line); }
+  .nav-more-panel { position: static; transform: none; min-width: 0; border: 0; box-shadow: none; border-radius: 0; padding: 0 0 8px 12px; grid-template-columns: 1fr; gap: 0; }
+  .nav-more-panel a { border-bottom: 0; padding: 9px 0; }
+}

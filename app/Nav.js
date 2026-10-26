@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { UTILITIES, KIND_LABEL, utilitySlug } from "../lib/utilities";
 import { usePathname } from "next/navigation";
 
 const LINKS = [
   ["/#companies", "Companies"],
-  ["/#gas", "More checks"],
   ["/tools", "Tools"],
   ["/this-month", "This month"],
   ["/electricity-tariff", "Tariff"],
@@ -39,6 +39,41 @@ function Globe() {
   );
 }
 
+// The "More checks" menu: every gas, K-Electric, PTCL, water, vehicle and
+// challan page, grouped by kind. A real dropdown on desktop, a plain list
+// inside the hamburger menu on phones.
+function MoreChecks({ onPick }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!open) return;
+    const close = (e) => { if (!ref.current?.contains(e.target)) setOpen(false); };
+    const esc = (e) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("click", close);
+    document.addEventListener("keydown", esc);
+    return () => { document.removeEventListener("click", close); document.removeEventListener("keydown", esc); };
+  }, [open]);
+  const groups = {};
+  for (const [code, u] of Object.entries(UTILITIES)) (groups[u.kind] ||= []).push([code, u]);
+  return (
+    <div className={`nav-more${open ? " open" : ""}`} ref={ref}>
+      <button type="button" className="nav-more-btn" aria-expanded={open} aria-haspopup="true" onClick={() => setOpen((v) => !v)}>
+        More checks <span aria-hidden="true">▾</span>
+      </button>
+      <div className="nav-more-panel" role="menu">
+        {Object.entries(groups).map(([kind, items]) => (
+          <div key={kind} className="nav-more-group">
+            <span className="nav-more-kind">{KIND_LABEL[kind]}</span>
+            {items.map(([code, u]) => (
+              <a key={code} href={`/${utilitySlug(code)}`} role="menuitem" onClick={() => { setOpen(false); onPick?.(); }}>{u.abbr}</a>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Nav({ pairs = {}, urduOnly = [] }) {
   const [open, setOpen] = useState(false);
   const path = usePathname();
@@ -47,7 +82,11 @@ export default function Nav({ pairs = {}, urduOnly = [] }) {
   return (
     <>
       <nav className={`nav-links${open ? " open" : ""}`}>
-        {LINKS.map(([href, label]) => (
+        {LINKS.slice(0, 1).map(([href, label]) => (
+          <a key={href} href={href} onClick={() => setOpen(false)}>{label}</a>
+        ))}
+        <MoreChecks onPick={() => setOpen(false)} />
+        {LINKS.slice(1).map(([href, label]) => (
           <a key={href} href={href} onClick={() => setOpen(false)}>{label}</a>
         ))}
       </nav>
