@@ -3,7 +3,7 @@ import RefInput from "./RefInput";
 import CheckBillLoader from "./CheckBillLoader";
 import QuickCheck from "./QuickCheck";
 import { DISCOS, hasLogo, discoLogo } from "../lib/discos";
-import { UTILITIES, utilitySlug } from "../lib/utilities";
+import { UTILITIES, KIND_LABEL, utilitySlug } from "../lib/utilities";
 import { SITE_URL, HOME_URL, OG_IMAGE, TWITTER_SITE, SOCIAL } from "../lib/seo";
 import { BUSINESS } from "../lib/contact";
 
@@ -228,17 +228,17 @@ export default async function Home({ searchParams }) {
       <section className="section" id="gas">
         <div className="container">
           <div className="section-head">
-            <span className="kicker">Gas and phone</span>
-            <h2>Gas and PTCL bills too</h2>
-            <p>Sui gas and PTCL bills live on their companies&apos; own portals behind a picture check. We keep your number ready and take you straight there.</p>
+            <span className="kicker">More checks</span>
+            <h2>Gas, K-Electric, PTCL, water, vehicle and challan checks</h2>
+            <p>These live on their organisations&apos; own portals behind a picture check. We keep your number ready and take you straight there, and PTCL e-bills show right here.</p>
           </div>
           <div className="disco-grid">
             {Object.entries(UTILITIES).map(([code, u]) => (
               <a key={code} className="disco-card" href={`/${utilitySlug(code)}`} style={{ "--c": u.color }}>
                 <span className="badge">{u.abbr.slice(0, 2)}</span>
                 <span className="name">{u.abbr}</span>
-                <span className="city">{u.kind === "gas" ? "Gas" : "Phone and internet"}</span>
-                <span className="go">Open bill →</span>
+                <span className="city">{KIND_LABEL[u.kind]}</span>
+                <span className="go">{u.kind === "vehicle" || u.kind === "challan" ? "Check →" : "Open bill →"}</span>
               </a>
             ))}
           </div>

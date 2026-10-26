@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 const LINKS = [
   ["/#companies", "Companies"],
-  ["/#gas", "Gas & PTCL"],
+  ["/#gas", "More checks"],
   ["/tools", "Tools"],
   ["/this-month", "This month"],
   ["/electricity-tariff", "Tariff"],

@@ -16,7 +16,7 @@ function Icon({ d }) {
   );
 }
 
-export default function PortalHandoff({ code, abbr, fields, portal }) {
+export default function PortalHandoff({ code, abbr, fields, portal, label }) {
   const [values, setValues] = useState(() => Object.fromEntries(fields.map((f) => [f.key, ""])));
   const [copied, setCopied] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -32,7 +32,8 @@ export default function PortalHandoff({ code, abbr, fields, portal }) {
   const complete = fields.every((f) => new RegExp(`^${f.pattern}$`).test(values[f.key] || ""));
 
   const set = (key, raw) => {
-    const v = raw.replace(/[^0-9]/g, "");
+    const f = fields.find((x) => x.key === key);
+    const v = f?.alnum ? raw.toUpperCase().replace(/[^0-9A-Z-]/g, "") : raw.replace(/[^0-9]/g, "");
     setValues((prev) => {
       const next = { ...prev, [key]: v };
       try { localStorage.setItem(KEY(code), JSON.stringify(next)); } catch {}
@@ -68,7 +69,7 @@ export default function PortalHandoff({ code, abbr, fields, portal }) {
               <input
                 id={`${code}-${f.key}`}
                 type="text"
-                inputMode="numeric"
+                inputMode={f.alnum ? "text" : "numeric"}
                 autoComplete="off"
                 pattern={f.pattern}
                 placeholder={f.placeholder}
@@ -80,7 +81,7 @@ export default function PortalHandoff({ code, abbr, fields, portal }) {
           </div>
         ))}
         <button type="submit" className="btn btn-primary" disabled={!complete}>
-          <Icon d="M14 3h7v7M21 3l-9 9M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5" /> Open {abbr} bill
+          <Icon d="M14 3h7v7M21 3l-9 9M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5" /> {label || `Open ${abbr} bill`}
         </button>
       </div>
       <p className="search-foot">
