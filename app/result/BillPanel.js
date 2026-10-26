@@ -16,8 +16,12 @@ export default function BillPanel({ bill, disco, info, reference, pitcUrl, adjus
   const slab = slabPosition(bill.unitsConsumed);
   const breakdown = chargeBreakdown(bill);
   const protectedInfo = protectedStatus(bill);
-  // The tariff code on the bill wins; units are only a fallback.
-  const billCategory = protectedInfo?.declared === true ? "protected" : categoryFor(bill.unitsConsumed);
+  // The tariff code on the bill wins either way; units are only a fallback
+  // when the code says nothing.
+  const billCategory =
+    protectedInfo?.declared === true ? "protected"
+    : protectedInfo?.declared === false ? "unprotected"
+    : categoryFor(bill.unitsConsumed);
   // A reminder is only offered when the due date reads cleanly and has not passed.
   const parsedDue = parseBillDate(bill.dueDate);
   const dueIso = parsedDue && daysBetween(todayPkIso(), parsedDue) >= 0 ? parsedDue : null;
