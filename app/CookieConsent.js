@@ -61,7 +61,7 @@ export default function CookieConsent() {
     >
       <div className="cc-inner">
         <div className="cc-copy">
-          <h2 id="cc-title">Cookies on eBill Pakistan</h2>
+          <h2 id="cc-title">Analytics cookies</h2>
           {/* Kept deliberately short on mobile: every line of banner height is a
               line of the lookup form it could cover. The full disclosure — third
               parties, prior visits, opt-out links — lives in the privacy policy. */}
@@ -71,12 +71,12 @@ export default function CookieConsent() {
                 half is held to two lines at 360px on purpose: banner height is
                 what determines the clearance above the Check Bill button. */}
             <span className="cc-long">
-              Checking your bill is free and always will be — advertising pays for it. Ads here use
-              cookies from Google and other partners, based on your visits to this and other sites.
-              Nothing loads until you accept.{" "}
+              We would like to use Google Analytics cookies to count visits and see which guides
+              help. They load only if you accept. Ads are served by Google, which asks for its own
+              consent.{" "}
             </span>
             <span className="cc-short">
-              Ads use cookies from Google and partners — nothing loads until you accept.{" "}
+              Analytics cookies load only if you accept. Google asks about ads separately.{" "}
             </span>
             <a href="/privacy">Privacy policy</a>.
           </p>
@@ -91,8 +91,7 @@ export default function CookieConsent() {
               <span>
                 <b>Strictly necessary</b>
                 <em>
-                  Needed for the site to work and to remember this choice. Always on, never used for
-                  advertising.
+                  Needed for the site to work and to remember this choice. Always on.
                 </em>
               </span>
             </label>
@@ -133,7 +132,7 @@ export default function CookieConsent() {
                     available to screen readers and appears from 560px. */}
                 Manage<span className="cc-btn-more">&nbsp;preferences</span>
               </button>
-              <button type="button" className="btn btn-primary cc-btn" onClick={() => decide({ ads: true, analytics: true })}>
+              <button type="button" className="btn btn-primary cc-btn" onClick={() => decide({ ads: false, analytics: true })}>
                 Accept
               </button>
             </>

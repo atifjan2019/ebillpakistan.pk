@@ -55,11 +55,9 @@ const nextConfig = {
   },
 
   images: {
-    // Serve DISCO logos as modern formats (AVIF/WebP) automatically.
+    // Serve images as modern formats (AVIF/WebP) automatically.
     formats: ["image/avif", "image/webp"],
-    // One logo (pesco.svg) is a trusted first-party SVG; allow the optimizer to
-    // serve it. Sandboxed + attachment CSP keeps it safe.
-    dangerouslyAllowSVG: true,
+    // Optimised images get a sandboxed, attachment-only policy as a safety net.
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },

@@ -1,8 +1,7 @@
-import Image from "next/image";
 import RefInput from "./RefInput";
 import CheckBillLoader from "./CheckBillLoader";
 import QuickCheck from "./QuickCheck";
-import { DISCOS, hasLogo, discoLogo } from "../lib/discos";
+import { DISCOS } from "../lib/discos";
 import { UTILITIES, KIND_LABEL, utilitySlug } from "../lib/utilities";
 import { SITE_URL, HOME_URL, OG_IMAGE, TWITTER_SITE, SOCIAL } from "../lib/seo";
 import { BUSINESS } from "../lib/contact";
@@ -210,11 +209,7 @@ export default async function Home({ searchParams }) {
           <div className="disco-grid">
             {entries.map(([code, [abbr, city, color]]) => (
               <a key={code} className="disco-card" href={`/${code}-bill-check`} style={{ "--c": color }}>
-                <span className={hasLogo(code) ? "badge badge--logo" : "badge"}>
-                  {hasLogo(code)
-                    ? <Image src={discoLogo(code)} alt={`${abbr} logo`} className="badge-logo" width={56} height={56} loading="lazy" />
-                    : abbr.slice(0, 2)}
-                </span>
+                <span className="badge">{abbr.slice(0, 2)}</span>
                 <span className="name">{abbr}</span>
                 <span className="city">{city}</span>
                 <span className="go">Check bill →</span>

@@ -1,8 +1,7 @@
-import Image from "next/image";
 import RefInput from "../RefInput";
 import CheckBillLoader from "../CheckBillLoader";
 import { notFound } from "next/navigation";
-import { DISCOS, hasLogo, discoLogo } from "../../lib/discos";
+import { DISCOS } from "../../lib/discos";
 import { COMPANIES, slugFor, codeFromSlug } from "../../lib/companies";
 import { complaintsFor, contentFor, faqsFor, seoFor, SECTIONS, CONTENT_UPDATED } from "../../lib/discoContent";
 import { guidesFor } from "../../lib/articles";
@@ -102,16 +101,6 @@ export default async function CompanyPage({ params }) {
               <li aria-current="page">{abbr} Bill Check</li>
             </ol>
           </nav>
-          {hasLogo(code) && (
-            <Image
-              className="disco-logo"
-              src={discoLogo(code)}
-              alt={`${c.full} (${abbr}) logo`}
-              width={88}
-              height={88}
-              priority
-            />
-          )}
           <span className="eyebrow"><span className="dot" /> {abbr} • {city} region</span>
           <h1>
             {abbr} Bill Check Online <span className="grad">{year}</span>
@@ -261,11 +250,7 @@ export default async function CompanyPage({ params }) {
               const [a2, ci2, co2] = DISCOS[x];
               return (
                 <a key={x} className="disco-card" href={`/${slugFor(x)}`} style={{ "--c": co2 }}>
-                  <span className={hasLogo(x) ? "badge badge--logo" : "badge"}>
-                    {hasLogo(x)
-                      ? <Image src={discoLogo(x)} alt={`${a2} logo`} className="badge-logo" width={56} height={56} loading="lazy" />
-                      : a2.slice(0, 2)}
-                  </span>
+                  <span className="badge">{a2.slice(0, 2)}</span>
                   <span className="name">{a2}</span>
                   <span className="city">{ci2}</span>
                 </a>

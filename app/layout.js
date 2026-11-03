@@ -4,9 +4,9 @@ import { DISCOS } from "../lib/discos";
 import { OG_IMAGE, OG_IMAGE_ALT, SITE_URL, TWITTER_SITE, SOCIAL } from "../lib/seo";
 import { ARTICLES } from "../lib/articles";
 import { BUSINESS } from "../lib/contact";
+import { ADSENSE_CLIENT } from "../lib/ads";
 import Nav from "./Nav";
 import CookieConsent, { CookieSettingsLink } from "./CookieConsent";
-import AdSense from "./AdSense";
 import Analytics from "./Analytics";
 import InstallPrompt from "./InstallPrompt";
 
@@ -74,6 +74,17 @@ const URDU_ONLY = ARTICLES.filter((a) => a.lang === "ur" && !a.translationOf).ma
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${body.variable} ${display.variable} ${urdu.variable}`}>
+      {/* AdSense account tag and script, in the HTML the server sends on every
+          page. A plain <script> rather than next/script, because next/script
+          does not appear in the served HTML. */}
+      <head>
+        <meta name="google-adsense-account" content={ADSENSE_CLIENT} />
+        <script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+          crossOrigin="anonymous"
+        />
+      </head>
       {/* suppressHydrationWarning: some browser extensions (e.g. ColorZilla adds
           cz-shortcut-listen) inject attributes on <body> before React hydrates,
           which otherwise triggers a benign hydration-mismatch warning. */}
@@ -174,10 +185,10 @@ export default function RootLayout({ children }) {
           </div>
         </footer>
 
-        {/* Consent gate + the loaders it controls. AdSense and Analytics render
-            no DOM and inject nothing until the visitor opts in to each. */}
+        {/* Our consent bar now covers analytics only: Analytics renders no DOM
+            and injects nothing until the visitor opts in. Advertising consent
+            is collected by Google's consent message. */}
         <CookieConsent />
-        <AdSense />
         <Analytics />
         <InstallPrompt />
       </body>

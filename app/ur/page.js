@@ -1,10 +1,9 @@
 // /ur: the Urdu homepage. Same lookup form as the English one (it posts to the
 // same /result), with the explanation, steps and FAQ written in Urdu, and links
 // to every Urdu guide. hreflang pairs it with "/".
-import Image from "next/image";
 import RefInput from "../RefInput";
 import CheckBillLoader from "../CheckBillLoader";
-import { DISCOS, hasLogo, discoLogo } from "../../lib/discos";
+import { DISCOS } from "../../lib/discos";
 import { SITE_URL } from "../../lib/seo";
 import { ARTICLES } from "../../lib/articles";
 
@@ -91,9 +90,7 @@ export default function UrduHome() {
           <div className="disco-grid">
             {entries.map(([code, [abbr, city, color]]) => (
               <a key={code} className="disco-card" href={`/${code}-bill-check`} style={{ "--c": color }}>
-                <span className={hasLogo(code) ? "badge badge--logo" : "badge"}>
-                  {hasLogo(code) ? <Image src={discoLogo(code)} alt={`${abbr} logo`} className="badge-logo" width={56} height={56} loading="lazy" /> : abbr.slice(0, 2)}
-                </span>
+                <span className="badge">{abbr.slice(0, 2)}</span>
                 <span className="name">{abbr}</span>
                 <span className="city">{city}</span>
                 <span className="go">بل چیک کریں ←</span>

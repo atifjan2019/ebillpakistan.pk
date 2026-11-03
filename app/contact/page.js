@@ -1,7 +1,6 @@
 import { SITE_URL, buildMeta } from "../../lib/seo";
 import { BUSINESS, addressOneLine } from "../../lib/contact";
 import ContactForm from "./ContactForm";
-import Verify from "../Verify";
 
 export const metadata = buildMeta({
   title: "Contact Us | eBill Pakistan",
@@ -71,11 +70,6 @@ export default function Contact() {
               <dt>Email</dt>
               <dd>
                 <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>
-              </dd>
-
-              <dt>Phone</dt>
-              <dd>
-                <Verify text={BUSINESS.phone} />
               </dd>
 
               <dt>Postal address</dt>

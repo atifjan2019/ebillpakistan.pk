@@ -11,7 +11,7 @@ const MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "";
 const SCRIPT_ID = "gtag-js";
 
 // Loads the Google tag ONLY after the visitor has consented to analytics
-// cookies, in the same way AdSense.js waits for advertising consent. Google's
+// cookies in our consent bar. Google's
 // own instructions say to paste the tag into <head> of every page; that would
 // fetch it before any choice is made, which the consent bar promises does not
 // happen. Mounted once in the root layout; renders no DOM.
@@ -38,8 +38,9 @@ export default function Analytics() {
         window.dataLayer.push(arguments);
       }
       window.gtag = gtag;
-      // Analytics was accepted; advertising consent is AdSense's business and
-      // is declared denied here so Analytics never shares data for ads.
+      // Analytics was accepted; advertising consent is collected by Google's
+      // own consent message, so it is declared denied here and Analytics never
+      // shares data for ads.
       gtag("consent", "default", {
         ad_storage: "denied",
         ad_user_data: "denied",
@@ -58,7 +59,7 @@ export default function Analytics() {
     }
 
     // Consent withdrawn after the tag had loaded: a loaded script cannot be
-    // unloaded, so the page is reloaded to drop it (as AdSense.js does).
+    // unloaded, so the page is reloaded to drop it.
     if (injected.current) {
       injected.current = false;
       window.location.reload();

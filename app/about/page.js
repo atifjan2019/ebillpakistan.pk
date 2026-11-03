@@ -1,4 +1,7 @@
 import { SITE_URL, buildMeta } from "../../lib/seo";
+import { BUSINESS, addressOneLine } from "../../lib/contact";
+import { safe } from "../../lib/verify";
+import Verify from "../Verify";
 
 export const metadata = buildMeta({
   title: "About eBill Pakistan | Free Electricity Bill Checker",
@@ -18,6 +21,7 @@ const aboutLd = {
 };
 
 export default function About() {
+  const owner = safe(BUSINESS.owner);
   return (
     <section className="legal-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutLd) }} />
@@ -62,6 +66,18 @@ export default function About() {
             or disputes, please use your company&apos;s official channels.
           </p>
 
+          {owner && (
+            <>
+              <h2>Who runs eBill Pakistan</h2>
+              <p>
+                eBill Pakistan is run by <Verify text={owner} />. Our postal address is{" "}
+                {addressOneLine()}, and you can reach us at{" "}
+                <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a> or through our{" "}
+                <a href="/contact">contact page</a>.
+              </p>
+            </>
+          )}
+
           <h2>How the lookup actually works</h2>
           <p>
             There is no magic and no scraping of anything private. Your bill already exists in the
@@ -100,9 +116,10 @@ export default function About() {
           <p>
             Checking a bill is free and always will be. The site is supported by advertising, which
             never determines what we publish: no advertiser sees a page before it goes live, and we
-            do not accept paid links or sponsored content inside our guides. Advertising cookies are
-            not set unless you accept them — see our <a href="/privacy">privacy policy</a> for what
-            that means and how to change your mind.
+            do not accept paid links or sponsored content inside our guides. Ads are served by Google,
+            which asks for your consent to personalised ads. Our{" "}
+            <a href="/privacy">privacy policy</a> explains how that works and how to change your
+            mind.
           </p>
 
           <h2>What&apos;s next</h2>

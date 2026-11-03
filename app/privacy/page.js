@@ -13,16 +13,16 @@ export default function Privacy() {
     <LegalShell
       path="/privacy"
       title="Privacy Policy"
-      updated="16 August 2026"
+      updated="3 November 2026"
       intro="eBill Pakistan (“we”, “us”, “our”) runs the website www.ebillpakistan.pk, a free tool that lets you view your electricity bill online. This policy explains what information we handle, what cookies are set, how advertising on this site works, and what choices you have. We have kept it in plain English."
     >
       <h2>1. The short version</h2>
       <p>
         You don&apos;t need an account or your name to use eBill Pakistan. The reference number you
         type is used once, to fetch your bill, and is not stored in a database. We don&apos;t sell
-        your data. The site is free to use and is paid for by advertising, which means third parties
-        — including Google — may set cookies in your browser. You can refuse those, and section 5
-        explains exactly how.
+        your data. The site is free to use and is paid for by advertising served by Google, which
+        may set cookies in your browser. Google asks for your consent to personalised ads, and
+        section 5 explains how that works and how to refuse.
       </p>
 
       <h2>2. Information we process</h2>
@@ -109,9 +109,10 @@ export default function Privacy() {
           <strong>we do not control those cookies</strong> and cannot read them ourselves.
         </li>
         <li>
-          Advertising cookies are <strong>not set before you consent</strong> to them. If you reject
-          non-essential cookies, or simply have not made a choice yet, our advertising code is not
-          loaded at all.
+          Ads on this site are <strong>served by Google</strong>. Where the law requires it,
+          Google shows its own consent message and collects your consent for personalised ads
+          before using cookies for them. If you do not consent, Google may still show ads that are
+          not personalised.
         </li>
       </ul>
 
@@ -119,8 +120,9 @@ export default function Privacy() {
       <p>You have several independent ways to refuse personalised advertising:</p>
       <ul>
         <li>
-          <strong>On this site:</strong> choose <em>Reject</em> in the cookie banner, or reopen it
-          at any time from the <em>Cookie settings</em> link in the footer, and change your choice.
+          <strong>On this site:</strong> refuse personalised ads in Google&apos;s consent message
+          when it appears. Where Google shows that message, it also gives you a way to change your
+          choice later.
         </li>
         <li>
           <strong>Across Google&apos;s services:</strong> you may opt out of personalised
@@ -151,8 +153,8 @@ export default function Privacy() {
       <p>
         We use Google Analytics to understand aggregate traffic — which pages are read, roughly
         where visitors come from, and whether the lookup succeeded. It relies on cookies, so it is
-        loaded only after you consent to analytics cookies, on the same basis as advertising, and
-        can be refused in the same banner. It is configured not to share data for advertising. Aggregate lookup statistics used to run
+        loaded only after you accept analytics cookies in our cookie banner, and you can refuse
+        them there. It is configured not to share data for advertising. Aggregate lookup statistics used to run
         the service (counts by company, by city and by day) are derived from server logs, are not
         tied to your identity, and are described in section 2.
       </p>
@@ -185,9 +187,10 @@ export default function Privacy() {
       <h2>10. Your choices and your rights</h2>
       <p>
         Since we don&apos;t maintain accounts, there is normally no profile to access, correct or
-        delete. You can change or withdraw your cookie consent at any time via{" "}
-        <em>Cookie settings</em> in the footer. For any privacy question or request — including
-        asking us to delete a message you sent us — email{" "}
+        delete. You can change or withdraw your analytics cookie consent at any time via{" "}
+        <em>Cookie settings</em> in the footer, and your personalised ads choice through
+        Google&apos;s consent message. For any privacy question or request, including
+        asking us to delete a message you sent us, email{" "}
         <a href="mailto:support@ebillpakistan.pk">support@ebillpakistan.pk</a> or use our{" "}
         <a href="/contact">contact form</a> and choose <em>Privacy request</em>. We aim to respond
         within a few working days.
