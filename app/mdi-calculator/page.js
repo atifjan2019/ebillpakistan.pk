@@ -5,6 +5,9 @@ import { A1_TOU } from "../../lib/tariffs";
 import MdiCalculator from "./MdiCalculator";
 
 export const revalidate = 3600;
+// The KV client fetches with no-store, which would otherwise make this page
+// render on every request instead of once an hour.
+export const dynamic = "force-static";
 
 export const metadata = buildMeta({
   title: "MDI Calculator: Fixed Charges on a Time-of-Use Bill",

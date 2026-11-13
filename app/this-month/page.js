@@ -9,6 +9,9 @@ import { getAllPosts } from "../../lib/posts";
 import ThisMonthBox from "../ThisMonthBox";
 
 export const revalidate = 3600;
+// The KV client fetches with no-store, which would otherwise make this page
+// render on every request instead of once an hour.
+export const dynamic = "force-static";
 
 const month = monthLabel(currentMonthPk());
 

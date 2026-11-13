@@ -4,6 +4,9 @@ import { getAdjustmentOverrides } from "../../lib/adjustmentOverrides";
 import SolarCalculator from "./SolarCalculator";
 
 export const revalidate = 3600;
+// The KV client fetches with no-store, which would otherwise make this page
+// render on every request instead of once an hour.
+export const dynamic = "force-static";
 
 // The export (net billing) rate reported in the national press for 2026; the
 // reader can change it. See the net-billing guide for the sourcing.

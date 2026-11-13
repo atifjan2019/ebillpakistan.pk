@@ -22,6 +22,9 @@ export const dynamicParams = false;
 // Rebuilt hourly so this month's adjustments (which the admin can enter on the
 // Settings tab) and new guides appear without a deploy.
 export const revalidate = 3600;
+// The KV client fetches with no-store, which would otherwise make this page
+// render on every request instead of once an hour.
+export const dynamic = "force-static";
 
 export function generateStaticParams() {
   return Object.keys(DISCOS).map((code) => ({ slug: slugFor(code) }));

@@ -5,6 +5,9 @@ import { PROTECTED, A1_BELOW_5KW } from "../../lib/tariffs";
 import BillCalculator from "./BillCalculator";
 
 export const revalidate = 3600;
+// The KV client fetches with no-store, which would otherwise make this page
+// render on every request instead of once an hour.
+export const dynamic = "force-static";
 
 export const metadata = buildMeta({
   title: "Electricity Bill Calculator Pakistan 2026: Units to Rupees",

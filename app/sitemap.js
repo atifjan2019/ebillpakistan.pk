@@ -7,6 +7,12 @@ import { AUTHOR_SLUGS } from "../lib/authors";
 
 const BASE = SITE_URL;
 
+// Built once and refreshed hourly, and at once by revalidatePath("/sitemap.xml")
+// when a post is published. force-static lets the KV read run at build time;
+// without it the prerender silently drops every KV post.
+export const dynamic = "force-static";
+export const revalidate = 3600;
+
 // Stable last-modified dates per content group. Bump the relevant constant when
 // you actually change that content; using `new Date()` here would stamp every
 // URL with the request time, which Google ignores as inaccurate.

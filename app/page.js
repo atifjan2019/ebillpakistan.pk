@@ -1,3 +1,4 @@
+import LookupState from "./LookupState";
 import RefInput from "./RefInput";
 import CheckBillLoader from "./CheckBillLoader";
 import QuickCheck from "./QuickCheck";
@@ -65,17 +66,15 @@ const FAQS = [
   ["Do you take payment?", "No. We show you the bill so you have the amount and reference number ready; you pay through JazzCash, Easypaisa, a bank app, an ATM or a bank counter. We are independent of PITC and of every distribution company."],
 ];
 
-export default async function Home({ searchParams }) {
-  const sp = await searchParams;
+const LOOKUP_ERRORS = {
+  badref: "That reference number doesn't look right. It is 8 to 14 digits, with no spaces or dashes — check it against the top-left of your bill.",
+  noref: "Enter the reference number printed at the top-left of your bill to check it.",
+  nodisco: "Choose the company printed on your bill first — a reference number only works on the company that issued it.",
+};
+
+// Prerendered: ?e= and ?disco= are applied in the browser by LookupState.
+export default async function Home() {
   const entries = Object.entries(DISCOS);
-  const selected = (sp?.disco || "").toLowerCase();
-  const LOOKUP_ERRORS = {
-    badref: "That reference number doesn't look right. It is 8 to 14 digits, with no spaces or dashes — check it against the top-left of your bill.",
-    noref: "Enter the reference number printed at the top-left of your bill to check it.",
-    nodisco: "Choose the company printed on your bill first — a reference number only works on the company that issued it.",
-  };
-  const lookupError = LOOKUP_ERRORS[sp?.e] || null;
-  const preset = DISCOS[selected] ? selected : "";
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -153,16 +152,14 @@ export default async function Home({ searchParams }) {
             pull up your latest bill, ready to view, download or send on WhatsApp.
           </p>
 
-          {lookupError && (
-            <p className="lookup-error" role="alert">{lookupError}</p>
-          )}
+          <LookupState errors={LOOKUP_ERRORS} codes={Object.keys(DISCOS)} />
 
           <form id="lookup" className="search-card" action="/result" method="get">
             <div className="search-grid">
               <div className="field">
                 <label htmlFor="disco">Company</label>
                 <div className="control sel">
-                  <select id="disco" name="disco" defaultValue={preset} required>
+                  <select id="disco" name="disco" defaultValue="" required>
                     <option value="" disabled>Select your company</option>
                     {entries.map(([code, [abbr]]) => (
                       <option key={code} value={code}>{abbr}</option>
@@ -174,7 +171,7 @@ export default async function Home({ searchParams }) {
                 <label htmlFor="reference">Reference number</label>
                 <div className="control">
                   <RefInput id="reference" name="reference" inputMode="numeric" pattern="[0-9]{8,14}"
-                    placeholder="e.g. 12345678901234" required autoFocus={!!preset} />
+                    placeholder="e.g. 12345678901234" required />
                 </div>
               </div>
               <button type="submit" className="btn btn-primary">{I.search} Check Bill</button>

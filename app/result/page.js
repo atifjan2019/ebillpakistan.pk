@@ -23,6 +23,9 @@ function sourcePage(referer) {
 }
 
 export const dynamic = "force-dynamic";
+// True on any datacenter host (Vercel, or Cloudflare Workers via the
+// DATACENTER_EGRESS var in wrangler.jsonc); read per request.
+const onDatacenter = () => !!(process.env.VERCEL || process.env.DATACENTER_EGRESS);
 export const maxDuration = 30;
 // PITC blocks Vercel's Mumbai (bom1) egress; Singapore is the closest region
 // that can reach it. Must match vercel.json.
@@ -66,7 +69,7 @@ export default async function Result({ searchParams }) {
   // Blocked" 500), so on Vercel without PITC_PROXY the server does not even try:
   // the visitor's browser fetches the bill instead (BillResult.js), and reports
   // the outcome to /api/bill-log.
-  const serverCanFetch = !process.env.VERCEL || !!process.env.PITC_PROXY;
+  const serverCanFetch = !onDatacenter() || !!process.env.PITC_PROXY;
   const browserPath = rl.success && !serverCanFetch;
 
   let bill = null;
@@ -96,7 +99,7 @@ export default async function Result({ searchParams }) {
   const pitcUrl = `https://bill.pitc.com.pk/gbill.aspx?refno=${encodeURIComponent(ref)}&type=U`;
   // The rendered-HTML path is only usable where the server can reach
   // bill.pitc.com.pk, which needs PITC_PROXY (PITC blocks datacenter egress).
-  const htmlPathAvailable = !process.env.VERCEL || !!process.env.PITC_PROXY;
+  const htmlPathAvailable = !onDatacenter() || !!process.env.PITC_PROXY;
 
   const adjustments = adjustmentsOn(new Date().toISOString());
 

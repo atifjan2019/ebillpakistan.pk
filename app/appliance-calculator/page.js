@@ -4,6 +4,9 @@ import { getAdjustmentOverrides } from "../../lib/adjustmentOverrides";
 import ApplianceCalculator from "./ApplianceCalculator";
 
 export const revalidate = 3600;
+// The KV client fetches with no-store, which would otherwise make this page
+// render on every request instead of once an hour.
+export const dynamic = "force-static";
 
 export const metadata = buildMeta({
   title: "Appliance Electricity Calculator Pakistan: Units per Month",
