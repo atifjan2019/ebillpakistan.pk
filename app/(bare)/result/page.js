@@ -9,6 +9,13 @@ import BillPanel from "./BillPanel";
 import BillResult from "./BillResult";
 import BillFallback from "./BillFallback";
 import BillFrame from "./BillFrame";
+import CopyAndOpen from "../../CopyAndOpen";
+
+// PITC serves AJK bills only through its own web form (bill.pitc.com.pk/ajkbill,
+// 18-digit reference plus a CAPTCHA); the JSON API this page uses rejects
+// 18-digit references. So for AJK we do not try: we hand the visitor to that
+// page with the reference copied.
+const AJK_BILL_PAGE = "https://bill.pitc.com.pk/ajkbill";
 
 // Resolve the page the user submitted from (homepage vs a DISCO page) from the
 // Referer. Internal redirects (referer = /result) are skipped so each user
@@ -55,6 +62,60 @@ export default async function Result({ searchParams }) {
   // reason so the homepage can say it.
   if (!DISCOS[disco]) redirect("/?e=nodisco");
   if (!isValidRef(ref, disco)) redirect(`/?e=${ref ? "badref" : "noref"}`);
+
+  if (disco === "ajk") {
+    const h = await headers();
+    const p = sourcePage(h.get("referer") || "");
+    if (p) {
+      await logBillCheck({
+        disco, ref, page: p, outcome: "handoff",
+        ip: getIp(h),
+        city: decodeURIComponent(h.get("x-vercel-ip-city") || ""),
+        country: h.get("x-vercel-ip-country") || "",
+      });
+    }
+    const [name] = DISCOS[disco];
+    return (
+      <section className="result-wrap">
+        <div className="container">
+          <nav aria-label="Breadcrumb" className="crumb">
+            <a href="/">Home</a> <span>/</span>{" "}
+            <a href="/ajk-bill-check">{name}</a> <span>/</span>{" "}
+            <span aria-current="page">Bill</span>
+          </nav>
+          <div className="result-head">
+            <div>
+              <h1>{name} electricity bill</h1>
+              <p className="ref">Reference No: <b>{ref}</b> · Azad Kashmir</p>
+            </div>
+            <a className="btn btn-ghost" href="/">← Check another bill</a>
+          </div>
+          <p className="page-note">eBill Pakistan is an independent service. It is not affiliated with the AJK Electricity Department, PITC or any government body.</p>
+          <div className="fallback-card">
+            <div className="fallback-head">
+              <div>
+                <h2>Your AJK bill opens on PITC&apos;s AJK bill page</h2>
+                <p>
+                  The AJK Electricity Department publishes its bills on PITC&apos;s AJK page, which asks for the
+                  18-digit reference number and a CAPTCHA code that a person has to type, so no third-party
+                  site can fetch an AJK bill for you. The button copies your reference number and opens that
+                  page in a new tab: paste the number, type the code shown in the picture, and the bill opens.
+                </p>
+              </div>
+            </div>
+            <div className="fallback-actions">
+              <CopyAndOpen reference={ref} url={AJK_BILL_PAGE} label="Copy reference and open the AJK bill page →" className="btn btn-primary" />
+            </div>
+            <p className="fallback-ref">A genuine AJK bill is headed AZAD JAMMU &amp; KASHMIR ELECTRICITY DEPARTMENT and marked Web Generated Bill. Read the address bar: it should be bill.pitc.com.pk.</p>
+            <p className="fallback-help">
+              Where the reference number is, how AJK tariffs differ and who to contact:{" "}
+              <a href="/ajk-bill-check">the AJK bill page on this site</a>.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   const info = DISCOS[disco];
   const hdrs = await headers();

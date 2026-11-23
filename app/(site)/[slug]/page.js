@@ -121,7 +121,7 @@ export default async function CompanyPage({ params }) {
                     placeholder={`e.g. ${ref.example}`} required autoFocus />
                 </div>
               </div>
-              <button type="submit" className="btn btn-primary"><Search /> Check {abbr} Bill</button>
+              <button type="submit" className="btn btn-primary"><Search /> {code === "ajk" ? "Open AJK bill" : `Check ${abbr} Bill`}</button>
             </div>
             <p className="search-foot">
               <span className="only-wide">Your {ref.digits}-digit reference number is printed at the top-left of your {abbr} bill.</span>
@@ -140,11 +140,20 @@ export default async function CompanyPage({ params }) {
               explanation. One good guide linked twelve times beats twelve copies. */}
           <p className="page-updated">Last updated: {updatedFor(code)}</p>
           <p className="page-note">eBill Pakistan is an independent service. It is not affiliated with {abbr}, PITC or any government body.</p>
-          <p className="page-lede">
-            Enter the reference number above and your latest {abbr} bill loads in a few seconds —
-            free, with no account. New to reading one? Our{" "}
-            <a href="/sample-bill-explained">annotated sample bill</a> explains every line.
-          </p>
+          {code === "ajk" ? (
+            <p className="page-lede">
+              AJK bills are published on PITC&apos;s AJK bill page, which needs the 18-digit reference number and a
+              CAPTCHA code typed by a person, so this site cannot show the bill itself. Enter the reference number
+              above and we copy it and open that page for you. New to reading a bill? Our{" "}
+              <a href="/sample-bill-explained">annotated sample bill</a> explains every line.
+            </p>
+          ) : (
+            <p className="page-lede">
+              Enter the reference number above and your latest {abbr} bill loads in a few seconds —
+              free, with no account. New to reading one? Our{" "}
+              <a href="/sample-bill-explained">annotated sample bill</a> explains every line.
+            </p>
+          )}
 
           <div className="glance" aria-label={`${abbr} at a glance`}>
             {contactNumber && (
