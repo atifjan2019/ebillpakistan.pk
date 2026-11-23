@@ -286,7 +286,7 @@ export default async function Home() {
           <div className="features">
             <div className="feature"><div className="ic">{I.bolt}</div><h3>Quick</h3><p>Your bill shows up in a few seconds. No waiting around, nothing to install.</p></div>
             <div className="feature"><div className="ic">{I.free}</div><h3>Always free</h3><p>Check as many bills as you like. There&apos;s never a charge or a sign-up.</p></div>
-            <div className="feature"><div className="ic">{I.lock}</div><h3>Yours stays yours</h3><p>We only ever look up the number you type. Nothing is saved or shared.</p></div>
+            <div className="feature"><div className="ic">{I.lock}</div><h3>Yours stays yours</h3><p>We only look up the number you type and keep no copy of your bill. Our seven-day diagnostics log holds the last four digits, the outcome and a hashed connection, never the full number.</p></div>
             <div className="feature"><div className="ic">{I.doc}</div><h3>Easy to keep</h3><p>Download a tidy one-page PDF, or share it on WhatsApp in a tap.</p></div>
           </div>
         </div>

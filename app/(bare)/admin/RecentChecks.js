@@ -42,9 +42,10 @@ export default function RecentChecks({ events }) {
               <th>Company</th>
               <th>Reference</th>
               <th>City</th>
-              <th>IP</th>
+              <th>Connection</th>
               <th>Page</th>
               <th>Outcome</th>
+              <th>Attempts</th>
             </tr>
           </thead>
           <tbody>
@@ -61,14 +62,14 @@ export default function RecentChecks({ events }) {
                   >
                     <td>{fmtTime(ev.t)}</td>
                     <td>{discoLabel(ev.disco)}</td>
-                    <td><code>{ev.ref || "—"}</code></td>
+                    <td><code>{ev.ref4 || ev.ref || "—"}</code></td>
                     <td>
                       {ev.city
                         ? `${ev.city}${ev.country ? ", " + ev.country : ""}`
                         : "—"}
                     </td>
                     <td>
-                      <code>{ev.ip || "—"}</code>
+                      <code title="Daily-salted hash of the IP address, not the address itself">{ev.iph || ev.ip || "—"}</code>
                     </td>
                     <td>
                       <code>{ev.page}</code>
@@ -78,17 +79,21 @@ export default function RecentChecks({ events }) {
                         {ev.outcome}
                       </span>
                     </td>
+                    <td>
+                      <code>{(ev.attempts || []).map((a) => `${a.via[0]}:${a.cause}`).join(" ") || "—"}</code>
+                    </td>
                   </tr>
                   {isOpen && (
                     <tr key={`${globalIdx}-detail`} className="adm-detail-row">
-                      <td colSpan={7}>
+                      <td colSpan={8}>
                         <div className="adm-detail">
                           <span><strong>Time:</strong> {fmtTime(ev.t)}</span>
                           <span><strong>Company:</strong> {discoLabel(ev.disco)} ({ev.disco})</span>
-                          <span><strong>Reference:</strong> {ev.ref || "—"}</span>
+                          <span><strong>Reference (last four):</strong> {ev.ref4 || ev.ref || "—"}</span>
+                          <span><strong>Attempts:</strong> {(ev.attempts || []).map((a) => `${a.via} ${a.cause}${a.ms != null ? ` ${a.ms}ms` : ""}`).join(", ") || "—"}</span>
                           <span><strong>Page:</strong> {ev.page}</span>
                           <span><strong>Outcome:</strong> {ev.outcome}</span>
-                          <span><strong>IP:</strong> {ev.ip || "—"}</span>
+                          <span><strong>Connection hash:</strong> {ev.iph || ev.ip || "—"}</span>
                           <span><strong>City:</strong> {ev.city || "—"}</span>
                           <span><strong>Country:</strong> {ev.country || "—"}</span>
                         </div>

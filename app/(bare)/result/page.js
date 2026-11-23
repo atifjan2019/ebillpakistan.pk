@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { DISCOS, isValidRef } from "../../../lib/discos";
 import { getIp, logBillCheck, rateLimitBill } from "../../../lib/store";
-import { fetchBillJson } from "../../../lib/pitc";
+import { fetchBillJson, causeOfError } from "../../../lib/pitc";
 import { normaliseBill } from "../../../lib/billData";
 import { adjustmentsOn } from "../../../lib/tariffs";
 import BillPanel from "./BillPanel";
@@ -134,21 +134,25 @@ export default async function Result({ searchParams }) {
 
   let bill = null;
   let reason = "upstream";
+  const attempts = [];
   if (!rl.success) {
     reason = "ratelimited";
   } else if (serverCanFetch) {
+    const started = Date.now();
     try {
       const raw = await fetchBillJson(ref);
       bill = normaliseBill(raw);
       if (!bill) reason = "notfound";
-    } catch {
+      attempts.push({ via: "server", cause: bill ? "ok" : "notfound", ms: Date.now() - started });
+    } catch (e) {
       reason = "upstream";
+      attempts.push({ via: "server", cause: causeOfError(e), ms: Date.now() - started });
     }
   }
 
   if (page && !browserPath) {
     await logBillCheck({
-      disco, ref, page,
+      disco, ref, page, attempts,
       outcome: bill ? "view" : reason,
       ip,
       city: decodeURIComponent(hdrs.get("x-vercel-ip-city") || ""),

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { DISCOS } from "../../../lib/discos";
-import { getStats, getContactMessages } from "../../../lib/store";
+import { getStats, getContactMessages, pruneEvents } from "../../../lib/store";
 import { getArticle } from "../../../lib/articles";
 import { getAllPosts, deletePost, getPost, savePost } from "../../../lib/posts";
 import { buildPost, slugify } from "../../../lib/publishPost";
@@ -256,7 +256,7 @@ export default async function AdminPage({ searchParams }) {
   const editSlug = tab === "posts" ? String(sp?.edit || "") : "";
   const draftSlug = tab === "posts" ? String(sp?.draft || "") : "";
   const [stats, posts, editingPost, editingDraft, drafts, agent, runLog, settings, messages] = await Promise.all([
-    tab === "posts" || tab === "settings" || tab === "messages" ? null : getStats(),
+    tab === "posts" || tab === "settings" || tab === "messages" ? null : pruneEvents().then(getStats),
     tab === "posts" ? getAllPosts() : null,
     editSlug ? getPost(editSlug) : null,
     draftSlug ? getDraft(draftSlug) : null,

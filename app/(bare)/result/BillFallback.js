@@ -18,8 +18,8 @@ export default function BillFallback({ discoName, reference, pitcUrl, reason }) 
       body: "Check the reference number digit by digit — it is 8 to 14 digits (18 for an AJK bill) with no spaces or dashes, and one wrong digit returns nothing rather than an error. Also make sure the company selected matches the one printed on your bill.",
     },
     upstream: {
-      title: "The billing system didn't respond",
-      body: "This is the official billing system being slow or unavailable, not a problem with your reference number. It is busiest in the last few days of the month. Trying again in a few minutes usually works.",
+      title: "The billing system is busy or didn't respond",
+      body: "PITC's billing system is rate-limiting lookups or not answering right now. This is not a problem with your reference number. It is busiest in the last few days of the month and around midday; trying again in a few minutes usually works, or open the bill on PITC's own page below.",
     },
     ratelimited: {
       title: "Too many lookups from this connection",

@@ -20,7 +20,7 @@ export const revalidate = 3600;
 const UPDATED = {
   core: "2026-11-23",   // homepage (independence line, 23 Nov 2026); DISCO pages use updatedFor()
   info: "2026-08-16",   // about, contact, sample bill, editorial policy, authors
-  legal: "2026-08-16",  // privacy (rewritten for advertising disclosure)
+  legal: "2026-11-23",  // privacy (lookup diagnostics log described, 23 Nov 2026)
   terms: "2026-01-10",  // terms, disclaimer (unchanged)
   tools: "2026-10-09",  // calculators and the monthly adjustments tracker
   utilities: "2026-10-26", // SNGPL, SSGC and PTCL pages
