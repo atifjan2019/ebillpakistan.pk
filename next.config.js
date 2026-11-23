@@ -24,6 +24,23 @@ const nextConfig = {
         ["/blog/how-to-check-electricity-bill-status", "/blog/how-to-check-electricity-bill-online-pakistan"],
         ["/blog/how-to-download-print-electricity-bill-duplicate", "/blog/how-to-check-electricity-bill-online-pakistan"],
       ].map(([source, destination]) => ({ source, destination, permanent: true })),
+      // November 2026: the per-company "bill check online" posts were folded
+      // into the company pages (lookalike-site warnings and complaint numbers
+      // now live there). See scripts/merge-company-posts.mjs. statusCode 301
+      // rather than permanent: true, which Next sends as a 308.
+      ...[
+        ["/blog/lesco-bill-check-online-official-page", "/lesco-bill-check"],
+        ["/blog/iesco-bill-check-online-official-page", "/iesco-bill-check"],
+        ["/blog/mepco-bill-check-online-official-page", "/mepco-bill-check"],
+        ["/blog/fesco-bill-check-online-official-page", "/fesco-bill-check"],
+        ["/blog/gepco-bill-check-online-official-page", "/gepco-bill-check"],
+        ["/blog/hesco-bill-check-online-official-page", "/hesco-bill-check"],
+        ["/blog/qesco-bill-check-online-official-page", "/qesco-bill-check"],
+        ["/blog/sepco-bill-check-online-official-page", "/sepco-bill-check"],
+        ["/blog/tesco-bill-check-online-official-page", "/tesco-bill-check"],
+        ["/blog/ajk-electricity-bill-check-online-official-page", "/ajk-bill-check"],
+        ["/blog/pesco-bill-check-online-complaint-numbers", "/pesco-bill-check"],
+      ].map(([source, destination]) => ({ source, destination, statusCode: 301 })),
       {
         // Browsers and crawlers request /favicon.ico directly regardless of
         // <link rel="icon"> in <head>. Redirect permanently to the site logo
