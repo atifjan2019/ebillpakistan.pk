@@ -12,7 +12,7 @@ export default function BillFallback({ discoName, reference, pitcUrl, reason }) 
   const COPY = {
     notfound: {
       title: "We couldn't find a bill for this number",
-      body: "Check the reference number digit by digit — it is 8 to 14 digits with no spaces or dashes, and one wrong digit returns nothing rather than an error. Also make sure the company selected matches the one printed on your bill.",
+      body: "Check the reference number digit by digit — it is 8 to 14 digits (18 for an AJK bill) with no spaces or dashes, and one wrong digit returns nothing rather than an error. Also make sure the company selected matches the one printed on your bill.",
     },
     upstream: {
       title: "The billing system didn't respond",

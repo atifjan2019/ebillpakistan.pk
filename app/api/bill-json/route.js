@@ -1,5 +1,5 @@
 import { fetchBillJson } from "../../../lib/pitc";
-import { isValidRef } from "../../../lib/discos";
+import { isValidRef, REF_LENGTH_TEXT } from "../../../lib/discos";
 import { rateLimitBill, getIp } from "../../../lib/store";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +12,7 @@ export async function GET(request) {
   const ref = (searchParams.get("reference") || "").trim();
 
   if (!isValidRef(ref)) {
-    return Response.json({ error: "reference must be 8-14 digits" }, { status: 400 });
+    return Response.json({ error: `reference must be ${REF_LENGTH_TEXT}` }, { status: 400 });
   }
   const rl = await rateLimitBill(`${getIp(request)}`);
   if (!rl.success) {

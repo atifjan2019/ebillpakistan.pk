@@ -28,8 +28,8 @@ export default function Privacy() {
       <h2>2. Information we process</h2>
       <ul>
         <li>
-          <strong>The number you enter.</strong> Your 14-digit reference number (or account/consumer
-          ID) is sent by your browser to the upstream billing system operated by the Power
+          <strong>The number you enter.</strong> Your reference number (14 digits, or 18 for AJK), or account/consumer
+          ID, is sent by your browser to the upstream billing system operated by the Power
           Information Technology Company (PITC) in order to retrieve your bill, and, if that
           request fails, to our server, which asks PITC on your behalf.
           Gas (SNGPL, SSGC) and PTCL numbers entered on their pages are different: they are kept

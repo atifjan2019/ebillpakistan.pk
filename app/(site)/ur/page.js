@@ -3,7 +3,7 @@
 // to every Urdu guide. hreflang pairs it with "/".
 import RefInput from "../../RefInput";
 import CheckBillLoader from "../../CheckBillLoader";
-import { DISCOS } from "../../../lib/discos";
+import { DISCOS, ANY_REF_PATTERN } from "../../../lib/discos";
 import { SITE_URL } from "../../../lib/seo";
 import { ARTICLES } from "../../../lib/articles";
 
@@ -65,7 +65,7 @@ export default function UrduHome() {
               <div className="field">
                 <label htmlFor="reference">ریفرنس نمبر</label>
                 <div className="control">
-                  <RefInput id="reference" name="reference" inputMode="numeric" pattern="[0-9]{8,14}" placeholder="مثلاً 12345678901234" required dir="ltr" />
+                  <RefInput id="reference" name="reference" inputMode="numeric" pattern={ANY_REF_PATTERN} placeholder="مثلاً 12345678901234" required dir="ltr" />
                 </div>
               </div>
               <button type="submit" className="btn btn-primary"><Search /> بل چیک کریں</button>

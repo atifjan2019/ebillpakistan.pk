@@ -1,7 +1,7 @@
 import RefInput from "../../RefInput";
 import CheckBillLoader from "../../CheckBillLoader";
 import { notFound } from "next/navigation";
-import { DISCOS } from "../../../lib/discos";
+import { DISCOS, refRule } from "../../../lib/discos";
 import { COMPANIES, slugFor, codeFromSlug } from "../../../lib/companies";
 import { complaintsFor, contentFor, faqsFor, seoFor, SECTIONS, updatedFor } from "../../../lib/discoContent";
 import { guidesFor } from "../../../lib/articles";
@@ -55,6 +55,7 @@ export default async function CompanyPage({ params }) {
   if (!code) notFound();
 
   const [abbr, city, color] = DISCOS[code];
+  const ref = refRule(code);
   const c = COMPANIES[code];
   const content = contentFor(code);
   const faqs = faqsFor(code);
@@ -116,14 +117,14 @@ export default async function CompanyPage({ params }) {
               <div className="field">
                 <label htmlFor="reference">{abbr} reference number</label>
                 <div className="control">
-                  <RefInput id="reference" name="reference" inputMode="numeric" pattern="[0-9]{8,14}"
-                    placeholder="e.g. 12345678901234" required autoFocus />
+                  <RefInput id="reference" name="reference" inputMode="numeric" pattern={ref.pattern}
+                    placeholder={`e.g. ${ref.example}`} required autoFocus />
                 </div>
               </div>
               <button type="submit" className="btn btn-primary"><Search /> Check {abbr} Bill</button>
             </div>
             <p className="search-foot">
-              <span className="only-wide">Your 14-digit reference number is printed at the top-left of your {abbr} bill.</span>
+              <span className="only-wide">Your {ref.digits}-digit reference number is printed at the top-left of your {abbr} bill.</span>
               <span className="only-narrow">Reference number: top-left of your {abbr} bill.</span>
             </p>
             <CheckBillLoader />
@@ -162,7 +163,7 @@ export default async function CompanyPage({ params }) {
             )}
             <div className="glance-item">
               <span className="glance-k">Reference number</span>
-              <span className="glance-v">14 digits</span>
+              <span className="glance-v">{ref.digits} digits</span>
               <span className="glance-n">Top-left of the bill. <a href="/blog/how-to-find-reference-number-on-electricity-bill">Where to find it</a></span>
             </div>
             <div className="glance-item">

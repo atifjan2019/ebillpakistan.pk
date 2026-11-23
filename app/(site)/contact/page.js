@@ -123,7 +123,7 @@ export default function Contact() {
           <ol>
             <li>
               <strong>&ldquo;My bill won&apos;t load.&rdquo;</strong> Check the reference number
-              digit by digit — it is 8 to 14 digits with no spaces or dashes, and a single
+              digit by digit — it is 8 to 14 digits, or 18 for an AJK bill, with no spaces or dashes, and a single
               transposed digit returns nothing rather than an error. Make sure you have picked the
               right company. If it still fails, the upstream billing system is often busy in the
               last few days of the month; trying again an hour later usually works. If you have lost

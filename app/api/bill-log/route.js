@@ -19,7 +19,7 @@ export async function POST(request) {
   const ref = String(body.ref || "").trim();
   const outcome = String(body.outcome || "");
   const page = String(body.page || "").slice(0, 120);
-  if (!DISCOS[disco] || !isValidRef(ref) || !OUTCOMES.has(outcome) || !page.startsWith("/")) {
+  if (!DISCOS[disco] || !isValidRef(ref, disco) || !OUTCOMES.has(outcome) || !page.startsWith("/")) {
     return new Response(null, { status: 400 });
   }
   await logBillCheck({

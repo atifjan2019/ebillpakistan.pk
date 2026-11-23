@@ -2,7 +2,7 @@ import LookupState from "../LookupState";
 import RefInput from "../RefInput";
 import CheckBillLoader from "../CheckBillLoader";
 import QuickCheck from "../QuickCheck";
-import { DISCOS } from "../../lib/discos";
+import { DISCOS, ANY_REF_PATTERN, REF_LENGTH_TEXT } from "../../lib/discos";
 import { UTILITIES, KIND_LABEL, utilitySlug } from "../../lib/utilities";
 import { SITE_URL, HOME_URL, OG_IMAGE, TWITTER_SITE, SOCIAL } from "../../lib/seo";
 import { BUSINESS } from "../../lib/contact";
@@ -67,7 +67,7 @@ const FAQS = [
 ];
 
 const LOOKUP_ERRORS = {
-  badref: "That reference number doesn't look right. It is 8 to 14 digits, with no spaces or dashes — check it against the top-left of your bill.",
+  badref: `That reference number doesn't look right. It is ${REF_LENGTH_TEXT}, with no spaces or dashes. Check it against the top-left of your bill.`,
   noref: "Enter the reference number printed at the top-left of your bill to check it.",
   nodisco: "Choose the company printed on your bill first — a reference number only works on the company that issued it.",
 };
@@ -170,7 +170,7 @@ export default async function Home() {
               <div className="field">
                 <label htmlFor="reference">Reference number</label>
                 <div className="control">
-                  <RefInput id="reference" name="reference" inputMode="numeric" pattern="[0-9]{8,14}"
+                  <RefInput id="reference" name="reference" inputMode="numeric" pattern={ANY_REF_PATTERN}
                     placeholder="e.g. 12345678901234" required />
                 </div>
               </div>

@@ -40,7 +40,7 @@ export async function generateMetadata({ searchParams }) {
   // (Phase 1 removed the robots.txt block) so Googlebot and the AdSense crawler
   // can see that the product works.
   const robots = { index: false, follow: true };
-  if (info && isValidRef(ref)) return { title: `${info[0]} Bill ${ref} | eBill Pakistan`, robots };
+  if (info && isValidRef(ref, disco)) return { title: `${info[0]} Bill ${ref} | eBill Pakistan`, robots };
   if (info) return { title: `${info[0]} Bill | eBill Pakistan`, robots };
   return { title: "Check Your Bill | eBill Pakistan", robots };
 }
@@ -53,8 +53,8 @@ export default async function Result({ searchParams }) {
   // A direct hit with a malformed reference used to redirect to "/" silently,
   // leaving the visitor on the homepage with no idea what went wrong. Carry the
   // reason so the homepage can say it.
-  if (!isValidRef(ref)) redirect(`/?e=${ref ? "badref" : "noref"}`);
   if (!DISCOS[disco]) redirect("/?e=nodisco");
+  if (!isValidRef(ref, disco)) redirect(`/?e=${ref ? "badref" : "noref"}`);
 
   const info = DISCOS[disco];
   const hdrs = await headers();

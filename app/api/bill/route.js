@@ -29,7 +29,7 @@ export async function GET(request) {
       headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" },
     });
 
-  if (!DISCOS[disco] || !isValidRef(ref)) {
+  if (!DISCOS[disco] || !isValidRef(ref, disco)) {
     return html(
       messagePage("Invalid request", "Please choose a company and enter a valid reference number.", "invalid"),
       400
