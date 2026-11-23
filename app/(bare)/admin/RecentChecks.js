@@ -17,7 +17,7 @@ const fmtTime = (ms) =>
   });
 
 const discoLabel = (code) =>
-  DISCOS[code] ? DISCOS[code][0] : code === "auto" ? "Auto-detect" : code;
+  DISCOS[code] ? DISCOS[code][0] : code === "auto" ? "Auto-detect (old)" : code;
 
 export default function RecentChecks({ events }) {
   const [page, setPage] = useState(0);

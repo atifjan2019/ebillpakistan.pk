@@ -8,7 +8,6 @@ import { adjustmentsOn } from "../../../lib/tariffs";
 import BillPanel from "./BillPanel";
 import BillResult from "./BillResult";
 import BillFallback from "./BillFallback";
-import BillFrame from "./BillFrame";
 import CopyAndOpen from "../../CopyAndOpen";
 
 // PITC serves AJK bills only through its own web form (bill.pitc.com.pk/ajkbill,
@@ -157,10 +156,10 @@ export default async function Result({ searchParams }) {
     });
   }
 
-  const pitcUrl = `https://bill.pitc.com.pk/gbill.aspx?refno=${encodeURIComponent(ref)}&type=U`;
-  // The rendered-HTML path is only usable where the server can reach
-  // bill.pitc.com.pk, which needs PITC_PROXY (PITC blocks datacenter egress).
-  const htmlPathAvailable = !onDatacenter() || !!process.env.PITC_PROXY;
+  // The company's own bill page on PITC, for the fallback card and the
+  // "original bill" link. The old gbill.aspx deep link now redirects to an
+  // empty page, so the visitor pastes the (copied) reference there instead.
+  const pitcUrl = `https://bill.pitc.com.pk/${disco}bill`;
 
   const adjustments = adjustmentsOn(new Date().toISOString());
 
@@ -186,9 +185,6 @@ export default async function Result({ searchParams }) {
           <BillPanel bill={bill} disco={disco} info={info} reference={ref} pitcUrl={pitcUrl} adjustments={adjustments} />
         ) : browserPath ? (
           <BillResult disco={disco} info={info} reference={ref} pitcUrl={pitcUrl} adjustments={adjustments} page={page} />
-        ) : htmlPathAvailable && reason === "upstream" ? (
-          // Server can reach bill.pitc.com.pk: fall back to the rendered bill.
-          <BillFrame src={`/api/bill?disco=${encodeURIComponent(disco)}&reference=${encodeURIComponent(ref)}`} disco={disco} reference={ref} />
         ) : (
           <BillFallback discoName={info[0]} reference={ref} pitcUrl={pitcUrl} reason={reason} />
         )}

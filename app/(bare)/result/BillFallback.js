@@ -7,7 +7,10 @@
 // page whose only function is to forward you elsewhere is the definition of a
 // doorway page.
 //
-// Now: an honest error, a retry, and the official portal as the last resort.
+// Now: an honest error, a retry, and the company's own PITC page as the last
+// resort, with the reference copied so it can be pasted there.
+import CopyAndOpen from "../../CopyAndOpen";
+
 export default function BillFallback({ discoName, reference, pitcUrl, reason }) {
   const COPY = {
     notfound: {
@@ -42,11 +45,7 @@ export default function BillFallback({ discoName, reference, pitcUrl, reason }) 
       <div className="fallback-actions">
         <a className="btn btn-primary" href="/">Try another number</a>
         {reason !== "notfound" && reference && (
-          <form action={pitcUrl} method="POST" target="_blank" rel="noopener noreferrer" encType="text/plain">
-            <button type="submit" className="btn btn-ghost">
-              Open on the official PITC portal →
-            </button>
-          </form>
+          <CopyAndOpen reference={reference} url={pitcUrl} label={`Copy reference and open ${discoName}'s PITC page →`} />
         )}
       </div>
 

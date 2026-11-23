@@ -338,7 +338,7 @@ const TAB_TITLES = {
 };
 
 /* ---------------- dashboard ---------------- */
-const discoLabel = (code) => (DISCOS[code] ? DISCOS[code][0] : code === "auto" ? "Auto-detect" : code);
+const discoLabel = (code) => (DISCOS[code] ? DISCOS[code][0] : code === "auto" ? "Auto-detect (old)" : code);
 
 function sortedRows(obj, labeller = (k) => k) {
   return Object.entries(obj || {})
