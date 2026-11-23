@@ -609,20 +609,19 @@ function AgentPanel({ agent, runLog, draftCount }) {
         <span className="adm-more">{agent.model} · {agent.autoPublish ? "publishes automatically" : "drafts wait for your approval"}</span>
       </h2>
       <p className="adm-agent-blurb">
-        Once a day it researches one topic the site does not cover yet, using live web search over NEPRA, the DISCOs and the
-        national press, then writes a sourced guide. {agent.autoPublish
+        When you press the button it researches one topic the site does not cover yet, using live web search over NEPRA,
+        the DISCOs and the national press, then writes a sourced guide. It no longer runs on a schedule. {agent.autoPublish
           ? "Each post is published to the blog as soon as it is written; it appears in the list below and can be edited or deleted there like any other post."
           : "Each draft sits below until you publish it, so nothing goes live without a person reading it."}
       </p>
       {!agent.configured && (
         <div className="adm-note">
           <strong>Add the API key:</strong> set <code>ANTHROPIC_API_KEY</code> in the Vercel project environment variables and redeploy.
-          The daily run also needs <code>CRON_SECRET</code> set, or Vercel's cron is refused.
         </div>
       )}
-      {agent.configured && !agent.cronSecret && (
+      {!agent.cronSecret && (
         <div className="adm-note">
-          <strong>Daily run is off:</strong> set <code>CRON_SECRET</code> in Vercel so the scheduled run is accepted. Manual runs work without it.
+          <strong>Reminders are off:</strong> set <code>CRON_SECRET</code> in Vercel so the daily reminders job is accepted. Writing a post from this page works without it.
         </div>
       )}
       {agent.state?.status === "failed" && (
@@ -899,8 +898,8 @@ function SettingsTab({ settings, msg, err, reminders }) {
       <div className="adm-panel">
         <h2>Bill due-date reminders <span className="adm-count">{reminders?.count ?? 0}</span></h2>
         <p className="adm-agent-blurb">
-          Visitors can ask for a phone notification three days before a bill is due and on the day. They go out with the
-          09:00 daily run. {reminders?.count ?? 0} device{reminders?.count === 1 ? " has" : "s have"} a reminder set.
+          Visitors can ask for a phone notification three days before a bill is due and on the day. They go out from a
+          daily job at 09:00. {reminders?.count ?? 0} device{reminders?.count === 1 ? " has" : "s have"} a reminder set.
           {reminders?.last
             ? ` Last run ${reminders.last.day}: ${reminders.last.sent} sent, ${reminders.last.failed} failed, ${reminders.last.removed} expired.`
             : " No run recorded yet."}
