@@ -17,6 +17,17 @@
 import { ARTICLES } from "../lib/articles.js";
 import { A1_BELOW_5KW, PROTECTED } from "../lib/tariffs.js";
 import { AUTHORS, DEFAULT_AUTHOR } from "../lib/authors.js";
+import { DISCO_CONTENT } from "../lib/discoContent.js";
+import { DISCOS } from "../lib/discos.js";
+
+// lib/companies.js imports "./discos" without an extension, which Node's ESM
+// loader rejects outside the bundler, so the slug rule is repeated here.
+const slugFor = (code) => `${code}-bill-check`;
+
+// --table prints one row per post (slug, date, words, citations, author,
+// closest static article, closest company page, links to other KV posts) and
+// exits. It is the inventory used to decide what to keep, merge or remove.
+const TABLE = process.argv.includes("--table");
 
 const URL_ = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -127,6 +138,67 @@ const staticBySlug = Object.fromEntries(ARTICLES.map((a) => [a.slug, a]));
 const GUIDES = ARTICLES.filter((a) =>
   ["how-to-find-reference-number-on-electricity-bill", "how-to-check-electricity-bill-online-pakistan"].includes(a.slug)
 );
+
+if (TABLE) {
+  // Topic similarity: the share of a post's distinctive words that also appear
+  // in the other page. Sentence overlap (used below) only catches copied
+  // lines; this catches two pages about the same thing in different words.
+  const STOP = new Set("about above after again against all also among and any are because been before being below between both but can could does doing down during each from further had has have having here how into its itself just more most much must not off once only other our ours out over own same should some such than that the their theirs them then there these they this those through under until very was were what when where which while who whom why will with would your yours electricity bill bills pakistan unit units check online company".split(" "));
+  const bag = (t) =>
+    new Set(
+      strip(t)
+        .toLowerCase()
+        .replace(/[^a-z0-9؀-ۿ\s-]/g, " ")
+        .split(/\s+/)
+        .filter((w) => w.length >= 5 && !STOP.has(w))
+    );
+  const share = (A, B) => {
+    if (!A.size) return 0;
+    let n = 0;
+    for (const w of A) if (B.has(w)) n++;
+    return (n / A.size) * 100;
+  };
+  const articleBags = ARTICLES.filter((a) => a.lang !== "ur").map((a) => [a.slug, bag(`${a.title} ${a.content} ${(a.faqs || []).flat().join(" ")}`)]);
+  const companyText = (code) => {
+    const c = DISCO_CONTENT[code] || {};
+    const paras = ["coverage", "background", "billLayout", "payments", "outages"].flatMap((k) => c[k]?.paras || []);
+    return `${c.intro || ""} ${paras.join(" ")} ${(c.faqs || []).flat().join(" ")} ${JSON.stringify(c.complaints || {})}`;
+  };
+  const companyBags = Object.keys(DISCOS).map((code) => [code, bag(companyText(code))]);
+  const kvSlugs = new Set(posts.map((p) => p.slug));
+  const cites = (p) => {
+    const src = String(p.contentSource || p.content || "");
+    return (src.match(/https?:\/\/[^\s)"'<]+/g) || []).filter((u) => !/ebillpakistan\.pk/.test(u)).length;
+  };
+  const linksTo = (p) => {
+    const hrefs = [...String(p.content || "").matchAll(/href="(?:https?:\/\/(?:www\.)?ebillpakistan\.pk)?\/blog\/([a-z0-9-]+)\/?"/g)].map((m) => m[1]);
+    return [...new Set(hrefs.filter((s) => kvSlugs.has(s) && s !== p.slug))];
+  };
+  const rows = [...posts].sort((a, b) => String(a.publishedDate).localeCompare(String(b.publishedDate))).map((p) => {
+    const body = `${p.title} ${p.content || ""} ${(p.faqs || []).flat().join(" ")}`;
+    const B = bag(body);
+    const art = articleBags.map(([s, A]) => [s, share(B, A)]).sort((x, y) => y[1] - x[1])[0];
+    const co = companyBags.map(([c, A]) => [c, share(B, A)]).sort((x, y) => y[1] - x[1])[0];
+    const codeInSlug = Object.keys(DISCOS).find((c) => new RegExp(`(^|-)${c}(-|$)`).test(p.slug));
+    return {
+      date: p.publishedDate,
+      words: words(`${p.content || ""} ${(p.faqs || []).flat().join(" ")}`),
+      cites: cites(p),
+      author: p.author || "(default)",
+      slug: p.slug,
+      article: art ? `${art[0]} ${art[1].toFixed(0)}%` : "",
+      company: co ? `${codeInSlug ? `/${slugFor(codeInSlug)} ` : ""}${co[0]} ${co[1].toFixed(0)}%` : "",
+      linksTo: linksTo(p),
+    };
+  });
+  console.log(`\nKV posts: ${rows.length}\n`);
+  console.log("| # | Date | Words | Cites | Author | Slug | Closest static article | Closest company page | Links to other KV posts |");
+  console.log("|---|---|---|---|---|---|---|---|---|");
+  rows.forEach((r, i) =>
+    console.log(`| ${i + 1} | ${r.date} | ${r.words} | ${r.cites} | ${r.author} | ${r.slug} | ${r.article} | ${r.company} | ${r.linksTo.join(", ") || "-"} |`)
+  );
+  process.exit(0);
+}
 
 const bar = "═".repeat(78);
 console.log(`\n${bar}\n  KV BLOG AUDIT — ${posts.length} post(s) in blog:posts\n${bar}`);

@@ -52,6 +52,7 @@ export default function UtilityPage({ code }) {
           <PortalHandoff code={code} abbr={u.abbr} fields={fields} portal={u.portal} label={buttonLabel} />
 
           <p className="search-foot" style={{ marginTop: 10 }}>{u.id.hint}</p>
+          <p className="page-note">eBill Pakistan is an independent service. It is not affiliated with {u.full}, the {u.portal.name} or any government body.</p>
           {code === "ptcl" && (
             <>
               <p className="search-foot" style={{ marginTop: 18 }}><b>Got the SMS?</b> PTCL texts and emails a one-off e-bill link for every invoice. Paste it and the bill shows right here, with no picture code.</p>
@@ -65,16 +66,16 @@ export default function UtilityPage({ code }) {
         <div className="container">
           <div className="section-head">
             <span className="kicker">Why the portal</span>
-            <h2>Why we hand you to the official site</h2>
+            <h2>Why we send you to the company&apos;s own site</h2>
             <p>
               The {u.portal.name} protects its records with a check that a person has to complete on that site, so no
               third-party site can fetch a {thing} for you the way we fetch electricity bills. We keep your
-              number ready, copy it for pasting, and open the official page: three taps instead of ten.
+              number ready, copy it for pasting, and open the company&apos;s own page: three taps instead of ten.
             </p>
           </div>
           <ol className="steps">
             <li className="step"><span className="num">1</span><h3>Enter the number once</h3><p>{u.id.hint} It is saved in your browser for next time.</p></li>
-            <li className="step"><span className="num">2</span><h3>Open the official portal</h3><p>The button copies your number and opens the {u.portal.name} in a new tab.</p></li>
+            <li className="step"><span className="num">2</span><h3>Open the company&apos;s portal</h3><p>The button copies your number and opens the {u.portal.name} in a new tab.</p></li>
             <li className="step"><span className="num">3</span><h3>Paste, pass the check, done</h3><p>{u.portal.how}</p></li>
           </ol>
         </div>

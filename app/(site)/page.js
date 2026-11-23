@@ -1,0 +1,410 @@
+import LookupState from "../LookupState";
+import RefInput from "../RefInput";
+import CheckBillLoader from "../CheckBillLoader";
+import QuickCheck from "../QuickCheck";
+import { DISCOS } from "../../lib/discos";
+import { UTILITIES, KIND_LABEL, utilitySlug } from "../../lib/utilities";
+import { SITE_URL, HOME_URL, OG_IMAGE, TWITTER_SITE, SOCIAL } from "../../lib/seo";
+import { BUSINESS } from "../../lib/contact";
+
+export const HOME_UPDATED = "2026-11-23";
+
+const HOME_TITLE = "eBill Pakistan | Check Your Electricity Bill Online";
+const HOME_DESC =
+  "Check your electricity bill online for LESCO, IESCO, MEPCO, FESCO and all 12 major DISCOs in Pakistan. Free, instant, no sign-up needed.";
+
+export const metadata = {
+  title: HOME_TITLE,
+  description: HOME_DESC,
+  // NOTE: canonical and og:url are emitted as raw <head> tags in the component
+  // below (see HOME_URL). The Metadata API strips the root trailing slash, so we
+  // bypass it here to keep canonical, og:url and the sitemap all = HOME_URL.
+  // Re-supply type/siteName/image/description: Next replaces (not deep-merges)
+  // the parent openGraph when a page sets its own, so omitting these drops them.
+  openGraph: {
+    type: "website",
+    siteName: "eBill Pakistan",
+    locale: "en_PK",
+    title: HOME_TITLE,
+    description: HOME_DESC,
+    images: [OG_IMAGE],
+  },
+  // Keep twitter:description identical to og:description, and carry the handle.
+  twitter: {
+    card: "summary_large_image",
+    site: TWITTER_SITE,
+    title: HOME_TITLE,
+    description: HOME_DESC,
+    images: [{ url: OG_IMAGE.url, alt: HOME_TITLE }],
+  },
+};
+
+/* inline icons (no external requests) */
+const I = {
+  shield: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 3l7 3v5c0 4.4-3 8.3-7 10-4-1.7-7-5.6-7-10V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg>,
+  bolt: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>,
+  free: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9"/><path d="M9 9.5C9 8 10.3 7 12 7s3 1 3 2.5S13.5 12 12 12s-3 .8-3 2.5S10.3 17 12 17s3-1 3-2.5"/></svg>,
+  list: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>,
+  search: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>,
+  doc: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M9 13h6M9 17h6"/></svg>,
+  lock: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>,
+  clock: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>,
+  grid: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>,
+  check: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="m5 13 4 4L19 7"/></svg>,
+};
+
+const FAQS = [
+  ["Where do I find my reference number?", "Top-left of your paper bill, under the name and address block, labelled Reference No. or Consumer No. It is normally the longest run of digits on the page, and it never changes — note it once and you can check every month without the paper copy."],
+  ["Do I need an account to check my bill?", "No. There is no sign-up, no password and no app to install. The reference number is the only thing required, and nothing about your bill is kept after the page is served."],
+  ["Which companies are supported?", "All twelve: LESCO, IESCO, MEPCO, FESCO, GEPCO, HESCO, PESCO, QESCO, SEPCO, TESCO, HAZECO and the AJK Electricity Department. Pick the one printed on your bill rather than guessing from your city — supply boundaries do not follow city limits."],
+  ["Why is my bill so much higher than last month for a few extra units?", "Almost always a slab crossing. Domestic billing is not calculated band by band for unprotected consumers: cross a boundary and every unit reprices at the higher rate, not just the units above the line. The tariff guide works through exactly what that costs."],
+  ["What is the difference between a protected and unprotected consumer?", "Protected consumers keep their monthly usage at or below 200 units and are charged materially lower rates. Unprotected consumers pay the standard schedule. Your tariff code is printed on the bill, and the gap between the two is large enough to be worth watching."],
+  ["Why are there two totals on my bill?", "One is payable within the due date, the other after it — the second includes the late payment surcharge. Check which one a counter or app is asking for before you pay."],
+  ["How long after paying does it show as paid?", "One to two working days. Counter payments at a bank branch post fastest; wallet and app payments take longer to reach the billing system. A bill still showing as due the morning after you paid is normal — keep the receipt until it clears."],
+  ["Can I get a bill for an earlier month?", "Not from the online lookup, which returns your current bill only. For a past month you need a duplicate from your distribution company. Downloading the PDF each month is the easier habit."],
+  ["Is my information safe here?", "The reference number you type is used once to fetch your bill and is not stored in a database. We do not create an account, we do not keep your bill, and we never ask for a CNIC or an OTP — no legitimate bill service will."],
+  ["Do you take payment?", "No. We show you the bill so you have the amount and reference number ready; you pay through JazzCash, Easypaisa, a bank app, an ATM or a bank counter. We are independent of PITC and of every distribution company."],
+];
+
+const LOOKUP_ERRORS = {
+  badref: "That reference number doesn't look right. It is 8 to 14 digits, with no spaces or dashes — check it against the top-left of your bill.",
+  noref: "Enter the reference number printed at the top-left of your bill to check it.",
+  nodisco: "Choose the company printed on your bill first — a reference number only works on the company that issued it.",
+};
+
+// Prerendered: ?e= and ?disco= are applied in the browser by LookupState.
+export default async function Home() {
+  const entries = Object.entries(DISCOS);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        url: `${SITE_URL}/`,
+        name: "eBill Pakistan",
+        description: "Check your electricity bill online for all major DISCOs in Pakistan.",
+        publisher: { "@id": `${SITE_URL}/#organization` },
+      },
+      {
+        "@type": "Organization",
+        "@id": `${SITE_URL}/#organization`,
+        name: "eBill Pakistan",
+        url: `${SITE_URL}/`,
+        logo: `${SITE_URL}/images/logo.png`,
+        email: BUSINESS.email,
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: BUSINESS.address.street,
+          addressLocality: BUSINESS.address.locality,
+          addressRegion: BUSINESS.address.region,
+          postalCode: BUSINESS.address.postalCode,
+          addressCountry: BUSINESS.address.country,
+        },
+        contactPoint: {
+          "@type": "ContactPoint",
+          contactType: "customer support",
+          email: BUSINESS.email,
+          areaServed: "PK",
+          availableLanguage: ["en", "ur"],
+        },
+        sameAs: [SOCIAL.facebook, SOCIAL.twitter],
+      },
+      {
+        "@type": "Service",
+        name: "Online Electricity Bill Check",
+        serviceType: "Electricity bill enquiry and download",
+        provider: { "@id": `${SITE_URL}/#organization` },
+        areaServed: { "@type": "Country", name: "Pakistan" },
+        description:
+          "Free online checking and downloading of electricity bills for all major distribution companies in Pakistan, including LESCO, IESCO, MEPCO, FESCO, GEPCO, HESCO, PESCO, QESCO, SEPCO, TESCO, HAZECO and AJK.",
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${SITE_URL}/#faq`,
+        mainEntity: FAQS.map(([q, a]) => ({
+          "@type": "Question",
+          name: q,
+          acceptedAnswer: { "@type": "Answer", text: a },
+        })),
+      },
+    ],
+  };
+
+  return (
+    <>
+      {/* Canonical + og:url with trailing slash (Metadata API would strip it). */}
+      <link rel="canonical" href={HOME_URL} />
+      <link rel="alternate" hrefLang="en" href={HOME_URL} />
+      <link rel="alternate" hrefLang="ur" href={`${SITE_URL}/ur`} />
+      <link rel="alternate" hrefLang="x-default" href={HOME_URL} />
+      <meta property="og:url" content={HOME_URL} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
+      {/* hero + search */}
+      <section className="hero">
+        <div className="container">
+          <span className="eyebrow"><span className="dot" /> Free • No sign-up • All companies</span>
+          <h1>Check Your <span className="grad">Electricity Bill</span> Online, Without the Hassle</h1>
+          <p className="sub">
+            No app to download, no account to make. Just pop in your reference number and we&apos;ll
+            pull up your latest bill, ready to view, download or send on WhatsApp.
+          </p>
+
+          <LookupState errors={LOOKUP_ERRORS} codes={Object.keys(DISCOS)} />
+
+          <form id="lookup" className="search-card" action="/result" method="get">
+            <div className="search-grid">
+              <div className="field">
+                <label htmlFor="disco">Company</label>
+                <div className="control sel">
+                  <select id="disco" name="disco" defaultValue="" required>
+                    <option value="" disabled>Select your company</option>
+                    {entries.map(([code, [abbr]]) => (
+                      <option key={code} value={code}>{abbr}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="field">
+                <label htmlFor="reference">Reference number</label>
+                <div className="control">
+                  <RefInput id="reference" name="reference" inputMode="numeric" pattern="[0-9]{8,14}"
+                    placeholder="e.g. 12345678901234" required />
+                </div>
+              </div>
+              <button type="submit" className="btn btn-primary">{I.search} Check Bill</button>
+            </div>
+            <p className="search-foot">
+              {I.shield}
+              <span className="only-wide">Pick your company, then enter the reference number printed at the top-left of your bill.</span>
+              <span className="only-narrow">Reference number: top-left of your bill.</span>
+            </p>
+            <CheckBillLoader />
+          </form>
+          <QuickCheck />
+          <p className="lang-switch"><a href="/ur" lang="ur">یہ صفحہ اردو میں دیکھیں</a></p>
+
+          <div className="trust">
+            <span className="pill">{I.free} 100% Free</span>
+            <span className="pill">{I.clock} Instant results</span>
+            <span className="pill">{I.lock} Private &amp; secure</span>
+            <span className="pill">{I.grid} 12 companies</span>
+          </div>
+        </div>
+      </section>
+
+      {/* companies */}
+      <section className="section" id="companies">
+        <div className="container">
+          <div className="section-head">
+            <span className="kicker">All companies</span>
+            <h2>Find your company</h2>
+            <p>Not sure which one you&apos;re with? Check the name printed on your bill, or tap your company here.</p>
+          </div>
+          <div className="disco-grid">
+            {entries.map(([code, [abbr, city, color]]) => (
+              <a key={code} className="disco-card" href={`/${code}-bill-check`} style={{ "--c": color }}>
+                <span className="badge">{abbr.slice(0, 2)}</span>
+                <span className="name">{abbr}</span>
+                <span className="city">{city}</span>
+                <span className="go">Check bill →</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* gas and phone */}
+      <section className="section" id="gas">
+        <div className="container">
+          <div className="section-head">
+            <span className="kicker">More checks</span>
+            <h2>Gas, K-Electric, PTCL, water, vehicle and challan checks</h2>
+            <p>These live on their organisations&apos; own portals behind a picture check. We keep your number ready and take you straight there, and PTCL e-bills show right here.</p>
+          </div>
+          <div className="disco-grid">
+            {Object.entries(UTILITIES).map(([code, u]) => (
+              <a key={code} className="disco-card" href={`/${utilitySlug(code)}`} style={{ "--c": u.color }}>
+                <span className="badge">{u.abbr.slice(0, 2)}</span>
+                <span className="name">{u.abbr}</span>
+                <span className="city">{KIND_LABEL[u.kind]}</span>
+                <span className="go">{u.kind === "vehicle" || u.kind === "challan" ? "Check →" : "Open bill →"}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* tools */}
+      <section className="home-tools" id="tools">
+        <div className="container">
+          <div className="section-head">
+            <span className="kicker">Tools</span>
+            <h2>Work the bill out before it arrives</h2>
+            <p>Built on NEPRA&apos;s notified rates and this month&apos;s adjustments, with every assumption on screen.</p>
+          </div>
+          <div className="tool-links tool-links--grid">
+            <a className="tool-link" href="/bill-calculator"><b>Bill calculator</b><span>Units in, estimated bill out, and the saving from a lower slab.</span></a>
+            <a className="tool-link" href="/protected-consumer-checker"><b>Protected consumer checker</b><span>Six months of units tell you whether you qualify, and when.</span></a>
+            <a className="tool-link" href="/this-month"><b>This month&apos;s adjustments</b><span>The fuel and quarterly charges on this month&apos;s bills.</span></a>
+            <a className="tool-link" href="/solar-calculator"><b>Solar savings calculator</b><span>What a rooftop system does to the bill under net billing.</span></a>
+          </div>
+        </div>
+      </section>
+
+      {/* how it works */}
+      <section className="section" id="how" style={{ background: "#fff", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)" }}>
+        <div className="container">
+          <div className="section-head">
+            <span className="kicker">How it works</span>
+            <h2>Honestly, it&apos;s this easy</h2>
+          </div>
+          <div className="steps">
+            <div className="step"><span className="num">1</span><div className="ic">{I.search}</div><h3>Grab your reference number</h3><p>It&apos;s the 14-digit number at the top of your paper bill. That&apos;s all you need.</p></div>
+            <div className="step"><span className="num">2</span><div className="ic">{I.grid}</div><h3>Pick your company</h3><p>Select your company from the list and type in your reference number. That&apos;s all we need.</p></div>
+            <div className="step"><span className="num">3</span><div className="ic">{I.doc}</div><h3>There&apos;s your bill</h3><p>View it right away, save it as a PDF, or send it on WhatsApp in one tap.</p></div>
+          </div>
+
+          <p className="section-foot">
+            Not sure what the lines on your bill mean? See our{" "}
+            <a href="/sample-bill-explained">annotated sample bill</a> — every field explained,
+            from the reference number and units consumed to FPA, GST and the late payment
+            surcharge.
+          </p>
+        </div>
+      </section>
+
+      {/* features */}
+      <section className="section">
+        <div className="container">
+          <div className="section-head">
+            <span className="kicker">Why people use us</span>
+            <h2>Made to be genuinely easy</h2>
+          </div>
+          <div className="features">
+            <div className="feature"><div className="ic">{I.bolt}</div><h3>Quick</h3><p>Your bill shows up in a few seconds. No waiting around, nothing to install.</p></div>
+            <div className="feature"><div className="ic">{I.free}</div><h3>Always free</h3><p>Check as many bills as you like. There&apos;s never a charge or a sign-up.</p></div>
+            <div className="feature"><div className="ic">{I.lock}</div><h3>Yours stays yours</h3><p>We only ever look up the number you type. Nothing is saved or shared.</p></div>
+            <div className="feature"><div className="ic">{I.doc}</div><h3>Easy to keep</h3><p>Download a tidy one-page PDF, or share it on WhatsApp in a tap.</p></div>
+          </div>
+        </div>
+      </section>
+
+
+      {/* ---------- how billing works: substantive content below the form ---------- */}
+      <section className="section home-explain">
+        <div className="container article">
+          <p className="page-updated">Last updated: {HOME_UPDATED}</p>
+          <p className="page-note">eBill Pakistan is an independent service. It is not affiliated with any distribution company, PITC or any government body.</p>
+          <h2>How electricity billing works in Pakistan</h2>
+          <p>
+            Every month a meter reader from your distribution company records the reading on your
+            meter. The difference between that reading and the previous month&apos;s is your{" "}
+            <strong>units consumed</strong>, and almost everything on the bill follows from it. That
+            figure goes into the national billing system run by the Power Information Technology
+            Company, which applies the tariff your connection sits on, adds the adjustments and taxes
+            in force that month, and produces the bill delivered to your door — and the identical
+            copy you can pull up here with the reference number.
+          </p>
+          <p>
+            The bill carries two totals and one date that matters: an amount payable{" "}
+            <strong>within</strong> the due date, a higher amount payable <strong>after</strong> it,
+            and the due date itself. The gap between the two is the late payment surcharge. Payment
+            channels credit on their own timetable — a counter payment usually posts the same working
+            day, a wallet or app payment takes one to two — so paying on the due date itself is
+            cutting it fine.
+          </p>
+
+          <h2>The one rule that explains most surprising bills</h2>
+          <p>
+            Domestic billing in Pakistan is <strong>not telescopic</strong>. For an unprotected
+            consumer, every unit is charged at the rate of the band the month reaches — not the first
+            hundred at one rate and the next hundred at another. Crossing a band boundary therefore
+            reprices the entire month, which is why a handful of extra units can add far more to a
+            bill than they appear to be worth. Only protected consumers get the benefit of one
+            previous band, and lifeline consumers get none.
+          </p>
+          <p>
+            Our <a href="/electricity-tariff">tariff guide</a> has the full notified schedule, the
+            fixed charges, the adjustment currently in force and a worked example of what crossing
+            the 200-unit line actually costs.
+          </p>
+
+          <h2>Protected and lifeline consumers</h2>
+          <p>
+            Domestic consumers are split by usage. <strong>Lifeline</strong> consumers use very
+            little and pay the lowest rates with no fixed charge. <strong>Protected</strong>{" "}
+            consumers keep monthly usage at or below 200 units and pay materially less per unit than{" "}
+            <strong>unprotected</strong> consumers on the standard schedule. Your status is printed
+            on the bill as a tariff code, and losing it is expensive — the{" "}
+            <a href="/electricity-tariff">tariff guide</a> sets out the thresholds and what is and is
+            not established about how status is assessed.
+          </p>
+
+          <h2>What the lines on your bill mean</h2>
+          <p>
+            Only one line on a bill is the electricity itself. The rest are the fuel price adjustment,
+            any quarterly adjustment in force, a fixed charge tied to your sanctioned load, meter
+            rent, electricity duty, GST and the PTV licence fee. On a typical domestic bill the energy
+            charge is around seven rupees in every ten, which is why cutting usage reduces a bill by
+            less than people expect — the flat items do not move at all. Our{" "}
+            <a href="/sample-bill-explained">annotated sample bill</a> walks through every field on a
+            complete bill, including both totals and the late payment surcharge.
+          </p>
+
+          <h2>The twelve distribution companies</h2>
+          <p>
+            Pakistan&apos;s power distribution outside Karachi is divided between eleven distribution
+            companies and one government department. The company that bills you is printed on your
+            bill — worth checking rather than assuming, because supply boundaries do not follow city
+            or district limits, and consumers near an edge frequently guess wrong. Each page below
+            carries that company&apos;s own complaint numbers, coverage, bill layout and payment
+            channels.
+          </p>
+          <div className="home-disco-list">
+            {entries.map(([code, [abbr, city]]) => (
+              <a key={code} href={`/${code}-bill-check`}>
+                <b>{abbr}</b> <span>{city}</span>
+              </a>
+            ))}
+          </div>
+          <p className="home-explain-foot">
+            Not sure which is yours? <a href="/blog/what-is-disco-pakistan-electricity">
+            What a DISCO is and which one serves you</a> explains how the map is divided.
+          </p>
+        </div>
+      </section>
+
+      {/* faq */}
+      <section className="section" id="faq" style={{ background: "#fff", borderTop: "1px solid var(--line)" }}>
+        <div className="container">
+          <div className="section-head">
+            <span className="kicker">FAQ</span>
+            <h2>Questions, answered</h2>
+          </div>
+          <div className="faq">
+            {FAQS.map(([q, a], i) => (
+              <details key={i} open={i === 0}>
+                <summary>{q}</summary>
+                <div className="a">{a}</div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* cta */}
+      <section className="section" style={{ paddingTop: 0 }}>
+        <div className="container">
+          <div className="cta-band">
+            <h2>Got your bill number handy?</h2>
+            <p>Pop it in and you&apos;ll have your bill in about ten seconds. Free, always.</p>
+            <a className="btn btn-ghost" href="#lookup">{I.bolt} Check my bill</a>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}

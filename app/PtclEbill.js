@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { parsePtclBill } from "../lib/ptclBill";
 import { fmtMoney } from "../lib/billData";
 import { parseBillDate, todayPkIso, daysBetween } from "../lib/dates";
-import ReminderButton from "./result/ReminderButton";
+import ReminderButton from "./ReminderButton";
 
 function Row({ label, value, mono }) {
   if (value === null || value === undefined || value === "") return null;

@@ -24,6 +24,38 @@ const nextConfig = {
         ["/blog/how-to-check-electricity-bill-status", "/blog/how-to-check-electricity-bill-online-pakistan"],
         ["/blog/how-to-download-print-electricity-bill-duplicate", "/blog/how-to-check-electricity-bill-online-pakistan"],
       ].map(([source, destination]) => ({ source, destination, permanent: true })),
+      // November 2026: the per-company "bill check online" posts were folded
+      // into the company pages (lookalike-site warnings and complaint numbers
+      // now live there). See scripts/merge-company-posts.mjs. statusCode 301
+      // rather than permanent: true, which Next sends as a 308.
+      ...[
+        ["/blog/lesco-bill-check-online-official-page", "/lesco-bill-check"],
+        ["/blog/iesco-bill-check-online-official-page", "/iesco-bill-check"],
+        ["/blog/mepco-bill-check-online-official-page", "/mepco-bill-check"],
+        ["/blog/fesco-bill-check-online-official-page", "/fesco-bill-check"],
+        ["/blog/gepco-bill-check-online-official-page", "/gepco-bill-check"],
+        ["/blog/hesco-bill-check-online-official-page", "/hesco-bill-check"],
+        ["/blog/qesco-bill-check-online-official-page", "/qesco-bill-check"],
+        ["/blog/sepco-bill-check-online-official-page", "/sepco-bill-check"],
+        ["/blog/tesco-bill-check-online-official-page", "/tesco-bill-check"],
+        ["/blog/ajk-electricity-bill-check-online-official-page", "/ajk-bill-check"],
+        ["/blog/pesco-bill-check-online-complaint-numbers", "/pesco-bill-check"],
+        // Thin, dated or overlapping posts merged into evergreen guides and
+        // company pages (see scripts/prune-posts.mjs).
+        ["/blog/electricity-bill-high-summer-2026", "/blog/unit-slabs-fuel-price-adjustment-taxes-explained"],
+        ["/blog/august-2026-electricity-bill-increase-surcharge", "/blog/unit-slabs-fuel-price-adjustment-taxes-explained"],
+        ["/blog/october-2026-electricity-bill-fca-qta", "/blog/unit-slabs-fuel-price-adjustment-taxes-explained"],
+        ["/blog/november-2026-electricity-bill-fuel-charge", "/blog/unit-slabs-fuel-price-adjustment-taxes-explained"],
+        ["/blog/december-2026-electricity-bill-quarterly-adjustment", "/blog/unit-slabs-fuel-price-adjustment-taxes-explained"],
+        ["/blog/december-2026-electricity-bill-october-fuel-charge", "/blog/unit-slabs-fuel-price-adjustment-taxes-explained"],
+        ["/blog/how-to-apply-net-metering-net-billing-2026", "/blog/net-metering-net-billing-2026"],
+        ["/blog/electricity-bill-late-payment-surcharge-due-date", "/blog/unpaid-electricity-bill-disconnection-notice-reconnection"],
+        ["/blog/peak-hours-time-of-use-electricity-bill", "/blog/mdi-fixed-charges-electricity-bill"],
+        ["/blog/rs-22-98-incremental-package-nepra-review", "/blog/industrial-electricity-tariff-b1-b2-b3-b4-rates"],
+        ["/blog/protected-consumer-200-unit-penalty-change-status", "/blog/protected-consumer-200-unit-rule"],
+        ["/blog/customer-facilitation-centre-iesco-bill-problems", "/iesco-bill-check"],
+        ["/blog/peshawar-high-court-taxes-pesco-bill", "/pesco-bill-check"],
+      ].map(([source, destination]) => ({ source, destination, statusCode: 301 })),
       {
         // Browsers and crawlers request /favicon.ico directly regardless of
         // <link rel="icon"> in <head>. Redirect permanently to the site logo
