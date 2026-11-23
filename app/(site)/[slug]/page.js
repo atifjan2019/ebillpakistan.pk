@@ -138,6 +138,7 @@ export default async function CompanyPage({ params }) {
               They are now one sentence each, pointing at the single canonical
               explanation. One good guide linked twelve times beats twelve copies. */}
           <p className="page-updated">Last updated: {updatedFor(code)}</p>
+          <p className="page-note">eBill Pakistan is an independent service. It is not affiliated with {abbr}, PITC or any government body.</p>
           <p className="page-lede">
             Enter the reference number above and your latest {abbr} bill loads in a few seconds —
             free, with no account. New to reading one? Our{" "}

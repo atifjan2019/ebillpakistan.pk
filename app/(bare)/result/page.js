@@ -119,6 +119,7 @@ export default async function Result({ searchParams }) {
           </div>
           <a className="btn btn-ghost" href="/">← Check another bill</a>
         </div>
+        <p className="page-note">eBill Pakistan is an independent service. It is not affiliated with {info[0]}, PITC or any government body; the bill below is {info[0]}&apos;s own record, shown as PITC&apos;s bill service returns it.</p>
 
         {bill ? (
           <BillPanel bill={bill} disco={disco} info={info} reference={ref} pitcUrl={pitcUrl} adjustments={adjustments} />

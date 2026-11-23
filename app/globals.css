@@ -1006,6 +1006,7 @@ a.byline-name:hover { color: var(--brand); }
 
 /* ---- Phase 3: homepage explainer, last-updated, staleness ---- */
 .page-updated { font-size: 14px; color: var(--muted); margin: 0 0 14px; }
+.page-note { font-size: 14px; color: var(--muted); margin: -6px 0 16px; line-height: 1.6; }
 .home-explain h2 { font-size: clamp(20px, 4.2vw, 26px); margin: 30px 0 10px; }
 .home-explain p { font-size: 16.5px; line-height: 1.78; color: var(--body); margin: 0 0 12px; }
 .home-explain a { color: var(--brand-700); font-weight: 600; }

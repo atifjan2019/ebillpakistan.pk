@@ -7,7 +7,7 @@ import { UTILITIES, KIND_LABEL, utilitySlug } from "../../lib/utilities";
 import { SITE_URL, HOME_URL, OG_IMAGE, TWITTER_SITE, SOCIAL } from "../../lib/seo";
 import { BUSINESS } from "../../lib/contact";
 
-export const HOME_UPDATED = "2026-08-16";
+export const HOME_UPDATED = "2026-11-23";
 
 const HOME_TITLE = "eBill Pakistan | Check Your Electricity Bill Online";
 const HOME_DESC =
@@ -297,6 +297,7 @@ export default async function Home() {
       <section className="section home-explain">
         <div className="container article">
           <p className="page-updated">Last updated: {HOME_UPDATED}</p>
+          <p className="page-note">eBill Pakistan is an independent service. It is not affiliated with any distribution company, PITC or any government body.</p>
           <h2>How electricity billing works in Pakistan</h2>
           <p>
             Every month a meter reader from your distribution company records the reading on your

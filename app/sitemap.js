@@ -3,6 +3,7 @@ import { slugFor } from "../lib/companies";
 import { UTILITY_CODES, utilitySlug } from "../lib/utilities";
 import { SITE_URL, HOME_URL } from "../lib/seo";
 import { getAllPosts } from "../lib/posts";
+import { updatedFor } from "../lib/discoContent";
 import { AUTHOR_SLUGS } from "../lib/authors";
 
 const BASE = SITE_URL;
@@ -17,7 +18,7 @@ export const revalidate = 3600;
 // you actually change that content; using `new Date()` here would stamp every
 // URL with the request time, which Google ignores as inaccurate.
 const UPDATED = {
-  core: "2026-08-16",   // homepage + DISCO landing pages
+  core: "2026-11-23",   // homepage (independence line, 23 Nov 2026); DISCO pages use updatedFor()
   info: "2026-08-16",   // about, contact, sample bill, editorial policy, authors
   legal: "2026-08-16",  // privacy (rewritten for advertising disclosure)
   terms: "2026-01-10",  // terms, disclaimer (unchanged)
@@ -27,12 +28,15 @@ const UPDATED = {
 
 export default async function sitemap() {
   const posts = await getAllPosts();
+  // The index changes whenever a post is added or edited, so it carries the
+  // newest post date rather than a hand-set constant.
+  const newestPost = posts.map((a) => a.lastUpdated || a.publishedDate).sort().at(-1) || UPDATED.core;
   return [
     { url: HOME_URL, lastModified: UPDATED.core, changeFrequency: "weekly", priority: 1 },
     { url: `${BASE}/ur`, lastModified: UPDATED.tools, changeFrequency: "weekly", priority: 0.9 },
     ...Object.keys(DISCOS).map((code) => ({
       url: `${BASE}/${slugFor(code)}`,
-      lastModified: UPDATED.core,
+      lastModified: updatedFor(code),
       changeFrequency: "weekly",
       priority: 0.8,
     })),
@@ -88,7 +92,7 @@ export default async function sitemap() {
       changeFrequency: "yearly",
       priority: 0.3,
     })),
-    { url: `${BASE}/blog`, lastModified: UPDATED.core, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${BASE}/blog`, lastModified: newestPost, changeFrequency: "weekly", priority: 0.6 },
     ...posts.map((a) => ({
       url: `${BASE}/blog/${a.slug}`,
       lastModified: a.lastUpdated || a.publishedDate,
