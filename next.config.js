@@ -40,6 +40,21 @@ const nextConfig = {
         ["/blog/tesco-bill-check-online-official-page", "/tesco-bill-check"],
         ["/blog/ajk-electricity-bill-check-online-official-page", "/ajk-bill-check"],
         ["/blog/pesco-bill-check-online-complaint-numbers", "/pesco-bill-check"],
+        // Thin, dated or overlapping posts merged into evergreen guides and
+        // company pages (see scripts/prune-posts.mjs).
+        ["/blog/electricity-bill-high-summer-2026", "/blog/unit-slabs-fuel-price-adjustment-taxes-explained"],
+        ["/blog/august-2026-electricity-bill-increase-surcharge", "/blog/unit-slabs-fuel-price-adjustment-taxes-explained"],
+        ["/blog/october-2026-electricity-bill-fca-qta", "/blog/unit-slabs-fuel-price-adjustment-taxes-explained"],
+        ["/blog/november-2026-electricity-bill-fuel-charge", "/blog/unit-slabs-fuel-price-adjustment-taxes-explained"],
+        ["/blog/december-2026-electricity-bill-quarterly-adjustment", "/blog/unit-slabs-fuel-price-adjustment-taxes-explained"],
+        ["/blog/december-2026-electricity-bill-october-fuel-charge", "/blog/unit-slabs-fuel-price-adjustment-taxes-explained"],
+        ["/blog/how-to-apply-net-metering-net-billing-2026", "/blog/net-metering-net-billing-2026"],
+        ["/blog/electricity-bill-late-payment-surcharge-due-date", "/blog/unpaid-electricity-bill-disconnection-notice-reconnection"],
+        ["/blog/peak-hours-time-of-use-electricity-bill", "/blog/mdi-fixed-charges-electricity-bill"],
+        ["/blog/rs-22-98-incremental-package-nepra-review", "/blog/industrial-electricity-tariff-b1-b2-b3-b4-rates"],
+        ["/blog/protected-consumer-200-unit-penalty-change-status", "/blog/protected-consumer-200-unit-rule"],
+        ["/blog/customer-facilitation-centre-iesco-bill-problems", "/iesco-bill-check"],
+        ["/blog/peshawar-high-court-taxes-pesco-bill", "/pesco-bill-check"],
       ].map(([source, destination]) => ({ source, destination, statusCode: 301 })),
       {
         // Browsers and crawlers request /favicon.ico directly regardless of

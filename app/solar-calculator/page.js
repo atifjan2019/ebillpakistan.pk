@@ -59,7 +59,7 @@ export default async function SolarCalculatorPage() {
             <li><strong>Ask for the export rate in writing.</strong> Net billing pays far less for exported units than net metering did, and the difference changes the payback by years. Our guide to <a href="/blog/net-metering-net-billing-2026">net metering and net billing in 2026</a> explains the rules.</li>
             <li><strong>Size for daytime use, not for the whole bill.</strong> A system that exports most of its output is earning the low rate on most of its output.</li>
             <li><strong>Check your slab first.</strong> A household at 350 units saves more per panel than one at 700, because the first panels take it across a slab boundary. The <a href="/bill-calculator">bill calculator</a> shows the slabs.</li>
-            <li><strong>The application is through your DISCO.</strong> See <a href="/blog/how-to-apply-net-metering-net-billing-2026">how to apply for net metering</a> for the documents and the steps.</li>
+            <li><strong>The application is through your DISCO.</strong> See <a href="/blog/net-metering-net-billing-2026">how to apply for net metering</a> for the documents and the steps.</li>
           </ul>
         </div>
 

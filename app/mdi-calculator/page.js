@@ -62,7 +62,7 @@ export default async function MdiCalculatorPage() {
           </ol>
           <p>
             Our guide <a href="/blog/mdi-fixed-charges-electricity-bill">what MDI and fixed charges are</a> explains the meter
-            reading itself, and <a href="/blog/peak-hours-time-of-use-electricity-bill">peak hours and Time-of-Use billing</a>{" "}
+            reading itself, and <a href="/blog/mdi-fixed-charges-electricity-bill#peak-hours">peak hours and Time-of-Use billing</a>{" "}
             covers when the peak rate applies. Below 5 kW there is no MDI; use the <a href="/bill-calculator">bill calculator</a>.
           </p>
         </div>
