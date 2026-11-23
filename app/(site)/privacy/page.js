@@ -13,7 +13,7 @@ export default function Privacy() {
     <LegalShell
       path="/privacy"
       title="Privacy Policy"
-      updated="3 November 2026"
+      updated="23 November 2026"
       intro="eBill Pakistan (“we”, “us”, “our”) runs the website www.ebillpakistan.pk, a free tool that lets you view your electricity bill online. This policy explains what information we handle, what cookies are set, how advertising on this site works, and what choices you have. We have kept it in plain English."
     >
       <h2>1. The short version</h2>
@@ -28,8 +28,8 @@ export default function Privacy() {
       <h2>2. Information we process</h2>
       <ul>
         <li>
-          <strong>The number you enter.</strong> Your 14-digit reference number (or account/consumer
-          ID) is sent by your browser to the upstream billing system operated by the Power
+          <strong>The number you enter.</strong> Your reference number (14 digits, or 18 for AJK), or account/consumer
+          ID, is sent by your browser to the upstream billing system operated by the Power
           Information Technology Company (PITC) in order to retrieve your bill, and, if that
           request fails, to our server, which asks PITC on your behalf.
           Gas (SNGPL, SSGC) and PTCL numbers entered on their pages are different: they are kept
@@ -47,10 +47,21 @@ export default function Privacy() {
         <li>
           <strong>Basic technical data.</strong> Like most websites, our servers automatically
           receive your IP address, approximate location (city and country, as reported by our
-          hosting provider), and the time of your request. We use this to keep the service secure,
-          prevent abuse, apply fair-use rate limits, and understand aggregate usage such as how many
-          lookups are made and from which cities. We do not link it to your identity and we do not
-          sell it.
+          hosting provider), and the time of your request. The IP address is used in the moment to
+          apply fair-use rate limits and is not stored as such.
+        </li>
+        <li>
+          <strong>The lookup diagnostics log.</strong> For each bill lookup we keep, for seven
+          days, a row with: the time, the company, the page you started from, whether the lookup
+          succeeded, failed at PITC or found no bill, the cause of each attempt (for example a
+          rate limit or a timeout), the city and country reported by our hosting provider, the
+          last four digits of the reference number, and a hash of your IP address made with a
+          salt that changes every day. The hash lets us see that the same connection failed
+          several times within a day; it cannot be turned back into your address and cannot be
+          followed from one day to the next. The full reference number and the IP address itself
+          are not written to the log. We use the log to find and fix lookup failures and to count
+          lookups by company, city and day. We do not link it to your identity and we do not sell
+          it.
         </li>
         <li>
           <strong>What you send us.</strong> If you use our contact form or email us, we receive
@@ -155,8 +166,8 @@ export default function Privacy() {
         where visitors come from, and whether the lookup succeeded. It relies on cookies, so it is
         loaded only after you accept analytics cookies in our cookie banner, and you can refuse
         them there. It is configured not to share data for advertising. Aggregate lookup statistics used to run
-        the service (counts by company, by city and by day) are derived from server logs, are not
-        tied to your identity, and are described in section 2.
+        the service (counts by company, by city and by day) are derived from the seven-day lookup
+        diagnostics log, are not tied to your identity, and are described in section 2.
       </p>
 
       <h2>7. Service providers</h2>
@@ -172,7 +183,10 @@ export default function Privacy() {
       <h2>8. Data retention &amp; security</h2>
       <p>
         Because we don&apos;t store your bills or personal details, there is very little to retain.
-        Short-lived caches and security logs are kept only as long as needed and then discarded.
+        The lookup diagnostics log described in section 2 is kept for seven days and then
+        deleted; it holds the last four digits of a reference and a daily-salted hash of an IP
+        address, not the full values. Short-lived caches and security logs are kept only as long
+        as needed and then discarded.
         Messages sent through the contact form are kept only as long as needed to deal with your
         enquiry. We take reasonable measures to protect information passing through our systems,
         though no online service can be guaranteed to be completely secure.

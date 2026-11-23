@@ -1,5 +1,5 @@
-import { fetchBillJson } from "../../../lib/pitc";
-import { isValidRef } from "../../../lib/discos";
+import { fetchBillJson, causeOfError } from "../../../lib/pitc";
+import { isValidRef, REF_LENGTH_TEXT } from "../../../lib/discos";
 import { rateLimitBill, getIp } from "../../../lib/store";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +12,7 @@ export async function GET(request) {
   const ref = (searchParams.get("reference") || "").trim();
 
   if (!isValidRef(ref)) {
-    return Response.json({ error: "reference must be 8-14 digits" }, { status: 400 });
+    return Response.json({ error: `reference must be ${REF_LENGTH_TEXT}` }, { status: 400 });
   }
   const rl = await rateLimitBill(`${getIp(request)}`);
   if (!rl.success) {
@@ -24,6 +24,12 @@ export async function GET(request) {
       headers: { "Cache-Control": "public, max-age=300, s-maxage=300" },
     });
   } catch (e) {
-    return Response.json({ error: "upstream unavailable" }, { status: 502 });
+    // Status by cause so the browser can tell a rate limit from an outage:
+    // 429 (with Retry-After when PITC sent one), 504 for a timeout, 502 otherwise.
+    const cause = causeOfError(e);
+    const status = cause === "429" ? 429 : cause === "timeout" ? 504 : 502;
+    const headers = {};
+    if (cause === "429" && e.retryAfterSec) headers["Retry-After"] = String(Math.ceil(e.retryAfterSec));
+    return Response.json({ error: "upstream unavailable", cause }, { status, headers });
   }
 }

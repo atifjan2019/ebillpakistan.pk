@@ -10,6 +10,7 @@ import BillActions from "./BillActions";
 import RememberLookup from "../../RememberLookup";
 import UsageChart from "./UsageChart";
 import ReminderButton from "../../ReminderButton";
+import CopyAndOpen from "../../CopyAndOpen";
 
 export default function BillPanel({ bill, disco, info, reference, pitcUrl, adjustments }) {
   const ref = reference;
@@ -55,14 +56,12 @@ export default function BillPanel({ bill, disco, info, reference, pitcUrl, adjus
       </div>
 
       <details className="orig-bill">
-        <summary>View the original bill on the official PITC portal</summary>
+        <summary>View the original bill on PITC&apos;s own page</summary>
         <p>
           The figures above are the ones the official system issued for this reference. If you
-          need the original printed layout — for a bank counter that wants it — open it here.
+          need the original printed layout, for a bank counter that wants it, the button copies your reference and opens the company&apos;s PITC page; paste the number and type the code shown.
         </p>
-        <form action={pitcUrl} method="POST" target="_blank" rel="noopener noreferrer" encType="text/plain">
-          <button type="submit" className="btn btn-ghost">Open the official bill →</button>
-        </form>
+        <CopyAndOpen reference={reference} url={pitcUrl} label="Copy reference and open the PITC bill page →" />
       </details>
     </>
   );

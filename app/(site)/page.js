@@ -2,7 +2,7 @@ import LookupState from "../LookupState";
 import RefInput from "../RefInput";
 import CheckBillLoader from "../CheckBillLoader";
 import QuickCheck from "../QuickCheck";
-import { DISCOS } from "../../lib/discos";
+import { DISCOS, ANY_REF_PATTERN, REF_LENGTH_TEXT } from "../../lib/discos";
 import { UTILITIES, KIND_LABEL, utilitySlug } from "../../lib/utilities";
 import { SITE_URL, HOME_URL, OG_IMAGE, TWITTER_SITE, SOCIAL } from "../../lib/seo";
 import { BUSINESS } from "../../lib/contact";
@@ -67,7 +67,7 @@ const FAQS = [
 ];
 
 const LOOKUP_ERRORS = {
-  badref: "That reference number doesn't look right. It is 8 to 14 digits, with no spaces or dashes — check it against the top-left of your bill.",
+  badref: `That reference number doesn't look right. It is ${REF_LENGTH_TEXT}, with no spaces or dashes. Check it against the top-left of your bill.`,
   noref: "Enter the reference number printed at the top-left of your bill to check it.",
   nodisco: "Choose the company printed on your bill first — a reference number only works on the company that issued it.",
 };
@@ -170,7 +170,7 @@ export default async function Home() {
               <div className="field">
                 <label htmlFor="reference">Reference number</label>
                 <div className="control">
-                  <RefInput id="reference" name="reference" inputMode="numeric" pattern="[0-9]{8,14}"
+                  <RefInput id="reference" name="reference" inputMode="numeric" pattern={ANY_REF_PATTERN}
                     placeholder="e.g. 12345678901234" required />
                 </div>
               </div>
@@ -286,7 +286,7 @@ export default async function Home() {
           <div className="features">
             <div className="feature"><div className="ic">{I.bolt}</div><h3>Quick</h3><p>Your bill shows up in a few seconds. No waiting around, nothing to install.</p></div>
             <div className="feature"><div className="ic">{I.free}</div><h3>Always free</h3><p>Check as many bills as you like. There&apos;s never a charge or a sign-up.</p></div>
-            <div className="feature"><div className="ic">{I.lock}</div><h3>Yours stays yours</h3><p>We only ever look up the number you type. Nothing is saved or shared.</p></div>
+            <div className="feature"><div className="ic">{I.lock}</div><h3>Yours stays yours</h3><p>We only look up the number you type and keep no copy of your bill. Our seven-day diagnostics log holds the last four digits, the outcome and a hashed connection, never the full number.</p></div>
             <div className="feature"><div className="ic">{I.doc}</div><h3>Easy to keep</h3><p>Download a tidy one-page PDF, or share it on WhatsApp in a tap.</p></div>
           </div>
         </div>

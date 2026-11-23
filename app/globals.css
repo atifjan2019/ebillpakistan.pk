@@ -894,6 +894,7 @@ a.byline-name:hover { color: var(--brand); }
 .fallback-actions .btn { width: 100%; min-height: 48px; }
 @media (min-width: 560px) { .fallback-actions { display: flex; } .fallback-actions .btn { width: auto; } }
 .fallback-ref { font-size: 14px; color: var(--muted); margin: 0 0 8px; overflow-wrap: anywhere; }
+.copy-state { display: block; font-size: 13.5px; color: var(--muted); margin-top: 8px; min-height: 1em; }
 .fallback-help { font-size: 14px; color: var(--muted); margin: 0; }
 .fallback-help a { color: var(--brand-700); font-weight: 600; }
 

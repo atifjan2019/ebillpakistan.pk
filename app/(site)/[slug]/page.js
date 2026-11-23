@@ -1,7 +1,7 @@
 import RefInput from "../../RefInput";
 import CheckBillLoader from "../../CheckBillLoader";
 import { notFound } from "next/navigation";
-import { DISCOS } from "../../../lib/discos";
+import { DISCOS, refRule } from "../../../lib/discos";
 import { COMPANIES, slugFor, codeFromSlug } from "../../../lib/companies";
 import { complaintsFor, contentFor, faqsFor, seoFor, SECTIONS, updatedFor } from "../../../lib/discoContent";
 import { guidesFor } from "../../../lib/articles";
@@ -55,6 +55,7 @@ export default async function CompanyPage({ params }) {
   if (!code) notFound();
 
   const [abbr, city, color] = DISCOS[code];
+  const ref = refRule(code);
   const c = COMPANIES[code];
   const content = contentFor(code);
   const faqs = faqsFor(code);
@@ -116,14 +117,14 @@ export default async function CompanyPage({ params }) {
               <div className="field">
                 <label htmlFor="reference">{abbr} reference number</label>
                 <div className="control">
-                  <RefInput id="reference" name="reference" inputMode="numeric" pattern="[0-9]{8,14}"
-                    placeholder="e.g. 12345678901234" required autoFocus />
+                  <RefInput id="reference" name="reference" inputMode="numeric" pattern={ref.pattern}
+                    placeholder={`e.g. ${ref.example}`} required autoFocus />
                 </div>
               </div>
-              <button type="submit" className="btn btn-primary"><Search /> Check {abbr} Bill</button>
+              <button type="submit" className="btn btn-primary"><Search /> {code === "ajk" ? "Open AJK bill" : `Check ${abbr} Bill`}</button>
             </div>
             <p className="search-foot">
-              <span className="only-wide">Your 14-digit reference number is printed at the top-left of your {abbr} bill.</span>
+              <span className="only-wide">Your {ref.digits}-digit reference number is printed at the top-left of your {abbr} bill.</span>
               <span className="only-narrow">Reference number: top-left of your {abbr} bill.</span>
             </p>
             <CheckBillLoader />
@@ -139,11 +140,20 @@ export default async function CompanyPage({ params }) {
               explanation. One good guide linked twelve times beats twelve copies. */}
           <p className="page-updated">Last updated: {updatedFor(code)}</p>
           <p className="page-note">eBill Pakistan is an independent service. It is not affiliated with {abbr}, PITC or any government body.</p>
-          <p className="page-lede">
-            Enter the reference number above and your latest {abbr} bill loads in a few seconds —
-            free, with no account. New to reading one? Our{" "}
-            <a href="/sample-bill-explained">annotated sample bill</a> explains every line.
-          </p>
+          {code === "ajk" ? (
+            <p className="page-lede">
+              AJK bills are published on PITC&apos;s AJK bill page, which needs the 18-digit reference number and a
+              CAPTCHA code typed by a person, so this site cannot show the bill itself. Enter the reference number
+              above and we copy it and open that page for you. New to reading a bill? Our{" "}
+              <a href="/sample-bill-explained">annotated sample bill</a> explains every line.
+            </p>
+          ) : (
+            <p className="page-lede">
+              Enter the reference number above and your latest {abbr} bill loads in a few seconds —
+              free, with no account. New to reading one? Our{" "}
+              <a href="/sample-bill-explained">annotated sample bill</a> explains every line.
+            </p>
+          )}
 
           <div className="glance" aria-label={`${abbr} at a glance`}>
             {contactNumber && (
@@ -162,7 +172,7 @@ export default async function CompanyPage({ params }) {
             )}
             <div className="glance-item">
               <span className="glance-k">Reference number</span>
-              <span className="glance-v">14 digits</span>
+              <span className="glance-v">{ref.digits} digits</span>
               <span className="glance-n">Top-left of the bill. <a href="/blog/how-to-find-reference-number-on-electricity-bill">Where to find it</a></span>
             </div>
             <div className="glance-item">
