@@ -12,7 +12,7 @@
 // accordion and FAQPage JSON-LD exactly like static articles' faqs field.
 // Result:  201 { success: true, url } | 400 | 401 | 409 | 413 | 503
 //
-// Storage: Vercel KV / Upstash Redis (hash blog:posts, see lib/posts.js).
+// Storage: Redis (hash blog:posts, see lib/posts.js).
 // Markdown is converted to HTML here, at publish time, so the article page
 // renders API posts through the same trusted-HTML pipeline as lib/articles.js.
 // The bearer token is the trust boundary: anyone holding it can publish

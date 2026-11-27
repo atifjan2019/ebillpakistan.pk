@@ -405,7 +405,7 @@ function Dashboard({ tab, stats, posts, page, msg, err, editing, drafts, agent, 
             {stats && !configured && (
               <div className="adm-note">
                 <strong>Dev mode:</strong> no Redis/KV detected, so counts are in-memory and reset on restart.
-                In production (Upstash/Vercel KV) they persist.
+                In production (Redis) they persist.
               </div>
             )}
 
